@@ -1,6 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from "fs"
 import { fileURLToPath } from "url"
 
+import { getCodeActionCommand, getCommand, getTerminalCommand } from "../utils/commands"
+
 describe("ADTEC Code package metadata", () => {
 	const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"))
 
@@ -26,6 +28,33 @@ describe("ADTEC Code package metadata", () => {
 		expect(manifest.icon).toBe("assets/icons/adtec-logo.png")
 		expect(manifest.contributes.viewsContainers.activitybar[0].icon).toBe("assets/icons/adtec-logo.png")
 		expect(existsSync(fileURLToPath(new URL(`../${manifest.icon}`, import.meta.url)))).toBe(true)
+	})
+
+	it("uses the package name as the namespace for every VS Code contribution", () => {
+		const namespace = manifest.name
+		const activityBarId = `${namespace}-ActivityBar`
+		const contributedCommands = new Set<string>(
+			manifest.contributes.commands.map(({ command }: { command: string }) => command),
+		)
+		const extensionSource = readFileSync(new URL("../extension.ts", import.meta.url), "utf-8")
+
+		expect(JSON.stringify(manifest.contributes)).not.toContain("roo-cline")
+		expect(extensionSource).not.toContain('"roo-cline.')
+		expect(manifest.contributes.viewsContainers.activitybar[0].id).toBe(activityBarId)
+		expect(Object.keys(manifest.contributes.views)).toContain(activityBarId)
+		expect(manifest.contributes.views[activityBarId][0].id).toBe(`${namespace}.SidebarProvider`)
+		expect(Object.keys(manifest.contributes.configuration.properties)).toEqual(
+			expect.arrayContaining([
+				`${namespace}.allowedCommands`,
+				`${namespace}.customStoragePath`,
+				`${namespace}.debug`,
+			]),
+		)
+		expect(contributedCommands).toContain(getCommand("plusButtonClicked"))
+		expect(contributedCommands).toContain(getCommand("historyButtonClicked"))
+		expect(contributedCommands).toContain(getCommand("settingsButtonClicked"))
+		expect(contributedCommands).toContain(getCodeActionCommand("explainCode"))
+		expect(contributedCommands).toContain(getTerminalCommand("terminalAddToContext"))
 	})
 
 	it("packages a valid bundled test skill", () => {

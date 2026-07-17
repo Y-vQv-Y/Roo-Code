@@ -33,6 +33,7 @@ import { McpServerManager } from "./services/mcp/McpServerManager"
 import { CodeIndexManager } from "./services/code-index/manager"
 import { migrateSettings } from "./utils/migrateSettings"
 import { autoImportSettings } from "./utils/autoImportSettings"
+import { getCommand } from "./utils/commands"
 import { API } from "./extension/api"
 
 import {
@@ -90,7 +91,7 @@ async function checkWorktreeAutoOpen(
 			// Open the Roo Code sidebar with a slight delay to ensure UI is ready
 			setTimeout(async () => {
 				try {
-					await vscode.commands.executeCommand("roo-cline.plusButtonClicked")
+					await vscode.commands.executeCommand(getCommand("plusButtonClicked"))
 				} catch (error) {
 					outputChannel.appendLine(
 						`[Worktree] Error auto-opening sidebar: ${error instanceof Error ? error.message : String(error)}`,
