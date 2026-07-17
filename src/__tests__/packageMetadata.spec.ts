@@ -58,4 +58,22 @@ describe("ADTEC Code package metadata", () => {
 		expect(relativeLinks).toEqual([])
 		expect(relativeImages).toEqual([])
 	})
+
+	it("publishes the branded VSIX and verifies the bundled test skill", () => {
+		const workflow = readFileSync(new URL("../../.github/workflows/marketplace-publish.yml", import.meta.url), "utf-8")
+
+		expect(workflow).toContain("package_name=$(node -p \"require('./src/package.json').name\")")
+		expect(workflow).toContain('vsix_path="bin/${package_name}-${current_package_version}.vsix"')
+		expect(workflow).toContain('unzip -l "$vsix_path"')
+		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
+		expect(workflow).toMatch(/gh release create[\s\S]*"\$vsix_path"/)
+		expect(workflow).not.toContain("bin/roo-cline-${current_package_version}.vsix")
+	})
+
+	it("extracts release notes from the unbracketed ADTEC changelog heading", () => {
+		const workflow = readFileSync(new URL("../../.github/workflows/marketplace-publish.yml", import.meta.url), "utf-8")
+
+		expect(workflow).toContain('$0 == "## " version')
+		expect(workflow).toContain("capture && /^## / { exit }")
+	})
 })

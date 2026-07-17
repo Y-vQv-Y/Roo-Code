@@ -33,24 +33,27 @@ jobs:
         run: echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> .env
       - name: Package Extension
         run: |
+          package_name=$(node -p "require('./src/package.json').name")
           current_package_version=$(node -p "require('./src/package.json').version")
+          vsix_path="bin/${package_name}-${current_package_version}.vsix"
           pnpm vsix
 
           # Save VSIX contents to a temporary file to avoid broken pipe issues.
-          unzip -l bin/roo-cline-${current_package_version}.vsix > /tmp/roo-code-vsix-contents.txt
+          unzip -l "$vsix_path" > /tmp/adtec-code-vsix-contents.txt
 
           # Check for required files.
-          grep -q "extension/package.json" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/package.nls.json" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/dist/extension.js" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/webview-ui/audio/celebration.wav" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/webview-ui/build/assets/index.js" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/codicons/codicon.ttf" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/roo-code-vsix-contents.txt || exit 1
-          grep -q ".env" /tmp/roo-code-vsix-contents.txt || exit 1
+          grep -q "extension/package.json" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/package.nls.json" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/dist/extension.js" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/webview-ui/audio/celebration.wav" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/webview-ui/build/assets/index.js" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/assets/codicons/codicon.ttf" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/builtin-skills/adtec-test/SKILL.md" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q ".env" /tmp/adtec-code-vsix-contents.txt || exit 1
           
           # Clean up temporary file.
-          rm /tmp/roo-code-vsix-contents.txt
+          rm /tmp/adtec-code-vsix-contents.txt
       - name: Create and Push Git Tag
         run: |
           current_package_version=$(node -p "require('./src/package.json').version")
@@ -69,11 +72,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          package_name=$(node -p "require('./src/package.json').name")
           current_package_version=$(node -p "require('./src/package.json').version")
+          vsix_path="bin/${package_name}-${current_package_version}.vsix"
 
           # Extract changelog for current version
           echo "Extracting changelog for version ${current_package_version}"
-          changelog_content=$(sed -n "/## \\[${current_package_version}\\]/,/## \\[/p" CHANGELOG.md | sed '$d')
+          changelog_content=$(awk -v version="${current_package_version}" '
+            $0 == "## " version || $0 == "## [" version "]" {
+              capture = 1
+              next
+            }
+            capture && /^## / { exit }
+            capture { print }
+          ' CHANGELOG.md)
 
           # If changelog extraction failed, use a default message
           if [ -z "$changelog_content" ]; then
@@ -88,5 +100,5 @@ jobs:
             --title "Release v${current_package_version}" \
             --notes "$changelog_content" \
             --target ${{ env.GIT_REF }} \
-            bin/roo-cline-${current_package_version}.vsix
+            "$vsix_path"
           echo "Successfully created GitHub Release v${current_package_version}"
