@@ -33,18 +33,26 @@ import { buildDocLink } from "@/utils/docLinks"
 import { SectionHeader } from "./SectionHeader"
 import { CreateSkillDialog } from "./CreateSkillDialog"
 
+type MutableSkillMetadata = Omit<SkillMetadata, "source"> & {
+	source: Exclude<SkillMetadata["source"], "bundled">
+}
+
+function isMutableSkill(skill: SkillMetadata): skill is MutableSkillMetadata {
+	return skill.source !== "bundled"
+}
+
 export const SkillsSettings: React.FC = () => {
 	const { t } = useAppTranslation()
 	const { cwd, skills: rawSkills, customModes } = useExtensionState()
 	const skills = useMemo(() => rawSkills ?? [], [rawSkills])
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-	const [skillToDelete, setSkillToDelete] = useState<SkillMetadata | null>(null)
+	const [skillToDelete, setSkillToDelete] = useState<MutableSkillMetadata | null>(null)
 	const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
 	// Mode selection modal state
 	const [modeDialogOpen, setModeDialogOpen] = useState(false)
-	const [skillToEditModes, setSkillToEditModes] = useState<SkillMetadata | null>(null)
+	const [skillToEditModes, setSkillToEditModes] = useState<MutableSkillMetadata | null>(null)
 	const [selectedModes, setSelectedModes] = useState<string[]>([])
 	const [isAnyMode, setIsAnyMode] = useState(true)
 
@@ -65,7 +73,7 @@ export const SkillsSettings: React.FC = () => {
 		handleRefresh()
 	}, [handleRefresh])
 
-	const handleDeleteClick = useCallback((skill: SkillMetadata) => {
+	const handleDeleteClick = useCallback((skill: MutableSkillMetadata) => {
 		setSkillToDelete(skill)
 		setDeleteDialogOpen(true)
 	}, [])
@@ -88,7 +96,7 @@ export const SkillsSettings: React.FC = () => {
 		setSkillToDelete(null)
 	}, [])
 
-	const handleEditClick = useCallback((skill: SkillMetadata) => {
+	const handleEditClick = useCallback((skill: MutableSkillMetadata) => {
 		vscode.postMessage({
 			type: "openSkillFile",
 			skillName: skill.name,
@@ -98,7 +106,7 @@ export const SkillsSettings: React.FC = () => {
 	}, [])
 
 	// Open mode selection modal
-	const handleOpenModeDialog = useCallback((skill: SkillMetadata) => {
+	const handleOpenModeDialog = useCallback((skill: MutableSkillMetadata) => {
 		setSkillToEditModes(skill)
 		// Initialize state from skill's current modeSlugs
 		const hasModeSlugs = skill.modeSlugs && skill.modeSlugs.length > 0
@@ -165,8 +173,6 @@ export const SkillsSettings: React.FC = () => {
 	// Render a single skill item
 	const renderSkillItem = useCallback(
 		(skill: SkillMetadata) => {
-			const isBundled = skill.source === "bundled"
-
 			return (
 				<div
 					key={`${skill.source}-${skill.name}-${skill.modeSlugs?.join(",") || "any"}`}
@@ -187,7 +193,7 @@ export const SkillsSettings: React.FC = () => {
 						</div>
 
 						{/* Bundled skills are installed with the extension and are read-only. */}
-						{!isBundled && (
+						{isMutableSkill(skill) && (
 							<div className="flex items-center gap-1 px-0 ml-0 min-[400px]:ml-0 min-[400px]:mt-4 flex-shrink-0">
 								{/* Mode settings button (gear icon) */}
 								<StandardTooltip content={t("settings:skills.configureModes")}>
