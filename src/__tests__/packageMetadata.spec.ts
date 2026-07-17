@@ -37,4 +37,13 @@ describe("ADTEC Code package metadata", () => {
 		expect(skill).toContain("description:")
 		expect(skill).toContain("ADTEC bundled skill loaded successfully.")
 	})
+
+	it("keeps the Marketplace README independent from a source repository", () => {
+		const readme = readFileSync(new URL("../../README.md", import.meta.url), "utf-8")
+		const relativeLinks = Array.from(readme.matchAll(/\]\((?!https?:\/\/|mailto:|#)([^)]+)\)/g), (match) => match[1])
+
+		expect(readme).toContain("# ADTEC Code")
+		expect(readme).not.toContain("github.com")
+		expect(relativeLinks).toEqual([])
+	})
 })
