@@ -46,4 +46,16 @@ describe("ADTEC Code package metadata", () => {
 		expect(readme).not.toContain("github.com")
 		expect(relativeLinks).toEqual([])
 	})
+
+	it("keeps the Marketplace changelog independent from a source repository", () => {
+		const changelog = readFileSync(new URL("../../CHANGELOG.md", import.meta.url), "utf-8")
+		const relativeLinks = Array.from(changelog.matchAll(/\]\((?!https?:\/\/|mailto:|#)([^)]+)\)/g), (match) => match[1])
+		const relativeImages = Array.from(changelog.matchAll(/!\[[^\]]*\]\((?!https?:\/\/|data:)([^)]+)\)/g), (match) => match[1])
+
+		expect(changelog).toContain("# ADTEC Code Changelog")
+		expect(changelog).toContain("## 0.1.0")
+		expect(changelog).not.toContain("github.com")
+		expect(relativeLinks).toEqual([])
+		expect(relativeImages).toEqual([])
+	})
 })
