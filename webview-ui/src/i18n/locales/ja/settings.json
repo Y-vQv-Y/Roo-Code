@@ -947,6 +947,7 @@
 		"description": "エージェントにコンテキスト指示を提供するスキルを管理します。スキルはタスクに関連する場合に自動的に適用されます。<DocsLink>詳細を見る</DocsLink>",
 		"workspaceSkills": "ワークスペーススキル",
 		"globalSkills": "グローバルスキル",
+		"bundledSkills": "組み込みスキル",
 		"noWorkspaceSkills": "このプロジェクトにはまだスキルがありません。",
 		"noGlobalSkills": "グローバルスキルが設定されていません。すべてのプロジェクトで利用可能なエージェント機能を追加するには、作成してください。",
 		"addSkill": "スキルを追加",

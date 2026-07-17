@@ -137,6 +137,12 @@ vi.mock("../SectionHeader", () => ({
 
 const mockSkills: SkillMetadata[] = [
 	{
+		name: "bundled-skill",
+		description: "A bundled read-only skill",
+		path: "/extension/builtin-skills/bundled-skill/SKILL.md",
+		source: "bundled",
+	},
+	{
 		name: "project-skill",
 		description: "A project skill",
 		path: "/workspace/.roo/skills/project-skill/SKILL.md",
@@ -220,6 +226,15 @@ describe("SkillsSettings", () => {
 
 		expect(screen.getByText("settings:skills.globalSkills")).toBeInTheDocument()
 		expect(screen.getByText("global-skill")).toBeInTheDocument()
+	})
+
+	it("displays bundled skills without mutation actions", () => {
+		renderSkillsSettings()
+
+		expect(screen.getByText("settings:skills.bundledSkills")).toBeInTheDocument()
+		const bundledSkill = screen.getByText("bundled-skill").closest('[data-skill-source="bundled"]')
+		expect(bundledSkill).toBeInTheDocument()
+		expect(bundledSkill?.querySelectorAll("button")).toHaveLength(0)
 	})
 
 	it("does not display project skills section when not in a workspace", () => {

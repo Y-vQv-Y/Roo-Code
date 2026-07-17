@@ -13,6 +13,9 @@
 # Include the built extension
 !dist
 
+# Include read-only skills bundled with the extension
+!builtin-skills/**
+
 # Include the built webview
 !**/*.map
 !webview-ui/audio

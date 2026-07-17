@@ -947,6 +947,7 @@
 		"description": "Beheer skills die contextuele instructies aan de agent verstrekken. Skills worden automatisch toegepast wanneer ze relevant zijn voor uw taken. <DocsLink>Meer informatie</DocsLink>",
 		"workspaceSkills": "Werkruimteskills",
 		"globalSkills": "Globale skills",
+		"bundledSkills": "Ingebouwde skills",
 		"noWorkspaceSkills": "Nog geen skills in dit project.",
 		"noGlobalSkills": "Nog geen globale skills.",
 		"addSkill": "Skill toevoegen",

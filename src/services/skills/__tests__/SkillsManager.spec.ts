@@ -33,6 +33,7 @@ const {
 // Use forward slashes for consistency, then normalize with path.normalize
 const HOME_DIR = process.platform === "win32" ? "C:\\Users\\testuser" : "/home/user"
 const PROJECT_DIR = process.platform === "win32" ? "C:\\test\\project" : "/test/project"
+const EXTENSION_DIR = process.platform === "win32" ? "C:\\test\\extension" : "/test/extension"
 const SHARED_DIR = process.platform === "win32" ? "C:\\shared\\skills" : "/shared/skills"
 
 // Helper to create platform-appropriate paths
@@ -118,6 +119,7 @@ describe("SkillsManager", () => {
 
 	// Pre-computed paths for tests
 	const globalSkillsDir = p(GLOBAL_ROO_DIR, "skills")
+	const bundledSkillsDir = p(EXTENSION_DIR, "builtin-skills")
 	const globalSkillsCodeDir = p(GLOBAL_ROO_DIR, "skills-code")
 	const globalSkillsArchitectDir = p(GLOBAL_ROO_DIR, "skills-architect")
 	const projectRooDir = p(PROJECT_DIR, ".roo")
@@ -135,6 +137,9 @@ describe("SkillsManager", () => {
 		// Create mock provider
 		mockProvider = {
 			cwd: PROJECT_DIR,
+			context: {
+				extensionPath: EXTENSION_DIR,
+			} as any,
 			customModesManager: {
 				getCustomModes: vi.fn().mockResolvedValue([]),
 			} as any,
@@ -148,6 +153,45 @@ describe("SkillsManager", () => {
 	})
 
 	describe("discoverSkills", () => {
+		it("should discover and load a skill bundled with the extension", async () => {
+			const bundledSkillDir = p(bundledSkillsDir, "adtec-test")
+			const bundledSkillMd = p(bundledSkillDir, "SKILL.md")
+
+			mockDirectoryExists.mockImplementation(async (dir: string) => dir === bundledSkillsDir)
+			mockRealpath.mockImplementation(async (pathArg: string) => pathArg)
+			mockReaddir.mockImplementation(async (dir: string) => (dir === bundledSkillsDir ? ["adtec-test"] : []))
+			mockStat.mockImplementation(async (pathArg: string) => {
+				if (pathArg === bundledSkillDir) return { isDirectory: () => true }
+				throw new Error("Not found")
+			})
+			mockFileExists.mockImplementation(async (file: string) => file === bundledSkillMd)
+			mockReadFile.mockImplementation(async (file: string) => {
+				if (file === bundledSkillMd) {
+					return `---
+name: adtec-test
+description: Verify bundled skill loading
+---
+
+ADTEC bundled skill loaded successfully.`
+				}
+				throw new Error("File not found")
+			})
+
+			await skillsManager.discoverSkills()
+
+			const skills = skillsManager.getSkillsForMode("code")
+			expect(skills).toEqual([
+				expect.objectContaining({
+					name: "adtec-test",
+					source: "bundled",
+					path: bundledSkillMd,
+				}),
+			])
+			await expect(skillsManager.getSkillContent("adtec-test", "code")).resolves.toEqual(
+				expect.objectContaining({ instructions: "ADTEC bundled skill loaded successfully." }),
+			)
+		})
+
 		it("should discover skills from global directory", async () => {
 			const pdfSkillDir = p(globalSkillsDir, "pdf-processing")
 			const pdfSkillMd = p(pdfSkillDir, "SKILL.md")
@@ -828,6 +872,35 @@ Instructions here...`
 	})
 
 	describe("getSkillsForMode", () => {
+		it("should allow a global skill to override a bundled skill with the same name", async () => {
+			const bundledSkillDir = p(bundledSkillsDir, "shared-skill")
+			const globalSkillDir = p(globalSkillsDir, "shared-skill")
+
+			mockDirectoryExists.mockImplementation(async (dir: string) =>
+				[bundledSkillsDir, globalSkillsDir].includes(dir),
+			)
+			mockRealpath.mockImplementation(async (pathArg: string) => pathArg)
+			mockReaddir.mockImplementation(async (dir: string) => {
+				if (dir === bundledSkillsDir || dir === globalSkillsDir) return ["shared-skill"]
+				return []
+			})
+			mockStat.mockImplementation(async (pathArg: string) => {
+				if (pathArg === bundledSkillDir || pathArg === globalSkillDir) return { isDirectory: () => true }
+				throw new Error("Not found")
+			})
+			mockFileExists.mockResolvedValue(true)
+			mockReadFile.mockResolvedValue(`---
+name: shared-skill
+description: Shared skill
+---
+Instructions`)
+
+			await skillsManager.discoverSkills()
+
+			const sharedSkill = skillsManager.getSkillsForMode("code").find((skill) => skill.name === "shared-skill")
+			expect(sharedSkill?.source).toBe("global")
+		})
+
 		it("should return skills filtered by mode", async () => {
 			const genericSkillDir = p(globalSkillsDir, "generic-skill")
 			const codeSkillDir = p(globalSkillsCodeDir, "code-skill")

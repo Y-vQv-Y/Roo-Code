@@ -6,7 +6,7 @@ export interface SkillMetadata {
 	name: string // Required: skill identifier
 	description: string // Required: when to use this skill
 	path: string // Absolute path to SKILL.md
-	source: "global" | "project" // Where the skill was discovered
+	source: "bundled" | "global" | "project" // Where the skill was discovered
 	/**
 	 * @deprecated Use modeSlugs instead. Kept for backward compatibility.
 	 * If set, skill is only available in this mode.

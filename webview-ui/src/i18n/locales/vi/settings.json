@@ -947,6 +947,7 @@
 		"description": "Quản lý các skill cung cấp hướng dẫn theo ngữ cảnh cho agent. Các skill được áp dụng tự động khi chúng liên quan đến nhiệm vụ của bạn. <DocsLink>Tìm hiểu thêm</DocsLink>",
 		"workspaceSkills": "Kỹ năng không gian làm việc",
 		"globalSkills": "Skills Toàn Cục",
+		"bundledSkills": "Skills Tích Hợp",
 		"noWorkspaceSkills": "Chưa có kỹ năng trong dự án này.",
 		"noGlobalSkills": "Không có skill toàn cục nào được cấu hình. Tạo một skill để thêm khả năng agent có sẵn trong tất cả các dự án.",
 		"addSkill": "Thêm Skill",

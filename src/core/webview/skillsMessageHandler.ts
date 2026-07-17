@@ -7,6 +7,11 @@ import { openFile } from "../../integrations/misc/open-file"
 import { t } from "../../i18n"
 
 type SkillSource = SkillMetadata["source"]
+type MutableSkillSource = Exclude<SkillSource, "bundled">
+
+function getMutableSkillSource(source: unknown): MutableSkillSource | undefined {
+	return source === "global" || source === "project" ? source : undefined
+}
 
 /**
  * Handles the requestSkills message - returns all skills metadata
@@ -38,7 +43,7 @@ export async function handleCreateSkill(
 ): Promise<SkillMetadata[] | undefined> {
 	try {
 		const skillName = message.skillName
-		const source = message.source as SkillSource
+		const source = getMutableSkillSource(message.source)
 		const skillDescription = message.skillDescription
 		// Support new modeSlugs array or fall back to legacy skillMode
 		const modeSlugs = message.skillModeSlugs ?? (message.skillMode ? [message.skillMode] : undefined)
@@ -78,7 +83,7 @@ export async function handleDeleteSkill(
 ): Promise<SkillMetadata[] | undefined> {
 	try {
 		const skillName = message.skillName
-		const source = message.source as SkillSource
+		const source = getMutableSkillSource(message.source)
 		// Support new skillModeSlugs array or fall back to legacy skillMode
 		const skillMode = message.skillModeSlugs?.[0] ?? message.skillMode
 
@@ -114,7 +119,7 @@ export async function handleMoveSkill(
 ): Promise<SkillMetadata[] | undefined> {
 	try {
 		const skillName = message.skillName
-		const source = message.source as SkillSource
+		const source = getMutableSkillSource(message.source)
 		const currentMode = message.skillMode
 		const newMode = message.newSkillMode
 
@@ -150,7 +155,7 @@ export async function handleUpdateSkillModes(
 ): Promise<SkillMetadata[] | undefined> {
 	try {
 		const skillName = message.skillName
-		const source = message.source as SkillSource
+		const source = getMutableSkillSource(message.source)
 		const newModeSlugs = message.newSkillModeSlugs
 
 		if (!skillName || !source) {

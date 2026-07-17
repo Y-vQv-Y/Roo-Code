@@ -18,6 +18,8 @@ import { t } from "../../i18n"
 // Re-export for convenience
 export type { SkillMetadata, SkillContent }
 
+type SkillSource = SkillMetadata["source"]
+
 export class SkillsManager {
 	private skills: Map<string, SkillMetadata> = new Map()
 	private providerRef: WeakRef<ClineProvider>
@@ -55,7 +57,7 @@ export class SkillsManager {
 	 * 1. The skills directory itself is a symlink (resolved by directoryExists using realpath)
 	 * 2. Individual skill subdirectories are symlinks
 	 */
-	private async scanSkillsDirectory(dirPath: string, source: "global" | "project", mode?: string): Promise<void> {
+	private async scanSkillsDirectory(dirPath: string, source: SkillSource, mode?: string): Promise<void> {
 		if (!(await directoryExists(dirPath))) {
 			return
 		}
@@ -91,7 +93,7 @@ export class SkillsManager {
 	 */
 	private async loadSkillMetadata(
 		skillDir: string,
-		source: "global" | "project",
+		source: SkillSource,
 		mode?: string,
 		skillName?: string,
 	): Promise<void> {
@@ -224,13 +226,14 @@ export class SkillsManager {
 
 	/**
 	 * Determine if newSkill should override existingSkill based on priority rules.
-	 * Priority: project > global, mode-specific > generic
+	 * Priority: project > global > bundled, mode-specific > generic
 	 */
 	private shouldOverrideSkill(existing: SkillMetadata, newSkill: SkillMetadata): boolean {
-		// Define source priority: project > global
+		// Define source priority: project > global > bundled
 		const sourcePriority: Record<string, number> = {
-			project: 2,
-			global: 1,
+			project: 3,
+			global: 2,
+			bundled: 1,
 		}
 
 		const existingPriority = sourcePriority[existing.source] ?? 0
@@ -293,7 +296,7 @@ export class SkillsManager {
 	/**
 	 * Get a skill by name, source, and optionally mode
 	 */
-	getSkill(name: string, source: "global" | "project", mode?: string): SkillMetadata | undefined {
+	getSkill(name: string, source: SkillSource, mode?: string): SkillMetadata | undefined {
 		const skillKey = this.getSkillKey(name, source, mode)
 		return this.skills.get(skillKey)
 	}
@@ -302,7 +305,7 @@ export class SkillsManager {
 	 * Find a skill by name and source (regardless of mode).
 	 * Useful for opening/editing skills where the exact mode key may vary.
 	 */
-	findSkillByNameAndSource(name: string, source: "global" | "project"): SkillMetadata | undefined {
+	findSkillByNameAndSource(name: string, source: SkillSource): SkillMetadata | undefined {
 		for (const skill of this.skills.values()) {
 			if (skill.name === name && skill.source === source) {
 				return skill
@@ -567,14 +570,15 @@ Add your skill instructions here.
 	private async getSkillsDirectories(): Promise<
 		Array<{
 			dir: string
-			source: "global" | "project"
+			source: SkillSource
 			mode?: string
 		}>
 	> {
-		const dirs: Array<{ dir: string; source: "global" | "project"; mode?: string }> = []
+		const dirs: Array<{ dir: string; source: SkillSource; mode?: string }> = []
 		const globalRooDir = getGlobalRooDirectory()
 		const globalAgentsDir = getGlobalAgentsDirectory()
 		const provider = this.providerRef.deref()
+		const bundledSkillsDir = provider ? path.join(provider.context.extensionPath, "builtin-skills") : null
 		const projectRooDir = provider?.cwd ? path.join(provider.cwd, ".roo") : null
 		const projectAgentsDir = provider?.cwd ? getProjectAgentsDirectoryForCwd(provider.cwd) : null
 
@@ -582,7 +586,7 @@ Add your skill instructions here.
 		const modesList = await this.getAvailableModes()
 
 		// Priority rules for skills with the same name:
-		// 1. Source level: project > global (handled by shouldOverrideSkill in getSkillsForMode)
+		// 1. Source level: project > global > bundled (handled by shouldOverrideSkill in getSkillsForMode)
 		// 2. Within the same source level: later-processed directories override earlier ones
 		//    (via Map.set replacement during discovery - same source+mode+name key gets replaced)
 		//
@@ -590,7 +594,12 @@ Add your skill instructions here.
 		// - Global: .agents/skills first, then .roo/skills (so .roo wins)
 		// - Project: .agents/skills first, then .roo/skills (so .roo wins)
 
-		// Global .agents directories (lowest priority - shared across agents)
+		// Bundled skills are read-only and have the lowest priority.
+		if (bundledSkillsDir) {
+			dirs.push({ dir: bundledSkillsDir, source: "bundled" })
+		}
+
+		// Global .agents directories (shared across agents)
 		dirs.push({ dir: path.join(globalAgentsDir, "skills"), source: "global" })
 		for (const mode of modesList) {
 			dirs.push({ dir: path.join(globalAgentsDir, `skills-${mode}`), source: "global", mode })

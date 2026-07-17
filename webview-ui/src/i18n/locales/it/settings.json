@@ -947,6 +947,7 @@
 		"description": "Gestisci le skills che forniscono istruzioni contestuali all'agente. Le skills vengono applicate automaticamente quando rilevanti per le tue attività. <DocsLink>Scopri di più</DocsLink>",
 		"workspaceSkills": "Skills dell'area di lavoro",
 		"globalSkills": "Skills Globali",
+		"bundledSkills": "Skills integrate",
 		"noWorkspaceSkills": "Nessuna skill in questo progetto ancora.",
 		"noGlobalSkills": "Nessuna skill globale configurata. Creane una per aggiungere capacità all'agente disponibili in tutti i progetti.",
 		"addSkill": "Aggiungi Skill",

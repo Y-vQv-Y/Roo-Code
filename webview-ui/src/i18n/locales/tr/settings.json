@@ -947,6 +947,7 @@
 		"description": "Ajana bağlamsal talimatlar sağlayan becerileri yönetin. Beceriler, görevlerinizle ilgili olduklarında otomatik olarak uygulanır. <DocsLink>Daha fazla bilgi</DocsLink>",
 		"workspaceSkills": "Çalışma Alanı Becerileri",
 		"globalSkills": "Genel Beceriler",
+		"bundledSkills": "Yerleşik Beceriler",
 		"noWorkspaceSkills": "Bu projede henüz beceri yok.",
 		"noGlobalSkills": "Yapılandırılmış genel beceri yok. Tüm projelerde kullanılabilir ajan yetenekleri eklemek için bir tane oluşturun.",
 		"addSkill": "Beceri Ekle",

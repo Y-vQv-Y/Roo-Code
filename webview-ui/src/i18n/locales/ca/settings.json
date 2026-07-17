@@ -947,6 +947,7 @@
 		"description": "Gestiona les skills que proporcionen instruccions contextuals a l'agent. Les skills s'apliquen automàticament quan són rellevants per a les teves tasques. <DocsLink>Més informació</DocsLink>",
 		"workspaceSkills": "Skills de l'espai de treball",
 		"globalSkills": "Skills globals",
+		"bundledSkills": "Skills integrades",
 		"noWorkspaceSkills": "Sense skills en aquest projecte encara.",
 		"noGlobalSkills": "Sense skills globals encara.",
 		"addSkill": "Afegir Skill",

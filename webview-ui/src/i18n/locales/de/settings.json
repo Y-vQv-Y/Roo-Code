@@ -947,6 +947,7 @@
 		"description": "Verwalten Sie Skills, die dem Agenten kontextbezogene Anweisungen bereitstellen. Skills werden automatisch angewendet, wenn sie für Ihre Aufgaben relevant sind. <DocsLink>Mehr erfahren</DocsLink>",
 		"workspaceSkills": "Workspace-Skills",
 		"globalSkills": "Globale Skills",
+		"bundledSkills": "Integrierte Skills",
 		"noWorkspaceSkills": "Noch keine Skills in diesem Projekt.",
 		"noGlobalSkills": "Noch keine globalen Skills.",
 		"addSkill": "Skill hinzufügen",

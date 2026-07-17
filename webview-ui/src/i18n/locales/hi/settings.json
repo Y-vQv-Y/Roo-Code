@@ -947,6 +947,7 @@
 		"description": "Skills का प्रबंधन करें जो एजेंट को संदर्भात्मक निर्देश प्रदान करते हैं। जब आपके कार्यों के लिए प्रासंगिक हों तो Skills स्वचालित रूप से लागू होते हैं। <DocsLink>और जानें</DocsLink>",
 		"workspaceSkills": "वर्कस्पेस Skills",
 		"globalSkills": "ग्लोबल Skills",
+		"bundledSkills": "बिल्ट-इन Skills",
 		"noWorkspaceSkills": "इस प्रोजेक्ट में अभी तक कोई skills नहीं।",
 		"noGlobalSkills": "अभी तक कोई ग्लोबल skills नहीं।",
 		"addSkill": "Skill जोड़ें",

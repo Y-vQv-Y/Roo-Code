@@ -947,6 +947,7 @@
 		"description": "Zarządzaj umiejętnościami, które dostarczają kontekstowe instrukcje dla agenta. Umiejętności są automatycznie stosowane, gdy są istotne dla Twoich zadań. <DocsLink>Dowiedz się więcej</DocsLink>",
 		"workspaceSkills": "Umiejętności obszaru roboczego",
 		"globalSkills": "Umiejętności Globalne",
+		"bundledSkills": "Wbudowane umiejętności",
 		"noWorkspaceSkills": "Brak umiejętności w tym projekcie.",
 		"noGlobalSkills": "Brak skonfigurowanych umiejętności globalnych. Utwórz jedną, aby dodać możliwości agenta dostępne we wszystkich projektach.",
 		"addSkill": "Dodaj Umiejętność",

@@ -947,6 +947,7 @@
 		"description": "管理为代理提供上下文指令的技能。技能会在与您的任务相关时自动应用。<DocsLink>了解更多</DocsLink>",
 		"workspaceSkills": "工作区技能",
 		"globalSkills": "全局技能",
+		"bundledSkills": "内置技能",
 		"noWorkspaceSkills": "此项目中还没有技能。",
 		"noGlobalSkills": "未配置全局技能。创建一个以添加在所有项目中可用的代理功能。",
 		"addSkill": "添加技能",

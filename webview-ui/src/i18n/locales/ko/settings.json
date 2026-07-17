@@ -947,6 +947,7 @@
 		"description": "에이전트에 컨텍스트 지침을 제공하는 스킬을 관리합니다. 스킬은 작업과 관련이 있을 때 자동으로 적용됩니다. <DocsLink>자세히 알아보기</DocsLink>",
 		"workspaceSkills": "워크스페이스 스킬",
 		"globalSkills": "전역 스킬",
+		"bundledSkills": "내장 스킬",
 		"noWorkspaceSkills": "이 프로젝트에 스킬이 아직 없습니다.",
 		"noGlobalSkills": "구성된 전역 스킬이 없습니다. 모든 프로젝트에서 사용할 수 있는 에이전트 기능을 추가하려면 하나를 만드세요.",
 		"addSkill": "스킬 추가",

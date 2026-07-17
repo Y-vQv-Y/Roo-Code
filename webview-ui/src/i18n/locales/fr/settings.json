@@ -947,6 +947,7 @@
 		"description": "Gérez les skills qui fournissent des instructions contextuelles à l'agent. Les skills sont automatiquement appliquées lorsqu'elles sont pertinentes pour vos tâches. <DocsLink>En savoir plus</DocsLink>",
 		"workspaceSkills": "Skills de l'espace de travail",
 		"globalSkills": "Skills Globales",
+		"bundledSkills": "Skills intégrées",
 		"noWorkspaceSkills": "Aucune skill dans ce projet pour le moment.",
 		"noGlobalSkills": "Aucune skill globale configurée. Créez-en une pour ajouter des capacités à l'agent disponibles dans tous les projets.",
 		"addSkill": "Ajouter une Skill",

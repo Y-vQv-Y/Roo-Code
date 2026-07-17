@@ -69,6 +69,7 @@ async function main() {
 							["../.env", ".env", { optional: true }],
 							[".vscodeignore", ".vscodeignore"],
 							["assets", "assets"],
+							["builtin-skills", "builtin-skills"],
 							["integrations", "integrations"],
 							["node_modules/vscode-material-icons/generated", "assets/vscode-material-icons"],
 							["../webview-ui/audio", "webview-ui/audio"],

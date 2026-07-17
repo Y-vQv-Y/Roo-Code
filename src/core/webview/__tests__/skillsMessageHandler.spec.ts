@@ -199,6 +199,20 @@ describe("skillsMessageHandler", () => {
 	})
 
 	describe("handleDeleteSkill", () => {
+		it("rejects deletion of a bundled skill", async () => {
+			const provider = createMockProvider(true)
+
+			const result = await handleDeleteSkill(provider, {
+				type: "deleteSkill",
+				skillName: "adtec-test",
+				source: "bundled",
+			} as unknown as WebviewMessage)
+
+			expect(result).toBeUndefined()
+			expect(mockDeleteSkill).not.toHaveBeenCalled()
+			expect(mockLog).toHaveBeenCalledWith("Error deleting skill: Missing required fields: skillName or source")
+		})
+
 		it("deletes a skill successfully", async () => {
 			const provider = createMockProvider(true)
 			mockDeleteSkill.mockResolvedValue(undefined)

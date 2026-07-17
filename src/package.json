@@ -1,10 +1,10 @@
 {
-	"name": "roo-cline",
-	"displayName": "%extension.displayName%",
+	"name": "adtec-code",
+	"displayName": "ADTEC Code",
 	"description": "%extension.description%",
 	"publisher": "RooVeterinaryInc",
 	"version": "0.1.0",
-	"icon": "assets/icons/icon.png",
+	"icon": "assets/icons/adtec-logo.png",
 	"galleryBanner": {
 		"color": "#617A91",
 		"theme": "dark"
@@ -15,10 +15,6 @@
 	},
 	"author": {
 		"name": "ADTEC Code"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Y-vQv-Y/Roo-Code"
 	},
 	"homepage": "https://www.adtec.com.cn/",
 	"categories": [
@@ -56,7 +52,7 @@
 				{
 					"id": "roo-cline-ActivityBar",
 					"title": "%views.activitybar.title%",
-					"icon": "assets/icons/icon.svg"
+					"icon": "assets/icons/adtec-logo.png"
 				}
 			]
 		},

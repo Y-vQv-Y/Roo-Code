@@ -947,6 +947,7 @@
 		"description": "Kelola skills yang memberikan instruksi kontekstual kepada agen. Skills diterapkan secara otomatis saat relevan dengan tugas Anda. <DocsLink>Pelajari lebih lanjut</DocsLink>",
 		"workspaceSkills": "Skills Ruang Kerja",
 		"globalSkills": "Skills Global",
+		"bundledSkills": "Skills Bawaan",
 		"noWorkspaceSkills": "Tidak ada skills di proyek ini belum.",
 		"noGlobalSkills": "Tidak ada skills global belum.",
 		"addSkill": "Tambahkan Skill",

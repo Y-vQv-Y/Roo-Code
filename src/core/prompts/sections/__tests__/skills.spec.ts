@@ -29,4 +29,22 @@ describe("getSkillsSection", () => {
 		await expect(getSkillsSection(undefined, "code")).resolves.toBe("")
 		await expect(getSkillsSection({ getSkillsForMode: vi.fn() }, undefined)).resolves.toBe("")
 	})
+
+	it("should advertise a bundled skill in the system prompt", async () => {
+		const mockSkillsManager = {
+			getSkillsForMode: vi.fn().mockReturnValue([
+				{
+					name: "adtec-test",
+					description: "Verify bundled skill loading",
+					path: "/extension/builtin-skills/adtec-test/SKILL.md",
+					source: "bundled" as const,
+				},
+			]),
+		}
+
+		const result = await getSkillsSection(mockSkillsManager, "code")
+
+		expect(result).toContain("<name>adtec-test</name>")
+		expect(result).toContain("<location>/extension/builtin-skills/adtec-test/SKILL.md</location>")
+	})
 })
