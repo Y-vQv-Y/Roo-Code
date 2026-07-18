@@ -83,6 +83,11 @@ export function truncateLine(line: string, maxLength: number = MAX_LINE_LENGTH):
  * Get the path to the ripgrep binary within the VSCode installation
  */
 export async function getBinPath(vscodeAppRoot: string): Promise<string | undefined> {
+	const configuredPath = process.env.ADTEC_CODE_RIPGREP_PATH
+	if (configuredPath && (await fileExistsAtPath(configuredPath))) {
+		return configuredPath
+	}
+
 	const checkPath = async (pkgFolder: string) => {
 		const fullPath = path.join(vscodeAppRoot, pkgFolder, binName)
 		return (await fileExistsAtPath(fullPath)) ? fullPath : undefined

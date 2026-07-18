@@ -34,6 +34,3 @@
 !assets/vscode-material-icons/**
 !assets/icons/**
 !assets/images/**
-
-# Include .env file for telemetry
-!.env

@@ -61,10 +61,8 @@ describe("ErrorBoundary", () => {
 		// Verify error boundary elements are displayed - using partial matchers to account for version info
 		expect(screen.getByText(/errorBoundary.title/)).toBeInTheDocument()
 
-		// Check for the GitHub link
-		const githubLink = screen.getByRole("link", { name: /errorBoundary.githubText/ })
-		expect(githubLink).toBeInTheDocument()
-		expect(githubLink).toHaveAttribute("href", "https://github.com/RooCodeInc/Roo-Code/issues")
+		// Error reports stay inside the ADTEC Code support process.
+		expect(screen.queryByRole("link")).not.toBeInTheDocument()
 
 		// Check for other error boundary elements
 		expect(screen.getByText(/errorBoundary.copyInstructions/)).toBeInTheDocument()

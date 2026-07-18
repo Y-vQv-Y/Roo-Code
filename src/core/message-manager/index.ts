@@ -51,7 +51,7 @@ export class MessageManager {
 		// Find the index in clineMessages
 		const clineIndex = this.task.clineMessages.findIndex((m) => m.ts === ts)
 		if (clineIndex === -1) {
-			throw new Error(`Message with timestamp ${ts} not found in clineMessages`)
+			throw new Error(`Message with timestamp ${ts} not found in task messages`)
 		}
 
 		// Calculate the actual cutoff index

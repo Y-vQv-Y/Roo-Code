@@ -1,72 +1,35 @@
-<p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline"><img src="https://img.shields.io/badge/VS_Code_Marketplace-007ACC?style=flat&logo=visualstudiocode&logoColor=white" alt="VS Code Marketplace"></a>
-  <a href="https://x.com/roocode"><img src="https://img.shields.io/badge/roocode-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
-</p>
-# Roo Code
+# ADTEC Code
 
-> Tu equipo de desarrollo con IA, directamente en tu editor
+ADTEC Code is an AI-powered development assistant for Visual Studio Code. It provides agent-based workflows for planning, coding, debugging, documentation, and repetitive development tasks directly in the editor.
 
-<details>
-  <summary>🌐 Idiomas disponibles</summary>
+## Features
 
-- [English](../../README.md)
-- [Català](../ca/README.md)
-- [Deutsch](../de/README.md)
-- [Español](../es/README.md)
-- [Français](../fr/README.md)
-- [हिंदी](../hi/README.md)
-- [Bahasa Indonesia](../id/README.md)
-- [Italiano](../it/README.md)
-- [日本語](../ja/README.md)
-- [한국어](../ko/README.md)
-- [Nederlands](../nl/README.md)
-- [Polski](../pl/README.md)
-- [Português (BR)](../pt-BR/README.md)
-- [Русский](../ru/README.md)
-- [Türkçe](../tr/README.md)
-- [Tiếng Việt](../vi/README.md)
-- [简体中文](../zh-CN/README.md)
-- [繁體中文](../zh-TW/README.md)
-- ...
-    </details>
+- Generate and modify code from natural-language requirements
+- Analyze, explain, refactor, and debug existing code
+- Work with Code, Architect, Ask, Debug, and custom modes
+- Run reusable Skills for specialized workflows
+- Connect external tools and services through MCP
+- Automate terminal and editor operations with configurable approval controls
 
----
+## Built-in Skills
 
-## ¿Qué puede hacer Roo Code por TI?
+ADTEC Code can include read-only Skills bundled with the extension. Workspace and global Skills can override a bundled Skill with the same name, allowing teams and individual developers to customize default workflows safely.
 
-- Generar código a partir de descripciones en lenguaje natural
-- Adaptarse con Modos: Código, Arquitecto, Pregunta, Depuración y Modos Personalizados
-- Refactorizar y depurar código existente
-- Escribir y actualizar documentación
-- Responder preguntas sobre tu base de código
-- Automatizar tareas repetitivas
-- Utilizar servidores MCP
+## Getting Started
 
-## Modos
+1. Install the ADTEC Code extension in Visual Studio Code.
+2. Open the ADTEC Code view from the Activity Bar.
+3. Configure an AI provider in Settings.
+4. Open a project and enter a task in the chat input.
 
-Roo Code se adapta a tu forma de trabajar, no al revés:
+## Website
 
-- Modo Código: codificación diaria, ediciones y operaciones de archivos
-- Modo Arquitecto: planificar sistemas, especificaciones y migraciones
-- Modo Pregunta: respuestas rápidas, explicaciones y documentos
-- Modo Depuración: rastrear problemas, agregar registros, aislar causas raíz
-- Modos Personalizados: crea modos especializados para tu equipo o flujo de trabajo
+Visit https://www.adtec.com.cn/ for information about Advanced Digital Technology.
 
-Más info: [Usar Modos](https://roocodeinc.github.io/Roo-Code/basic-usage/using-modes) • [Modos Personalizados](https://roocodeinc.github.io/Roo-Code/advanced-usage/custom-modes)
+## Source Repository
 
-## Recursos
+Source code and internal issue tracking: https://github.com/Y-vQv-Y
 
-- **[Documentación](https://roocodeinc.github.io/Roo-Code/):** La guía oficial para instalar, configurar y dominar Roo Code.
-- **[Incidencias de GitHub](https://github.com/RooCodeInc/Roo-Code/issues):** Reporta errores y sigue el desarrollo.
+## License
 
----
-
-## Aviso legal
-
-**Ten en cuenta** que Roo Code, Inc **no** hace ninguna representación o garantía con respecto a cualquier código, modelo u otras herramientas proporcionadas o puestas a disposición en relación con Roo Code, cualquier herramienta de terceros asociada, o cualquier resultado. Asumes **todos los riesgos** asociados con el uso de dichas herramientas o resultados; tales herramientas se proporcionan "**TAL CUAL**" y "**SEGÚN DISPONIBILIDAD**". Dichos riesgos pueden incluir, sin limitación, infracciones de propiedad intelectual, vulnerabilidades o ataques cibernéticos, sesgo, imprecisiones, errores, defectos, virus, tiempo de inactividad, pérdida o daño de propiedad y/o lesiones personales. Eres el único responsable de tu uso de dichas herramientas o resultados (incluidas, entre otras, la legalidad, idoneidad y resultados de los mismos).
-
----
-
-## Licencia
-
-[Apache 2.0 © 2025 Roo Code, Inc.](../../LICENSE)
+Licensed under the Apache License 2.0.

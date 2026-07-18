@@ -1,4 +1,4 @@
-// npx vitest core/prompts/__tests__/responses-rooignore.spec.ts
+// npx vitest core/prompts/__tests__/responses-adtecignore.spec.ts
 
 import type { Mock } from "vitest"
 
@@ -57,7 +57,7 @@ describe("RooIgnore Response Formatting", () => {
 			expect(parsed.type).toBe("access_denied")
 			expect(parsed.path).toBe("secrets/api-keys.json")
 			expect(parsed.suggestion).toContain("continue without this file")
-			expect(parsed.suggestion).toContain("update the .rooignore file")
+			expect(parsed.suggestion).toContain("update the .adtecignore file")
 		})
 
 		/**
@@ -77,7 +77,7 @@ describe("RooIgnore Response Formatting", () => {
 
 	describe("formatResponse.formatFilesList with RooIgnoreController", () => {
 		/**
-		 * Tests file listing with rooignore controller
+		 * Tests file listing with adtecignore controller
 		 */
 		it("should format files list with lock symbols for ignored files", async () => {
 			// Create controller
@@ -213,7 +213,7 @@ describe("RooIgnore Response Formatting", () => {
 		/**
 		 * Tests the instructions format
 		 */
-		it("should format .rooignore instructions for the LLM", async () => {
+		it("should format .adtecignore instructions for the LLM", async () => {
 			// Create controller
 			const controller = new RooIgnoreController(TEST_CWD)
 			await controller.initialize()
@@ -222,7 +222,7 @@ describe("RooIgnore Response Formatting", () => {
 			const instructions = controller.getInstructions()
 
 			// Verify format and content
-			expect(instructions).toContain("# .rooignore")
+			expect(instructions).toContain("# .adtecignore")
 			expect(instructions).toContain(LOCK_TEXT_SYMBOL)
 			expect(instructions).toContain("node_modules")
 			expect(instructions).toContain(".git")
@@ -237,11 +237,11 @@ describe("RooIgnore Response Formatting", () => {
 		/**
 		 * Tests null/undefined case
 		 */
-		it("should return undefined when no .rooignore exists", async () => {
-			// Set up no .rooignore
+		it("should return undefined when no .adtecignore exists", async () => {
+			// Set up no .adtecignore
 			mockFileExists.mockResolvedValue(false)
 
-			// Create controller without .rooignore
+			// Create controller without .adtecignore
 			const controller = new RooIgnoreController(TEST_CWD)
 			await controller.initialize()
 

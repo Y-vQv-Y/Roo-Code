@@ -248,7 +248,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 	const handleDeleteMessageConfirm = async (messageTs: number, restoreCheckpoint?: boolean): Promise<void> => {
 		const currentCline = provider.getCurrentTask()
 		if (!currentCline) {
-			console.error("[handleDeleteMessageConfirm] No current cline available")
+			console.error("[handleDeleteMessageConfirm] No current task available")
 			return
 		}
 
@@ -350,10 +350,10 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 
 				hasCheckpoint = checkpoints.length > 0
 			} else {
-				console.log("[webviewMessageHandler] Edit - Message not found in clineMessages!")
+				console.log("[webviewMessageHandler] Edit - Message not found in task messages")
 			}
 		} else {
-			console.log("[webviewMessageHandler] Edit - No currentCline available!")
+			console.log("[webviewMessageHandler] Edit - No current task available")
 		}
 
 		// Send message to webview to show edit confirmation dialog
@@ -377,7 +377,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 	): Promise<void> => {
 		const currentCline = provider.getCurrentTask()
 		if (!currentCline) {
-			console.error("[handleEditMessageConfirm] No current cline available")
+			console.error("[handleEditMessageConfirm] No current task available")
 			return
 		}
 
@@ -1235,7 +1235,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			break
 		}
 		case "openKeyboardShortcuts": {
-			// Open VSCode keyboard shortcuts settings and optionally filter to show the Roo Code commands
+			// Open VSCode keyboard shortcuts settings and optionally filter to show the ADTEC Code commands
 			const searchQuery = message.text || ""
 			if (searchQuery) {
 				// Open with a search query pre-filled
@@ -1262,7 +1262,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			}
 
 			const workspaceFolder = getCurrentCwd()
-			const rooDir = path.join(workspaceFolder, ".roo")
+			const rooDir = path.join(workspaceFolder, ".adtec")
 			const mcpPath = path.join(rooDir, "mcp.json")
 
 			try {
@@ -1898,14 +1898,14 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 				if (scope === "project") {
 					const workspacePath = getWorkspacePath()
 					if (workspacePath) {
-						rulesFolderPath = path.join(workspacePath, ".roo", `rules-${message.slug}`)
+						rulesFolderPath = path.join(workspacePath, ".adtec", `rules-${message.slug}`)
 					} else {
-						rulesFolderPath = path.join(".roo", `rules-${message.slug}`)
+						rulesFolderPath = path.join(".adtec", `rules-${message.slug}`)
 					}
 				} else {
 					// Global scope - use OS home directory
 					const homeDir = os.homedir()
-					rulesFolderPath = path.join(homeDir, ".roo", `rules-${message.slug}`)
+					rulesFolderPath = path.join(homeDir, ".adtec", `rules-${message.slug}`)
 				}
 
 				// Check if the rules folder exists
@@ -2655,7 +2655,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 				// Determine the commands directory based on source
 				let commandsDir: string
 				if (source === "global") {
-					const globalConfigDir = path.join(os.homedir(), ".roo")
+					const globalConfigDir = path.join(os.homedir(), ".adtec")
 					commandsDir = path.join(globalConfigDir, "commands")
 				} else {
 					if (!vscode.workspace.workspaceFolders?.length) {
@@ -2668,7 +2668,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 						vscode.window.showErrorMessage(t("common:errors.no_workspace_for_project_command"))
 						break
 					}
-					commandsDir = path.join(workspaceRoot, ".roo", "commands")
+					commandsDir = path.join(workspaceRoot, ".adtec", "commands")
 				}
 
 				// Ensure the commands directory exists

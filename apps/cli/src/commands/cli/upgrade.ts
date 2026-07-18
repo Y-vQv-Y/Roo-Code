@@ -3,14 +3,13 @@ import { spawn } from "child_process"
 import { VERSION } from "@/lib/utils/version.js"
 import { isRecord } from "@/lib/utils/guards.js"
 
-const RELEASES_URL = "https://api.github.com/repos/RooCodeInc/Roo-Code/releases?per_page=100"
-export const INSTALL_SCRIPT_COMMAND =
-	"curl -fsSL https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/apps/cli/install.sh | sh"
+export const INSTALL_SCRIPT_COMMAND = process.env.ADTEC_CODE_INSTALL_COMMAND
 
 export interface UpgradeOptions {
 	currentVersion?: string
 	fetchImpl?: typeof fetch
 	runInstaller?: () => Promise<void>
+	releasesUrl?: string
 }
 
 function parseVersion(version: string): number[] {
@@ -65,11 +64,18 @@ export function compareVersions(a: string, b: string): number {
 	return 0
 }
 
-export async function getLatestCliVersion(fetchImpl: typeof fetch = fetch): Promise<string> {
-	const response = await fetchImpl(RELEASES_URL, {
+export async function getLatestCliVersion(
+	fetchImpl: typeof fetch = fetch,
+	releasesUrl = process.env.ADTEC_CODE_RELEASES_URL,
+): Promise<string> {
+	if (!releasesUrl) {
+		throw new Error("CLI upgrades are managed by the internal ADTEC Code distribution service.")
+	}
+
+	const response = await fetchImpl(releasesUrl, {
 		headers: {
 			Accept: "application/vnd.github+json",
-			"User-Agent": "roo-cli",
+			"User-Agent": "adtec-code-cli",
 		},
 	})
 
@@ -111,7 +117,12 @@ export async function getLatestCliVersion(fetchImpl: typeof fetch = fetch): Prom
 
 export function runUpgradeInstaller(version?: string, spawnImpl: typeof spawn = spawn): Promise<void> {
 	return new Promise((resolve, reject) => {
-		const env = version ? { ...process.env, ROO_VERSION: version } : process.env
+		if (!INSTALL_SCRIPT_COMMAND) {
+			reject(new Error("No internal ADTEC Code install command is configured."))
+			return
+		}
+
+		const env = version ? { ...process.env, ADTEC_CODE_VERSION: version } : process.env
 		const child = spawnImpl("sh", ["-c", INSTALL_SCRIPT_COMMAND], { stdio: "inherit", env })
 
 		child.once("error", (error) => {
@@ -137,15 +148,15 @@ export async function upgrade(options: UpgradeOptions = {}): Promise<void> {
 
 	console.log(`Current version: ${currentVersion}`)
 
-	const latestVersion = await getLatestCliVersion(fetchImpl)
+	const latestVersion = await getLatestCliVersion(fetchImpl, options.releasesUrl)
 	console.log(`Latest version: ${latestVersion}`)
 
 	if (compareVersions(latestVersion, currentVersion) <= 0) {
-		console.log("Roo CLI is already up to date.")
+		console.log("ADTEC Code CLI is already up to date.")
 		return
 	}
 
-	console.log(`Upgrading Roo CLI from ${currentVersion} to ${latestVersion}...`)
+	console.log(`Upgrading ADTEC Code CLI from ${currentVersion} to ${latestVersion}...`)
 	if (runInstaller) {
 		await runInstaller()
 	} else {

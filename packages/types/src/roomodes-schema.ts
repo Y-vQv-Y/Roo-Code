@@ -1,5 +1,5 @@
 /**
- * Builds the Zod schema for .roomodes configuration files and converts it
+ * Builds the Zod schema for .adtecmodes configuration files and converts it
  * to JSON Schema (draft-07). This module is the single source of truth for
  * both the generator script (scripts/generate-roomodes-schema.ts) and the
  * drift-detection test.
@@ -33,7 +33,7 @@ const exportedModeConfigSchema = modeConfigSchema.omit({ groups: true }).extend(
 	rulesFiles: z.array(ruleFileSchema).optional(),
 })
 
-// Build the top-level .roomodes schema.
+// Build the top-level .adtecmodes schema.
 const roomodesZodSchema = z
 	.object({
 		customModes: z.array(exportedModeConfigSchema),
@@ -41,7 +41,7 @@ const roomodesZodSchema = z
 	.strict()
 
 /**
- * Generates the JSON Schema object for .roomodes configuration files.
+ * Generates the JSON Schema object for .adtecmodes configuration files.
  * Includes metadata fields ($id, title, description).
  */
 export function generateRoomodesJsonSchema(): Record<string, unknown> {
@@ -50,9 +50,9 @@ export function generateRoomodesJsonSchema(): Record<string, unknown> {
 		target: "jsonSchema7",
 	}) as Record<string, unknown>
 
-	jsonSchema["$id"] = "https://github.com/RooCodeInc/Roo-Code/blob/main/schemas/roomodes.json"
-	jsonSchema["title"] = "Roo Code Custom Modes"
-	jsonSchema["description"] = "Schema for .roomodes configuration files used by Roo Code to define custom modes."
+	jsonSchema["$id"] = "https://github.com/Y-vQv-Y"
+	jsonSchema["title"] = "ADTEC Code Custom Modes"
+	jsonSchema["description"] = "Schema for .adtecmodes configuration files used by ADTEC Code to define custom modes."
 
 	return jsonSchema
 }

@@ -9,7 +9,7 @@ import { RooCodeEventName, type ClineMessage } from "@roo-code/types"
 import { waitFor, sleep } from "../utils"
 import { setDefaultSuiteTimeout } from "../test-utils"
 
-suite.skip("Roo Code use_mcp_tool Tool", function () {
+suite.skip("ADTEC Code use_mcp_tool Tool", function () {
 	setDefaultSuiteTimeout(this)
 
 	let tempDir: string
@@ -30,16 +30,16 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 		testFiles = {
 			simple: path.join(workspaceDir, `mcp-test-${Date.now()}.txt`),
 			testData: path.join(workspaceDir, `mcp-data-${Date.now()}.json`),
-			mcpConfig: path.join(workspaceDir, ".roo", "mcp.json"),
+			mcpConfig: path.join(workspaceDir, ".adtec", "mcp.json"),
 		}
 
 		// Create initial test files
 		await fs.writeFile(testFiles.simple, "Initial content for MCP test")
 		await fs.writeFile(testFiles.testData, JSON.stringify({ test: "data", value: 42 }, null, 2))
 
-		// Create .roo directory and MCP configuration file
-		const rooDir = path.join(workspaceDir, ".roo")
-		await fs.mkdir(rooDir, { recursive: true })
+		// Create .adtec directory and MCP configuration file
+		const adtecDir = path.join(workspaceDir, ".adtec")
+		await fs.mkdir(adtecDir, { recursive: true })
 
 		const mcpConfig = {
 			mcpServers: {
@@ -74,11 +74,11 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 			}
 		}
 
-		// Clean up .roo directory
+		// Clean up .adtec directory
 		const workspaceDir = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || tempDir
-		const rooDir = path.join(workspaceDir, ".roo")
+		const adtecDir = path.join(workspaceDir, ".adtec")
 		try {
-			await fs.rm(rooDir, { recursive: true, force: true })
+			await fs.rm(adtecDir, { recursive: true, force: true })
 		} catch {
 			// Directory might not exist
 		}
@@ -185,7 +185,7 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 			}
 		}
 		api.on(RooCodeEventName.TaskCompleted, taskCompletedHandler)
-		await sleep(2000) // Wait for Roo Code to fully initialize
+		await sleep(2000) // Wait for ADTEC Code to fully initialize
 
 		// Trigger MCP server detection by opening and modifying the file
 		console.log("Triggering MCP server detection by modifying the config file...")
@@ -194,7 +194,7 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 			const document = await vscode.workspace.openTextDocument(mcpConfigUri)
 			const editor = await vscode.window.showTextDocument(document)
 
-			// Make a small modification to trigger the save event, without this Roo Code won't load the MCP server
+			// Make a small modification to trigger the save event, without this ADTEC Code won't load the MCP server
 			const edit = new vscode.WorkspaceEdit()
 			const currentContent = document.getText()
 			const modifiedContent = currentContent.replace(
@@ -515,12 +515,12 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 				responseText.includes("mcp-test-") || responseText.includes(path.basename(testFiles.simple))
 			const hasDataFile =
 				responseText.includes("mcp-data-") || responseText.includes(path.basename(testFiles.testData))
-			const hasRooDir = responseText.includes(".roo")
+			const hasAdtecDir = responseText.includes(".adtec")
 
-			// At least one of our test files or the .roo directory should be present
+			// At least one of our test files or the .adtec directory should be present
 			assert.ok(
-				hasTestFile || hasDataFile || hasRooDir,
-				`MCP server response should contain our test files or .roo directory. Expected to find: '${path.basename(testFiles.simple)}', '${path.basename(testFiles.testData)}', or '.roo'. Got: ${responseText.substring(0, 200)}...`,
+				hasTestFile || hasDataFile || hasAdtecDir,
+				`MCP server response should contain our test files or .adtec directory. Expected to find: '${path.basename(testFiles.simple)}', '${path.basename(testFiles.testData)}', or '.adtec'. Got: ${responseText.substring(0, 200)}...`,
 			)
 
 			// Check for typical directory listing indicators
@@ -661,7 +661,7 @@ suite.skip("Roo Code use_mcp_tool Tool", function () {
 			const hasTestFiles =
 				responseText.includes("mcp-test-") ||
 				responseText.includes("mcp-data-") ||
-				responseText.includes(".roo") ||
+				responseText.includes(".adtec") ||
 				responseText.includes(".txt") ||
 				responseText.includes(".json") ||
 				responseText.length > 10 // At least some content indicating directory structure

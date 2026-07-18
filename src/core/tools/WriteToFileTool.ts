@@ -50,7 +50,7 @@ export class WriteToFileTool extends BaseTool<"write_to_file"> {
 		const accessAllowed = task.rooIgnoreController?.validateAccess(relPath)
 
 		if (!accessAllowed) {
-			await task.say("rooignore_error", relPath)
+			await task.say("adtecignore_error", relPath)
 			pushToolResult(formatResponse.rooIgnoreError(relPath))
 			return
 		}

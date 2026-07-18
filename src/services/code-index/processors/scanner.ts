@@ -86,7 +86,7 @@ export class DirectoryScanner implements IDirectoryScanner {
 
 		await ignoreController.initialize()
 
-		// Filter paths using .rooignore
+		// Filter paths using .adtecignore
 		const allowedPaths = ignoreController.filterPaths(filePaths)
 
 		// Filter by supported extensions, ignore patterns, and excluded directories

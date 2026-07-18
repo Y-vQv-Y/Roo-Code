@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "Terjadi kesalahan",
-		"reportText": "Bantu kami meningkatkan dengan melaporkan kesalahan ini di",
-		"githubText": "halaman GitHub Issues kami",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "Salin dan tempel pesan kesalahan berikut untuk menyertakannya sebagai bagian dari laporan Anda:",
 		"errorStack": "Stack Error:",
 		"componentStack": "Stack Komponen:"

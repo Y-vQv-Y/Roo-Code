@@ -13,7 +13,8 @@ vi.mock("react-i18next", () => ({
 				"chat:apiRequest.rateLimitWait": "Rate limiting",
 				"chat:apiRequest.failed": "API Request Failed",
 				"chat:apiRequest.errorTitle": "Provider Error",
-				"chat:apiRequest.errorMessage.unknown": "Unknown API error. Please report this on GitHub.",
+				"chat:apiRequest.errorMessage.unknown":
+					"Unknown API error. Please contact your ADTEC Code administrator.",
 				"chat:apiRequest.errorMessage.docs": "Docs",
 			}
 			return map[key] ?? key
@@ -83,7 +84,7 @@ describe("ChatRow - rate limit wait", () => {
 		expect(container.firstChild).toBeNull()
 	})
 
-	it("links unknown API errors to GitHub issues", () => {
+	it("keeps unknown API errors inside the internal support flow", () => {
 		const message: any = {
 			type: "say",
 			say: "api_req_retry_delayed",
@@ -93,10 +94,7 @@ describe("ChatRow - rate limit wait", () => {
 
 		renderChatRow(message)
 
-		expect(screen.getByText("Unknown API error. Please report this on GitHub.")).toBeInTheDocument()
-		expect(screen.getByRole("link", { name: /Docs/ })).toHaveAttribute(
-			"href",
-			"https://github.com/RooCodeInc/Roo-Code/issues/new?template=bug_report.yml",
-		)
+		expect(screen.getByText("Unknown API error. Please contact your ADTEC Code administrator.")).toBeInTheDocument()
+		expect(screen.queryByRole("link", { name: /Docs/ })).not.toBeInTheDocument()
 	})
 })

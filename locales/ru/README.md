@@ -1,72 +1,35 @@
-<p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline"><img src="https://img.shields.io/badge/VS_Code_Marketplace-007ACC?style=flat&logo=visualstudiocode&logoColor=white" alt="VS Code Marketplace"></a>
-  <a href="https://x.com/roocode"><img src="https://img.shields.io/badge/roocode-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
-</p>
-# Roo Code
+# ADTEC Code
 
-> Твоя команда разработчиков на ИИ — прямо в редакторе
+ADTEC Code is an AI-powered development assistant for Visual Studio Code. It provides agent-based workflows for planning, coding, debugging, documentation, and repetitive development tasks directly in the editor.
 
-<details>
-  <summary>🌐 Доступные языки</summary>
+## Features
 
-- [English](../../README.md)
-- [Català](../ca/README.md)
-- [Deutsch](../de/README.md)
-- [Español](../es/README.md)
-- [Français](../fr/README.md)
-- [हिंदी](../hi/README.md)
-- [Bahasa Indonesia](../id/README.md)
-- [Italiano](../it/README.md)
-- [日本語](../ja/README.md)
-- [한국어](../ko/README.md)
-- [Nederlands](../nl/README.md)
-- [Polski](../pl/README.md)
-- [Português (BR)](../pt-BR/README.md)
-- [Русский](../ru/README.md)
-- [Türkçe](../tr/README.md)
-- [Tiếng Việt](../vi/README.md)
-- [简体中文](../zh-CN/README.md)
-- [繁體中文](../zh-TW/README.md)
-- ...
-    </details>
+- Generate and modify code from natural-language requirements
+- Analyze, explain, refactor, and debug existing code
+- Work with Code, Architect, Ask, Debug, and custom modes
+- Run reusable Skills for specialized workflows
+- Connect external tools and services through MCP
+- Automate terminal and editor operations with configurable approval controls
 
----
+## Built-in Skills
 
-## Что Roo Code может сделать для ВАС?
+ADTEC Code can include read-only Skills bundled with the extension. Workspace and global Skills can override a bundled Skill with the same name, allowing teams and individual developers to customize default workflows safely.
 
-- Генерировать код из описаний на естественном языке
-- Адаптация с помощью режимов: Код, Архитектор, Вопрос, Отладка и Пользовательские режимы
-- Рефакторить и отлаживать существующий код
-- Писать и обновлять документацию
-- Отвечать на вопросы о вашей кодовой базе
-- Автоматизировать повторяющиеся задачи
-- Использовать серверы MCP
+## Getting Started
 
-## Режимы
+1. Install the ADTEC Code extension in Visual Studio Code.
+2. Open the ADTEC Code view from the Activity Bar.
+3. Configure an AI provider in Settings.
+4. Open a project and enter a task in the chat input.
 
-Roo Code адаптируется к вашему стилю работы, а не наоборот:
+## Website
 
-- Режим Код: повседневное кодирование, правки и операции с файлами
-- Режим Архитектор: планирование систем, спецификаций и миграций
-- Режим Вопрос: быстрые ответы, объяснения и документация
-- Режим Отладка: отслеживание проблем, добавление логов, изоляция первопричин
-- Пользовательские режимы: создавайте специализированные режимы для вашей команды или рабочего процесса
+Visit https://www.adtec.com.cn/ for information about Advanced Digital Technology.
 
-Подробнее: [Использование режимов](https://roocodeinc.github.io/Roo-Code/basic-usage/using-modes) • [Пользовательские режимы](https://roocodeinc.github.io/Roo-Code/advanced-usage/custom-modes)
+## Source Repository
 
-## Ресурсы
+Source code and internal issue tracking: https://github.com/Y-vQv-Y
 
-- **[Документация](https://roocodeinc.github.io/Roo-Code/):** Официальное руководство по установке, настройке и освоению Roo Code.
-- **[Проблемы на GitHub](https://github.com/RooCodeInc/Roo-Code/issues):** Сообщайте об ошибках и отслеживайте разработку.
+## License
 
----
-
-## Отказ от ответственности
-
-**Пожалуйста, обратите внимание**, что Roo Code, Inc. **не делает** никаких заявлений и не дает никаких гарантий в отношении любого кода, моделей или других инструментов, предоставляемых или доступных в связи с Roo Code, любых связанных сторонних инструментов или любых результирующих результатов. Вы принимаете на себя **все риски**, связанные с использованием любых таких инструментов или результатов; такие инструменты предоставляются на условиях **"КАК ЕСТЬ"** и **"ПО МЕРЕ ДОСТУПНОСТИ"**. Такие риски могут включать, без ограничений, нарушение прав интеллектуальной собственности, киберуязвимости или атаки, предвзятость, неточности, ошибки, дефекты, вирусы, простои, потерю или повреждение имущества и/или телесные повреждения. Вы несете полную ответственность за использование любых таких инструментов или результатов (включая, без ограничений, их законность, уместность и результаты).
-
----
-
-## Лицензия
-
-[Apache 2.0 © 2025 Roo Code, Inc.](../../LICENSE)
+Licensed under the Apache License 2.0.

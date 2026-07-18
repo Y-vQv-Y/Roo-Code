@@ -1,4 +1,4 @@
-name: Publish Extension
+name: Package and Release ADTEC Code
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  GIT_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+  GIT_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
 jobs:
   publish-extension:
@@ -15,6 +15,7 @@ jobs:
       contents: write # Required for pushing tags.
     if: >
         ( github.event_name == 'pull_request' &&
+        github.event.pull_request.merged == true &&
         github.event.pull_request.base.ref == 'main' &&
         contains(github.event.pull_request.title, 'Changeset version bump') ) ||
         github.event_name == 'workflow_dispatch'
@@ -25,12 +26,12 @@ jobs:
           ref: ${{ env.GIT_REF }}
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
+        with:
+          install-args: '--frozen-lockfile'
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Create .env file
-        run: echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> .env
       - name: Package Extension
         run: |
           package_name=$(node -p "require('./src/package.json').name")
@@ -39,6 +40,7 @@ jobs:
           pnpm vsix
 
           # Save VSIX contents to a temporary file to avoid broken pipe issues.
+          test -f "$vsix_path"
           unzip -l "$vsix_path" > /tmp/adtec-code-vsix-contents.txt
 
           # Check for required files.
@@ -49,8 +51,18 @@ jobs:
           grep -q "extension/webview-ui/build/assets/index.js" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/assets/codicons/codicon.ttf" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/assets/icons/adtec-logo.png" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/builtin-skills/adtec-test/SKILL.md" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q ".env" /tmp/adtec-code-vsix-contents.txt || exit 1
+
+          # Verify the installed extension metadata and bundled skill contract.
+          unzip -p "$vsix_path" extension/package.json | grep -Fq '"name": "adtec-code"' || exit 1
+          unzip -p "$vsix_path" extension/package.json | grep -Fq '"publisher": "ADTEC"' || exit 1
+          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'name: adtec-test' || exit 1
+          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'ADTEC bundled skill loaded successfully.' || exit 1
+
+          # Do not ship local secrets or legacy source-project branding.
+          ! grep -q "extension/.env" /tmp/adtec-code-vsix-contents.txt || exit 1
+          ! grep -q "extension/assets/icons/icon.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
           
           # Clean up temporary file.
           rm /tmp/adtec-code-vsix-contents.txt
@@ -60,14 +72,7 @@ jobs:
           git tag -a "v${current_package_version}" -m "Release v${current_package_version}"
           git push origin "v${current_package_version}" --no-verify
           echo "Successfully created and pushed git tag v${current_package_version}"
-      #- name: Publish Extension
-      #  env:
-      #    VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      #    OVSX_PAT: ${{ secrets.OVSX_PAT }}
-      #   run: |
-      #    current_package_version=$(node -p "require('./src/package.json').version")
-      #    pnpm --filter roo-cline publish:marketplace
-      #    echo "Successfully published version $current_package_version to VS Code Marketplace"
+      # Public Marketplace publishing is disabled for internal ADTEC Code distributions.
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

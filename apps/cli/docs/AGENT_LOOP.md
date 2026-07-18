@@ -1,6 +1,6 @@
 # CLI Agent Loop
 
-This document explains how the Roo Code CLI detects and tracks the agent loop state.
+This document explains how the ADTEC Code CLI detects and tracks the agent loop state.
 
 ## Overview
 
@@ -191,7 +191,7 @@ The **single source of truth** for agent state, including the current mode. It:
 ```typescript
 const client = new ExtensionClient({
 	sendMessage: (msg) => extensionHost.sendToExtension(msg),
-	debug: true, // Writes to ~/.roo/cli-debug.log
+	debug: true, // Writes to ~/.adtec/cli-debug.log
 })
 
 // Query state at any time
@@ -318,16 +318,16 @@ if (isInteractiveAsk(ask)) {
 
 ## Debug Logging
 
-Enable with `-d` flag. Logs go to `~/.roo/cli-debug.log`:
+Enable with `-d` flag. Logs go to `~/.adtec/cli-debug.log`:
 
 ```bash
-roo -d -P "Build something" --no-tui
+adtec-code -d -P "Build something" --no-tui
 ```
 
 View logs:
 
 ```bash
-tail -f ~/.roo/cli-debug.log
+tail -f ~/.adtec/cli-debug.log
 ```
 
 Example output:

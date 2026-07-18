@@ -213,19 +213,19 @@ export const ContextManagementSettings = ({
 				</SearchableSetting>
 
 				<SearchableSetting
-					settingId="context-show-rooignored-files"
+					settingId="context-show-adtecignored-files"
 					section="contextManagement"
-					label={t("settings:contextManagement.rooignore.label")}>
+					label={t("settings:contextManagement.adtecignore.label")}>
 					<VSCodeCheckbox
 						checked={showRooIgnoredFiles}
 						onChange={(e: any) => setCachedStateField("showRooIgnoredFiles", e.target.checked)}
-						data-testid="show-rooignored-files-checkbox">
+						data-testid="show-adtecignored-files-checkbox">
 						<label className="block font-medium mb-1">
-							{t("settings:contextManagement.rooignore.label")}
+							{t("settings:contextManagement.adtecignore.label")}
 						</label>
 					</VSCodeCheckbox>
 					<div className="text-vscode-descriptionForeground text-sm mt-1 mb-3">
-						{t("settings:contextManagement.rooignore.description")}
+						{t("settings:contextManagement.adtecignore.description")}
 					</div>
 				</SearchableSetting>
 

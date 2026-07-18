@@ -28,7 +28,7 @@ describe("roomodes JSON schema", () => {
 		expect(validate).toBeDefined()
 	})
 
-	it("should accept a minimal valid .roomodes config", () => {
+	it("should accept a minimal valid .adtecmodes config", () => {
 		const config = {
 			customModes: [
 				{

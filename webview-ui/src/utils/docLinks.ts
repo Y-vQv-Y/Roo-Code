@@ -1,8 +1,8 @@
 /**
  * Utility for building extension help links.
  *
- * GitHub is the only extension-facing support destination for now.
+ * ADTEC Code's repository is the extension-facing documentation destination.
  */
 export function buildDocLink(_path: string, _campaign: string): string {
-	return "https://github.com/RooCodeInc/Roo-Code"
+	return "https://github.com/Y-vQv-Y"
 }

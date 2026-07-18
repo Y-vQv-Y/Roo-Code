@@ -1,5 +1,5 @@
 {
-	"greeting": "Welcome to Roo Code!",
+	"greeting": "Welcome to ADTEC Code!",
 	"task": {
 		"title": "Task",
 		"expand": "Expand task",
@@ -117,17 +117,17 @@
 	},
 	"scrollToBottom": "Scroll to bottom of chat",
 	"scrollToLatestCheckpoint": "Scroll to previous checkpoint",
-	"about": "Roo is a whole AI dev team in your editor",
+	"about": "ADTEC Code is a whole AI dev team in your editor",
 	"docs": "Check our <DocsLink>docs</DocsLink> to get started",
 	"onboarding": "What would you like to do?",
-	"rooTips": {
+	"adtecTips": {
 		"customizableModes": {
 			"title": "Customizable modes that don't swerve",
 			"description": "Specialized personas that stay on-task and deliver."
 		},
 		"modelAgnostic": {
 			"title": "Bring your own model, no markup or lock-in",
-			"description": "Use your own provider key or even run local inference — Roo doesn't charge for it"
+			"description": "Use your own provider key or even run local inference — ADTEC Code doesn't charge for it"
 		}
 	},
 	"selectMode": "Select mode for interaction",
@@ -138,7 +138,7 @@
 	"modeSelector": {
 		"title": "Modes",
 		"settings": "Mode Settings",
-		"description": "Specialized personas that tailor Roo's behavior.",
+		"description": "Specialized personas that tailor ADTEC Code's behavior.",
 		"searchPlaceholder": "Search modes...",
 		"noResults": "No results found"
 	},
@@ -176,7 +176,7 @@
 			"docs": "Docs",
 			"goToSettings": "Settings",
 			"connection": "Connection error. Make sure you have a working internet connection.",
-			"unknown": "Unknown API error. Please report this on GitHub.",
+			"unknown": "Unknown API error. Please contact your ADTEC Code administrator.",
 			"claudeCodeNotAuthenticated": "You need to sign in to use Claude Code. Go to Settings and click \"Sign in to Claude Code\" to authenticate."
 		}
 	},
@@ -215,46 +215,46 @@
 		}
 	},
 	"skill": {
-		"wantsToLoad": "Roo wants to load a skill",
-		"didLoad": "Roo loaded a skill"
+		"wantsToLoad": "ADTEC Code wants to load a skill",
+		"didLoad": "ADTEC Code loaded a skill"
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo wants to read this file",
-		"wantsToReadMultiple": "Roo wants to read multiple files",
-		"wantsToReadAndXMore": "Roo wants to read this file and {{count}} more",
-		"wantsToReadOutsideWorkspace": "Roo wants to read this file outside of the workspace",
-		"didRead": "Roo read this file",
-		"wantsToEdit": "Roo wants to edit this file",
-		"wantsToEditOutsideWorkspace": "Roo wants to edit this file outside of the workspace",
-		"wantsToEditProtected": "Roo wants to edit a protected configuration file",
-		"wantsToApplyBatchChanges": "Roo wants to apply changes to multiple files",
-		"wantsToGenerateImage": "Roo wants to generate an image",
-		"wantsToGenerateImageOutsideWorkspace": "Roo wants to generate an image outside of the workspace",
-		"wantsToGenerateImageProtected": "Roo wants to generate an image in a protected location",
-		"didGenerateImage": "Roo generated an image",
-		"wantsToCreate": "Roo wants to create a new file",
-		"wantsToInsert": "Roo wants to insert content into this file",
-		"wantsToInsertWithLineNumber": "Roo wants to insert content into this file at line {{lineNumber}}",
-		"wantsToInsertAtEnd": "Roo wants to append content to the end of this file"
+		"wantsToRead": "ADTEC Code wants to read this file",
+		"wantsToReadMultiple": "ADTEC Code wants to read multiple files",
+		"wantsToReadAndXMore": "ADTEC Code wants to read this file and {{count}} more",
+		"wantsToReadOutsideWorkspace": "ADTEC Code wants to read this file outside of the workspace",
+		"didRead": "ADTEC Code read this file",
+		"wantsToEdit": "ADTEC Code wants to edit this file",
+		"wantsToEditOutsideWorkspace": "ADTEC Code wants to edit this file outside of the workspace",
+		"wantsToEditProtected": "ADTEC Code wants to edit a protected configuration file",
+		"wantsToApplyBatchChanges": "ADTEC Code wants to apply changes to multiple files",
+		"wantsToGenerateImage": "ADTEC Code wants to generate an image",
+		"wantsToGenerateImageOutsideWorkspace": "ADTEC Code wants to generate an image outside of the workspace",
+		"wantsToGenerateImageProtected": "ADTEC Code wants to generate an image in a protected location",
+		"didGenerateImage": "ADTEC Code generated an image",
+		"wantsToCreate": "ADTEC Code wants to create a new file",
+		"wantsToInsert": "ADTEC Code wants to insert content into this file",
+		"wantsToInsertWithLineNumber": "ADTEC Code wants to insert content into this file at line {{lineNumber}}",
+		"wantsToInsertAtEnd": "ADTEC Code wants to append content to the end of this file"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo wants to view the top level files in this directory",
-		"didViewTopLevel": "Roo viewed the top level files in this directory",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo wants to view the top level files in this directory (outside workspace)",
-		"didViewTopLevelOutsideWorkspace": "Roo viewed the top level files in this directory (outside workspace)",
-		"wantsToViewRecursive": "Roo wants to recursively view all files in this directory",
-		"didViewRecursive": "Roo recursively viewed all files in this directory",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo wants to recursively view all files in this directory (outside workspace)",
-		"didViewRecursiveOutsideWorkspace": "Roo recursively viewed all files in this directory (outside workspace)",
-		"wantsToViewMultipleDirectories": "Roo wants to view multiple directories",
-		"wantsToSearch": "Roo wants to search this directory for <code>{{regex}}</code>",
-		"didSearch": "Roo searched this directory for <code>{{regex}}</code>",
-		"wantsToSearchOutsideWorkspace": "Roo wants to search this directory (outside workspace) for <code>{{regex}}</code>",
-		"didSearchOutsideWorkspace": "Roo searched this directory (outside workspace) for <code>{{regex}}</code>"
+		"wantsToViewTopLevel": "ADTEC Code wants to view the top level files in this directory",
+		"didViewTopLevel": "ADTEC Code viewed the top level files in this directory",
+		"wantsToViewTopLevelOutsideWorkspace": "ADTEC Code wants to view the top level files in this directory (outside workspace)",
+		"didViewTopLevelOutsideWorkspace": "ADTEC Code viewed the top level files in this directory (outside workspace)",
+		"wantsToViewRecursive": "ADTEC Code wants to recursively view all files in this directory",
+		"didViewRecursive": "ADTEC Code recursively viewed all files in this directory",
+		"wantsToViewRecursiveOutsideWorkspace": "ADTEC Code wants to recursively view all files in this directory (outside workspace)",
+		"didViewRecursiveOutsideWorkspace": "ADTEC Code recursively viewed all files in this directory (outside workspace)",
+		"wantsToViewMultipleDirectories": "ADTEC Code wants to view multiple directories",
+		"wantsToSearch": "ADTEC Code wants to search this directory for <code>{{regex}}</code>",
+		"didSearch": "ADTEC Code searched this directory for <code>{{regex}}</code>",
+		"wantsToSearchOutsideWorkspace": "ADTEC Code wants to search this directory (outside workspace) for <code>{{regex}}</code>",
+		"didSearchOutsideWorkspace": "ADTEC Code searched this directory (outside workspace) for <code>{{regex}}</code>"
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo wants to search the codebase for <code>{{query}}</code>",
-		"wantsToSearchWithPath": "Roo wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>",
+		"wantsToSearch": "ADTEC Code wants to search the codebase for <code>{{query}}</code>",
+		"wantsToSearchWithPath": "ADTEC Code wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>",
 		"didSearch_one": "Found 1 result",
 		"didSearch_other": "Found {{count}} results",
 		"resultTooltip": "Similarity score: {{score}} (click to open file)"
@@ -279,24 +279,24 @@
 	"response": "Response",
 	"arguments": "Arguments",
 	"text": {
-		"rooSaid": "Roo said"
+		"adtecSaid": "ADTEC Code said"
 	},
 	"feedback": {
 		"youSaid": "You said"
 	},
 	"mcp": {
-		"wantsToUseTool": "Roo wants to use a tool on the {{serverName}} MCP server",
-		"wantsToAccessResource": "Roo wants to access a resource on the {{serverName}} MCP server"
+		"wantsToUseTool": "ADTEC Code wants to use a tool on the {{serverName}} MCP server",
+		"wantsToAccessResource": "ADTEC Code wants to access a resource on the {{serverName}} MCP server"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo wants to switch to {{mode}} mode",
-		"wantsToSwitchWithReason": "Roo wants to switch to {{mode}} mode because: {{reason}}",
-		"didSwitch": "Roo switched to {{mode}} mode",
-		"didSwitchWithReason": "Roo switched to {{mode}} mode because: {{reason}}"
+		"wantsToSwitch": "ADTEC Code wants to switch to {{mode}} mode",
+		"wantsToSwitchWithReason": "ADTEC Code wants to switch to {{mode}} mode because: {{reason}}",
+		"didSwitch": "ADTEC Code switched to {{mode}} mode",
+		"didSwitchWithReason": "ADTEC Code switched to {{mode}} mode because: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo wants to create a new subtask in {{mode}} mode",
-		"wantsToFinish": "Roo wants to mark this as completed",
+		"wantsToCreate": "ADTEC Code wants to create a new subtask in {{mode}} mode",
+		"wantsToFinish": "ADTEC Code wants to mark this as completed",
 		"newTaskContent": "Subtask Instructions",
 		"resultContent": "Subtask completed",
 		"defaultResult": "Please continue to the next task.",
@@ -304,7 +304,7 @@
 		"goToSubtask": "View task"
 	},
 	"questions": {
-		"hasQuestion": "Roo has a question"
+		"hasQuestion": "ADTEC Code has a question"
 	},
 	"taskCompleted": "Task Completed",
 	"error": "Error",
@@ -321,12 +321,12 @@
 		"copyToClipboard": "Copy basic error info",
 		"copied": "Copied!",
 		"diagnostics": "Get detailed error info",
-		"proxyProvider": "You seem to be using a proxy-based provider. Make sure to check its logs and to ensure it's not rewriting Roo's requests."
+		"proxyProvider": "You seem to be using a proxy-based provider. Make sure to check its logs and to ensure it's not rewriting ADTEC Code's requests."
 	},
 	"diffError": {
 		"title": "Edit Unsuccessful"
 	},
-	"troubleMessage": "Roo is having trouble...",
+	"troubleMessage": "ADTEC Code is having trouble...",
 	"powershell": {
 		"issues": "It seems like you're having Windows PowerShell issues, please see this"
 	},
@@ -346,29 +346,6 @@
 		"triggerLabel_one": "1 auto-approved",
 		"triggerLabel_other": "{{count}} auto-approved",
 		"triggerLabelAll": "BRRR"
-	},
-	"announcement": {
-		"title": "Roo Code {{version}} Released",
-		"support": "Please support Roo Code by starring us on <githubLink>GitHub</githubLink>.",
-		"finalRelease": {
-			"title": "The last Roo Code release",
-			"intro": "This is the last Roo Code release. <announcementLink>As we announced a few weeks ago</announcementLink>, we've decided to shift our focus to <roomoteLink>Roomote</roomoteLink>, our cloud agent platform, which we believe to be the future of software development. Thank you so much for your support throughout the past year or so.",
-			"continuity": "This extension should continue to work indefinitely, but it won't receive bug fixes, new features, or model updates.",
-			"alternatives": "If you want to use an extension, we recommend checking out <zooCodeLink>ZooCode</zooCodeLink> (a Roo Code fork by the community) and <clineLink>Cline</clineLink> (where Roo Code originally started).",
-			"signoff": "Happy coding!"
-		},
-		"release": {
-			"heading": "What's New:",
-			"gpt55": "GPT-5.5 via OpenAI Codex: Added GPT-5.5 support in the OpenAI Codex provider so you can use the latest model straight from Roo Code.",
-			"claudeOpus47": "Claude Opus 4.7 on Vertex AI: Added Claude Opus 4.7 to the Vertex AI provider for Anthropic's newest flagship reasoning model.",
-			"checkpointNav": "Previous Checkpoint Navigation: Added controls in chat to jump back through prior checkpoints, with full i18n support."
-		},
-		"cloudAgents": {
-			"heading": "New in the Cloud:",
-			"specialized": "Introducing <bold>Explainer</bold>, <bold>Planner</bold>, and <bold>Coder</bold> - three specialized cloud agents to enhance your workflows.",
-			"description": "The agents work together in the cloud and can be triggered from the web or through Slack.",
-			"tryButton": "Try Cloud Agents"
-		}
 	},
 	"reasoning": {
 		"thinking": "Thinking",
@@ -393,18 +370,18 @@
 	"profileViolationWarning": "The current profile isn't compatible with your organization's settings",
 	"shellIntegration": {
 		"title": "Command Execution Warning",
-		"description": "Your command is being executed without VSCode terminal shell integration. To suppress this warning you can disable shell integration in the <strong>Terminal</strong> section of the <settingsLink>Roo Code settings</settingsLink> or troubleshoot VSCode terminal integration using the link below.",
+		"description": "Your command is being executed without VSCode terminal shell integration. To suppress this warning you can disable shell integration in the <strong>Terminal</strong> section of the <settingsLink>ADTEC Code settings</settingsLink> or troubleshoot VSCode terminal integration using the link below.",
 		"troubleshooting": "Click here for shell integration documentation."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "Auto-Approved Request Limit Reached",
-			"description": "Roo has reached the auto-approved limit of {{count}} API request(s). Would you like to reset the count and proceed with the task?",
+			"description": "ADTEC Code has reached the auto-approved limit of {{count}} API request(s). Would you like to reset the count and proceed with the task?",
 			"button": "Reset and Continue"
 		},
 		"autoApprovedCostLimitReached": {
 			"title": "Auto-Approved Cost Limit Reached",
-			"description": "Roo has reached the auto-approved cost limit of ${{count}}. Would you like to reset the cost and proceed with the task?",
+			"description": "ADTEC Code has reached the auto-approved cost limit of ${{count}}. Would you like to reset the cost and proceed with the task?",
 			"button": "Reset and Continue"
 		}
 	},
@@ -443,8 +420,8 @@
 		}
 	},
 	"slashCommand": {
-		"wantsToRun": "Roo wants to run a slash command",
-		"didRun": "Roo ran a slash command"
+		"wantsToRun": "ADTEC Code wants to run a slash command",
+		"didRun": "ADTEC Code ran a slash command"
 	},
 	"queuedMessages": {
 		"title": "Queued Messages",
@@ -473,12 +450,11 @@
 		"openMcpSettings": "Open MCP Settings"
 	},
 	"readCommandOutput": {
-		"title": "Roo read command output"
+		"title": "ADTEC Code read command output"
 	},
 	"retiredProvider": {
 		"title": "Provider no longer supported",
 		"message": "This provider is no longer supported. Please select a different provider in your API profile settings.",
-		"openSettings": "Open Settings",
-		"rooMessage": "As part of our decision to sunset the Roo Code extension, we also ended the Roo Code Router, which only existed to support the extension. Sorry about the hassle."
+		"openSettings": "Open Settings"
 	}
 }

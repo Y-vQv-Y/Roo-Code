@@ -474,7 +474,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		this.fileContextTracker = new FileContextTracker(provider, this.taskId)
 
 		this.rooIgnoreController.initialize().catch((error) => {
-			console.error("Failed to initialize RooIgnoreController:", error)
+			console.error("Failed to initialize ADTEC Ignore controller:", error)
 		})
 
 		this.apiConfiguration = apiConfiguration
@@ -1198,7 +1198,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			await this.providerRef.deref()?.updateTaskHistory(historyItem)
 			return true
 		} catch (error) {
-			console.error("Failed to save Roo messages:", error)
+			console.error("Failed to save ADTEC Code messages:", error)
 			return false
 		}
 	}
@@ -1232,7 +1232,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// simply removes the reference to this instance, but the instance is
 		// still alive until this promise resolves or rejects.)
 		if (this.abort) {
-			throw new Error(`[RooCode#ask] task ${this.taskId}.${this.instanceId} aborted`)
+			throw new Error(`[ADTECCode#ask] task ${this.taskId}.${this.instanceId} aborted`)
 		}
 
 		let askTs: number
@@ -1595,7 +1595,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		try {
 			return await this.fileContextTracker.getFilesReadByRoo()
 		} catch (error) {
-			console.error(`[Task#${context}] Failed to get files read by Roo:`, error)
+			console.error(`[Task#${context}] Failed to get files read by ADTEC Code:`, error)
 			return undefined
 		}
 	}
@@ -1721,7 +1721,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		contextTruncation?: ContextTruncation,
 	): Promise<undefined> {
 		if (this.abort) {
-			throw new Error(`[RooCode#say] task ${this.taskId}.${this.instanceId} aborted`)
+			throw new Error(`[ADTECCode#say] task ${this.taskId}.${this.instanceId} aborted`)
 		}
 
 		if (partial !== undefined) {
@@ -1824,7 +1824,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	async sayAndCreateMissingParamError(toolName: ToolName, paramName: string, relPath?: string) {
 		await this.say(
 			"error",
-			`Roo tried to use ${toolName}${
+			`ADTEC Code tried to use ${toolName}${
 				relPath ? ` for '${relPath.toPosix()}'` : ""
 			} without value for required parameter '${paramName}'. Retrying...`,
 		)
@@ -2055,7 +2055,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					// Removing or merging it would destroy this metadata, causing all condensed
 					// messages to become "orphaned" and restored to active status — effectively
 					// undoing the condensation and sending the full history to the API.
-					// See: https://github.com/RooCodeInc/Roo-Code/issues/11487
+					// See: https://www.adtec.com.cn/
 					modifiedApiConversationHistory = [...existingApiConversationHistory]
 					modifiedOldUserContent = []
 				} else if (lastMessage.role === "assistant") {
@@ -2309,7 +2309,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				this.rooIgnoreController = undefined
 			}
 		} catch (error) {
-			console.error("Error disposing RooIgnoreController:", error)
+			console.error("Error disposing ADTEC Ignore controller:", error)
 			// This is the critical one for the leak fix.
 		}
 
@@ -2477,7 +2477,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			const currentIncludeFileDetails = currentItem.includeFileDetails
 
 			if (this.abort) {
-				throw new Error(`[RooCode#recursivelyMakeRooRequests] task ${this.taskId}.${this.instanceId} aborted`)
+				throw new Error(`[ADTECCode#recursivelyMakeRequests] task ${this.taskId}.${this.instanceId} aborted`)
 			}
 
 			if (this.consecutiveMistakeLimit > 0 && this.consecutiveMistakeCount >= this.consecutiveMistakeLimit) {
@@ -3206,7 +3206,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				// Need to call here in case the stream was aborted.
 				if (this.abort || this.abandoned) {
 					throw new Error(
-						`[RooCode#recursivelyMakeRooRequests] task ${this.taskId}.${this.instanceId} aborted`,
+						`[ADTECCode#recursivelyMakeRequests] task ${this.taskId}.${this.instanceId} aborted`,
 					)
 				}
 
@@ -3994,7 +3994,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				? await getEnvironmentDetails(this, true)
 				: undefined
 
-			// Get files read by Roo for code folding - only when context management will run
+			// Get files read by ADTEC Code for code folding - only when context management will run
 			const contextMgmtFilesReadByRoo =
 				contextManagementWillRun && autoCondenseContext
 					? await this.getFilesReadByRooSafely("attemptApiRequest")

@@ -1,16 +1,16 @@
-name: Nightly Publish
+name: Package ADTEC Code Nightly
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Allows manual triggering.
+  workflow_dispatch:
 
 jobs:
-  publish-nightly:
+  package-nightly:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read # No tags pushed → read is enough.
+      contents: read
 
     steps:
       - name: Checkout code
@@ -21,11 +21,11 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
         with:
           install-args: '--frozen-lockfile'
-      - name: Forge numeric Nightly version
+      - name: Forge numeric nightly version
         id: version
         env:
           RUN_NUMBER: ${{ github.run_number }}
-        run: echo "number=$(( 5500 + ${RUN_NUMBER} ))" >> $GITHUB_OUTPUT
+        run: echo "number=$((5500 + RUN_NUMBER))" >> "$GITHUB_OUTPUT"
       - name: Patch package.json version
         env:
           VERSION_NUMBER: ${{ steps.version.outputs.number }}
@@ -34,19 +34,18 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             const pkgPath = path.join(__dirname, 'apps', 'vscode-nightly', 'package.nightly.json');
-            const pkg = JSON.parse(fs.readFileSync(pkgPath,'utf8'));
-            const [maj, min] = pkg.version.split('.');
-            pkg.version = `${maj}.${min}.${process.env.VERSION_NUMBER}`;
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            const [major, minor] = pkg.version.split('.');
+            pkg.version = `${major}.${minor}.${process.env.VERSION_NUMBER}`;
             fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
-            console.log(`🔖 Nightly version set to ${pkg.version}`);
+            console.log(`Nightly version set to ${pkg.version}`);
           EOF
       - name: Build VSIX
-        run: pnpm vsix:nightly # Produces bin/roo-code-nightly-0.0.[count].vsix
-      - name: Publish to VS Code Marketplace
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx vsce publish --packagePath "bin/$(/bin/ls bin | head -n1)"
-      - name: Publish to Open VSX Registry
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx ovsx publish "bin/$(ls bin | head -n1)"
+        run: pnpm vsix:nightly
+      - name: Upload internal nightly artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: adtec-code-nightly-${{ steps.version.outputs.number }}
+          path: bin/adtec-code-nightly-*.vsix
+          if-no-files-found: error
+          retention-days: 7

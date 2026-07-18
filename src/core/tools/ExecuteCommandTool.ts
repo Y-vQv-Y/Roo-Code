@@ -34,7 +34,7 @@ export function resolveAgentTimeoutMs(timeoutSeconds: number | null | undefined)
 	// In CLI runtime, stdin harnesses expect command lifetime to be governed
 	// solely by commandExecutionTimeout (user setting), not model-provided
 	// background timeouts.
-	return process.env.ROO_CLI_RUNTIME === "1" ? 0 : requestedAgentTimeout
+	return process.env.ADTEC_CODE_CLI_RUNTIME === "1" ? 0 : requestedAgentTimeout
 }
 
 export class ExecuteCommandTool extends BaseTool<"execute_command"> {
@@ -57,7 +57,7 @@ export class ExecuteCommandTool extends BaseTool<"execute_command"> {
 			const ignoredFileAttemptedToAccess = task.rooIgnoreController?.validateCommand(canonicalCommand)
 
 			if (ignoredFileAttemptedToAccess) {
-				await task.say("rooignore_error", ignoredFileAttemptedToAccess)
+				await task.say("adtecignore_error", ignoredFileAttemptedToAccess)
 				pushToolResult(formatResponse.rooIgnoreError(ignoredFileAttemptedToAccess))
 				return
 			}

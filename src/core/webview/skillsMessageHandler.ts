@@ -187,7 +187,7 @@ export async function handleUpdateSkillModes(
 export async function handleOpenSkillFile(provider: ClineProvider, message: WebviewMessage): Promise<void> {
 	try {
 		const skillName = message.skillName
-		const source = message.source as SkillSource
+		const source = getMutableSkillSource(message.source)
 
 		if (!skillName || !source) {
 			throw new Error(t("skills:errors.missing_delete_fields"))

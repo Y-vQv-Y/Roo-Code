@@ -42,13 +42,15 @@ describe("getLatestCliVersion", () => {
 				{ tag_name: "cli-v0.1.8" },
 			])) as typeof fetch
 
-		await expect(getLatestCliVersion(fetchImpl)).resolves.toBe("0.1.10")
+		await expect(getLatestCliVersion(fetchImpl, "https://releases.internal/adtec-code")).resolves.toBe("0.1.10")
 	})
 
 	it("throws when release check fails", async () => {
 		const fetchImpl = (async () => createFetchResponse({}, { ok: false, status: 503 })) as typeof fetch
 
-		await expect(getLatestCliVersion(fetchImpl)).rejects.toThrow("Failed to check latest version")
+		await expect(getLatestCliVersion(fetchImpl, "https://releases.internal/adtec-code")).rejects.toThrow(
+			"Failed to check latest version",
+		)
 	})
 })
 
@@ -71,10 +73,11 @@ describe("upgrade", () => {
 			currentVersion: "0.1.4",
 			fetchImpl,
 			runInstaller,
+			releasesUrl: "https://releases.internal/adtec-code",
 		})
 
 		expect(runInstaller).not.toHaveBeenCalled()
-		expect(logSpy).toHaveBeenCalledWith("Roo CLI is already up to date.")
+		expect(logSpy).toHaveBeenCalledWith("ADTEC Code CLI is already up to date.")
 	})
 
 	it("runs installer when a newer version is available", async () => {
@@ -85,6 +88,7 @@ describe("upgrade", () => {
 			currentVersion: "0.1.4",
 			fetchImpl,
 			runInstaller,
+			releasesUrl: "https://releases.internal/adtec-code",
 		})
 
 		expect(runInstaller).toHaveBeenCalledTimes(1)

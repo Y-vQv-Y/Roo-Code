@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "Algo deu errado",
-		"reportText": "Ajude-nos a melhorar relatando este erro em",
-		"githubText": "nossa página de Issues no GitHub",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "Copie e cole a seguinte mensagem de erro para incluí-la como parte do seu relatório:",
 		"errorStack": "Pilha de Erro:",
 		"componentStack": "Pilha de Componentes:"

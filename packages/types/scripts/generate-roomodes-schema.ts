@@ -1,5 +1,5 @@
 /**
- * Generates the JSON Schema for .roomodes configuration files from the Zod
+ * Generates the JSON Schema for .adtecmodes configuration files from the Zod
  * schemas defined in packages/types/src/mode.ts.
  *
  * This ensures the schema stays in sync with the TypeScript types. Run via:

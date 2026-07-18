@@ -110,7 +110,7 @@ export class ApplyPatchTool extends BaseTool<"apply_patch"> {
 				// Check access permissions
 				const accessAllowed = task.rooIgnoreController?.validateAccess(relPath)
 				if (!accessAllowed) {
-					await task.say("rooignore_error", relPath)
+					await task.say("adtecignore_error", relPath)
 					pushToolResult(formatResponse.rooIgnoreError(relPath))
 					return
 				}
@@ -377,7 +377,7 @@ export class ApplyPatchTool extends BaseTool<"apply_patch"> {
 			// Validate destination path access permissions
 			const moveAccessAllowed = task.rooIgnoreController?.validateAccess(change.movePath)
 			if (!moveAccessAllowed) {
-				await task.say("rooignore_error", change.movePath)
+				await task.say("adtecignore_error", change.movePath)
 				pushToolResult(formatResponse.rooIgnoreError(change.movePath))
 				await task.diffViewProvider.reset()
 				return

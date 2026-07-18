@@ -149,7 +149,7 @@ export class ClineProvider
 
 	public isViewLaunched = false
 	public settingsImportedAt?: number
-	public readonly latestAnnouncementId = "may-2026-final-roo-code-release" // Final Roo Code release announcement.
+	public readonly latestAnnouncementId = "adtec-internal"
 	public readonly providerSettingsManager: ProviderSettingsManager
 	public readonly customModesManager: CustomModesManager
 
@@ -826,7 +826,7 @@ export class ClineProvider
 		historyItem: HistoryItem & { rootTask?: Task; parentTask?: Task },
 		options?: { startTask?: boolean },
 	) {
-		const isCliRuntime = process.env.ROO_CLI_RUNTIME === "1"
+		const isCliRuntime = process.env.ADTEC_CODE_CLI_RUNTIME === "1"
 		// CLI injects runtime provider settings from command flags/env at startup.
 		// Restoring provider profiles from task history can overwrite those
 		// runtime settings with stale/incomplete persisted profiles.
@@ -1064,14 +1064,14 @@ export class ClineProvider
 
 			if (fs.existsSync(portFilePath)) {
 				localPort = fs.readFileSync(portFilePath, "utf8").trim()
-				console.log(`[ClineProvider:Vite] Using Vite server port from ${portFilePath}: ${localPort}`)
+				console.log(`[ADTECCode:Vite] Using Vite server port from ${portFilePath}: ${localPort}`)
 			} else {
 				console.log(
 					`[ClineProvider:Vite] Port file not found at ${portFilePath}, using default port: ${localPort}`,
 				)
 			}
 		} catch (err) {
-			console.error("[ClineProvider:Vite] Failed to read Vite port file:", err)
+			console.error("[ADTECCode:Vite] Failed to read Vite port file:", err)
 		}
 
 		const localServerUrl = `localhost:${localPort}`
@@ -1105,7 +1105,7 @@ export class ClineProvider
 			"vscode-material-icons",
 			"icons",
 		])
-		const imagesUri = getUri(webview, this.contextProxy.extensionUri, ["assets", "images"])
+		const imagesUri = getUri(webview, this.contextProxy.extensionUri, ["assets", "icons"])
 		const audioUri = getUri(webview, this.contextProxy.extensionUri, ["webview-ui", "audio"])
 
 		const file = "src/index.tsx"
@@ -1145,7 +1145,7 @@ export class ClineProvider
 						window.AUDIO_BASE_URI = "${audioUri}"
 						window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 					</script>
-					<title>Roo Code</title>
+					<title>ADTEC Code</title>
 				</head>
 				<body>
 					<div id="root"></div>
@@ -1186,7 +1186,7 @@ export class ClineProvider
 			"vscode-material-icons",
 			"icons",
 		])
-		const imagesUri = getUri(webview, this.contextProxy.extensionUri, ["assets", "images"])
+		const imagesUri = getUri(webview, this.contextProxy.extensionUri, ["assets", "icons"])
 		const audioUri = getUri(webview, this.contextProxy.extensionUri, ["webview-ui", "audio"])
 
 		// Use a nonce to only allow a specific script to be run.
@@ -1224,7 +1224,7 @@ export class ClineProvider
 				window.AUDIO_BASE_URI = "${audioUri}"
 				window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 			</script>
-            <title>Roo Code</title>
+            <title>ADTEC Code</title>
           </head>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -1545,21 +1545,21 @@ export class ClineProvider
 		// Get platform-specific application data directory
 		let mcpServersDir: string
 		if (process.platform === "win32") {
-			// Windows: %APPDATA%\Roo-Code\MCP
-			mcpServersDir = path.join(os.homedir(), "AppData", "Roaming", "Roo-Code", "MCP")
+			// Windows: %APPDATA%\ADTEC-Code\MCP
+			mcpServersDir = path.join(os.homedir(), "AppData", "Roaming", "ADTEC-Code", "MCP")
 		} else if (process.platform === "darwin") {
-			// macOS: ~/Documents/Cline/MCP
-			mcpServersDir = path.join(os.homedir(), "Documents", "Cline", "MCP")
+			// macOS: ~/Documents/ADTEC-Code/MCP
+			mcpServersDir = path.join(os.homedir(), "Documents", "ADTEC-Code", "MCP")
 		} else {
-			// Linux: ~/.local/share/Cline/MCP
-			mcpServersDir = path.join(os.homedir(), ".local", "share", "Roo-Code", "MCP")
+			// Linux: ~/.local/share/ADTEC-Code/MCP
+			mcpServersDir = path.join(os.homedir(), ".local", "share", "ADTEC-Code", "MCP")
 		}
 
 		try {
 			await fs.mkdir(mcpServersDir, { recursive: true })
 		} catch (error) {
 			// Fallback to a relative path if directory creation fails
-			return path.join(os.homedir(), ".roo-code", "mcp")
+			return path.join(os.homedir(), ".adtec-code", "mcp")
 		}
 		return mcpServersDir
 	}
@@ -1927,7 +1927,6 @@ export class ClineProvider
 
 		const {
 			apiConfiguration,
-			lastShownAnnouncementId,
 			customInstructions,
 			alwaysAllowReadOnly,
 			alwaysAllowReadOnlyOutsideWorkspace,
@@ -2035,7 +2034,7 @@ export class ClineProvider
 			ttsSpeed: ttsSpeed ?? 1.0,
 			enableCheckpoints: enableCheckpoints ?? true,
 			checkpointTimeout: checkpointTimeout ?? DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
-			shouldShowAnnouncement: lastShownAnnouncementId !== this.latestAnnouncementId,
+			shouldShowAnnouncement: false,
 			allowedCommands: mergedAllowedCommands,
 			deniedCommands: mergedDeniedCommands,
 			soundVolume: soundVolume ?? 0.5,
@@ -2571,7 +2570,7 @@ export class ClineProvider
 
 			// Register custom modes so the CustomModesManager knows about them.
 			// setValues writes to global state, but the manager overwrites that
-			// when it merges .roomodes + global settings on refresh.  Persisting
+			// when it merges .adtecmodes + global settings on refresh.  Persisting
 			// via updateCustomMode ensures modes survive the merge cycle.
 			if (configuration.customModes?.length) {
 				for (const mode of configuration.customModes) {

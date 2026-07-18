@@ -314,10 +314,10 @@ async function resumeSessionAndSendMarker(
 }
 
 async function main() {
-	const cliRoot = process.env.ROO_CLI_ROOT
-		? path.resolve(process.env.ROO_CLI_ROOT)
+	const cliRoot = process.env.ADTEC_CODE_CLI_ROOT
+		? path.resolve(process.env.ADTEC_CODE_CLI_ROOT)
 		: path.resolve(__dirname, "../../..")
-	const workspacePath = await fs.mkdtemp(path.join(os.tmpdir(), "roo-cli-create-session-id-"))
+	const workspacePath = await fs.mkdtemp(path.join(os.tmpdir(), "adtec-code-cli-create-session-id-"))
 
 	const firstSessionId = randomUUID()
 	const secondSessionId = randomUUID()

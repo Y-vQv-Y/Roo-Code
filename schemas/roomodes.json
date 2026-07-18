@@ -90,7 +90,7 @@
 	"required": ["customModes"],
 	"additionalProperties": false,
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://github.com/RooCodeInc/Roo-Code/blob/main/schemas/roomodes.json",
-	"title": "Roo Code Custom Modes",
-	"description": "Schema for .roomodes configuration files used by Roo Code to define custom modes."
+	"$id": "https://www.adtec.com.cn/",
+	"title": "ADTEC Code Custom Modes",
+	"description": "Schema for .adtecmodes configuration files used by ADTEC Code to define custom modes."
 }

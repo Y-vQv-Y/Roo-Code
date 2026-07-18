@@ -80,7 +80,7 @@ export const getRooReasoning = ({
 		return { enabled: false }
 	}
 
-	// For Roo models that support reasoning effort, absence of a selection should be
+	// For ADTEC Code models that support reasoning effort, absence of a selection should be
 	// treated as an explicit "off" signal so that the backend does not auto-enable
 	// reasoning. This aligns with the default behavior in tests.
 	if (!reasoningEffort) {
@@ -93,7 +93,7 @@ export const getRooReasoning = ({
 		return undefined
 	}
 
-	// For Roo, "minimal" is treated as "none" for effort-based reasoning – we omit
+	// For ADTEC Code, "minimal" is treated as "none" for effort-based reasoning – we omit
 	// the reasoning field entirely instead of sending an explicit effort.
 	if (reasoningEffort === "minimal") {
 		return undefined

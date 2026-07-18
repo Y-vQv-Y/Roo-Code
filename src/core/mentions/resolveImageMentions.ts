@@ -55,7 +55,7 @@ function dedupePreserveOrder(values: string[]): string[] {
  * - Respects per-file size limits (default 5MB)
  * - Respects total memory limits (default 20MB)
  * - Skips images if model doesn't support them
- * - Respects `.rooignore` via `rooIgnoreController.validateAccess` when provided
+ * - Respects `.adtecignore` via `rooIgnoreController.validateAccess` when provided
  */
 export async function resolveImageMentions({
 	text,

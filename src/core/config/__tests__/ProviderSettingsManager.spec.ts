@@ -558,7 +558,7 @@ describe("ProviderSettingsManager", () => {
 	})
 
 	describe("LoadConfig", () => {
-		it("preserves Roo Code Router configs as retired providers", async () => {
+		it("preserves ADTEC Code Router configs as retired providers", async () => {
 			const existingConfig = {
 				currentApiConfigName: "default",
 				apiConfigs: {

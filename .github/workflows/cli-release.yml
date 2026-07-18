@@ -65,8 +65,8 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           PLATFORM: ${{ matrix.platform }}
         run: |
-          RELEASE_DIR="roo-cli-${PLATFORM}"
-          TARBALL="roo-cli-${PLATFORM}.tar.gz"
+          RELEASE_DIR="adtec-code-cli-${PLATFORM}"
+          TARBALL="adtec-code-cli-${PLATFORM}.tar.gz"
 
           # Clean up any previous build.
           rm -rf "$RELEASE_DIR"
@@ -137,18 +137,15 @@ jobs:
             'const __dirname = dirname(__filename);' \
             '' \
             '// Set environment variables for the CLI' \
-            "process.env.ROO_CLI_ROOT = join(__dirname, '..');" \
-            "process.env.ROO_EXTENSION_PATH = join(__dirname, '..', 'extension');" \
-            "process.env.ROO_RIPGREP_PATH = join(__dirname, 'rg');" \
+            "process.env.ADTEC_CODE_CLI_ROOT = join(__dirname, '..');" \
+            "process.env.ADTEC_CODE_EXTENSION_PATH = join(__dirname, '..', 'extension');" \
+            "process.env.ADTEC_CODE_RIPGREP_PATH = join(__dirname, 'rg');" \
             '' \
             '// Import and run the actual CLI' \
             "await import(join(__dirname, '..', 'lib', 'index.js'));" \
-            > "$RELEASE_DIR/bin/roo"
+            > "$RELEASE_DIR/bin/adtec-code"
 
-          chmod +x "$RELEASE_DIR/bin/roo"
-
-          # Create empty .env file.
-          touch "$RELEASE_DIR/.env"
+          chmod +x "$RELEASE_DIR/bin/adtec-code"
 
           # Create tarball.
           echo "Creating tarball..."
@@ -172,7 +169,7 @@ jobs:
         env:
           PLATFORM: ${{ matrix.platform }}
         run: |
-          TARBALL="roo-cli-${PLATFORM}.tar.gz"
+          TARBALL="adtec-code-cli-${PLATFORM}.tar.gz"
 
           # Create temp directory for verification.
           VERIFY_DIR=$(mktemp -d)
@@ -181,13 +178,13 @@ jobs:
           tar -xzf "$TARBALL" -C "$VERIFY_DIR"
 
           echo "Verifying tarball contents..."
-          ls -la "$VERIFY_DIR/roo-cli-${PLATFORM}/"
+          ls -la "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/"
 
           # Check required files exist.
-          test -f "$VERIFY_DIR/roo-cli-${PLATFORM}/bin/roo" || { echo "Missing bin/roo"; exit 1; }
-          test -f "$VERIFY_DIR/roo-cli-${PLATFORM}/lib/index.js" || { echo "Missing lib/index.js"; exit 1; }
-          test -f "$VERIFY_DIR/roo-cli-${PLATFORM}/package.json" || { echo "Missing package.json"; exit 1; }
-          test -d "$VERIFY_DIR/roo-cli-${PLATFORM}/extension" || { echo "Missing extension directory"; exit 1; }
+          test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/bin/adtec-code" || { echo "Missing bin/adtec-code"; exit 1; }
+          test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/lib/index.js" || { echo "Missing lib/index.js"; exit 1; }
+          test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/package.json" || { echo "Missing package.json"; exit 1; }
+          test -d "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/extension" || { echo "Missing extension directory"; exit 1; }
 
           echo "Tarball verification passed!"
 
@@ -199,8 +196,8 @@ jobs:
         with:
           name: cli-${{ matrix.platform }}
           path: |
-            roo-cli-${{ matrix.platform }}.tar.gz
-            roo-cli-${{ matrix.platform }}.tar.gz.sha256
+            adtec-code-cli-${{ matrix.platform }}.tar.gz
+            adtec-code-cli-${{ matrix.platform }}.tar.gz.sha256
           retention-days: 7
 
   # Create GitHub release with all platform artifacts.
@@ -319,14 +316,7 @@ jobs:
 
           echo "## Installation" >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
-          echo '```bash' >> "$NOTES_FILE"
-          echo "curl -fsSL https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/apps/cli/install.sh | sh" >> "$NOTES_FILE"
-          echo '```' >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "Or install a specific version:" >> "$NOTES_FILE"
-          echo '```bash' >> "$NOTES_FILE"
-          echo "ROO_VERSION=$VERSION curl -fsSL https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/apps/cli/install.sh | sh" >> "$NOTES_FILE"
-          echo '```' >> "$NOTES_FILE"
+          echo "Download the matching internal release archive and install it with the repository's apps/cli/install.sh script." >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "## Requirements" >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
@@ -337,18 +327,18 @@ jobs:
           echo "" >> "$NOTES_FILE"
           echo '```bash' >> "$NOTES_FILE"
           echo "# Run a task" >> "$NOTES_FILE"
-          echo 'roo "What is this project?"' >> "$NOTES_FILE"
+          echo 'adtec-code "What is this project?"' >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "# See all options" >> "$NOTES_FILE"
-          echo "roo --help" >> "$NOTES_FILE"
+          echo "adtec-code --help" >> "$NOTES_FILE"
           echo '```' >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "## Platform Support" >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "This release includes binaries for:" >> "$NOTES_FILE"
-          echo '- `roo-cli-darwin-arm64.tar.gz` - macOS Apple Silicon (M1/M2/M3)' >> "$NOTES_FILE"
-          echo '- `roo-cli-linux-x64.tar.gz` - Linux x64' >> "$NOTES_FILE"
-          echo '- `roo-cli-linux-arm64.tar.gz` - Linux ARM64' >> "$NOTES_FILE"
+          echo '- `adtec-code-cli-darwin-arm64.tar.gz` - macOS Apple Silicon (M1/M2/M3)' >> "$NOTES_FILE"
+          echo '- `adtec-code-cli-linux-x64.tar.gz` - Linux x64' >> "$NOTES_FILE"
+          echo '- `adtec-code-cli-linux-arm64.tar.gz` - Linux ARM64' >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "## Checksums" >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
@@ -357,7 +347,7 @@ jobs:
           echo '```' >> "$NOTES_FILE"
 
           gh release create "$TAG" \
-            --title "Roo Code CLI v$VERSION" \
+            --title "ADTEC Code CLI v$VERSION" \
             --notes-file "$NOTES_FILE" \
             --prerelease \
             release/*

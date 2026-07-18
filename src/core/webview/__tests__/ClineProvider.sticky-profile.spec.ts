@@ -178,8 +178,8 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 	beforeEach(async () => {
 		vi.clearAllMocks()
 		taskIdCounter = 0
-		originalRooCliRuntimeEnv = process.env.ROO_CLI_RUNTIME
-		delete process.env.ROO_CLI_RUNTIME
+		originalRooCliRuntimeEnv = process.env.ADTEC_CODE_CLI_RUNTIME
+		delete process.env.ADTEC_CODE_CLI_RUNTIME
 
 		const globalState: Record<string, string | undefined> = {
 			mode: "code",
@@ -266,9 +266,9 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 
 	afterEach(() => {
 		if (originalRooCliRuntimeEnv === undefined) {
-			delete process.env.ROO_CLI_RUNTIME
+			delete process.env.ADTEC_CODE_CLI_RUNTIME
 		} else {
-			process.env.ROO_CLI_RUNTIME = originalRooCliRuntimeEnv
+			process.env.ADTEC_CODE_CLI_RUNTIME = originalRooCliRuntimeEnv
 		}
 	})
 
@@ -476,7 +476,7 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 
 		it("should skip restoring task apiConfigName from history in CLI runtime", async () => {
 			await provider.resolveWebviewView(mockWebviewView)
-			process.env.ROO_CLI_RUNTIME = "1"
+			process.env.ADTEC_CODE_CLI_RUNTIME = "1"
 
 			const historyItem: HistoryItem = {
 				id: "test-task-id",
@@ -510,7 +510,7 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 
 		it("should skip restoring mode-based provider config from history in CLI runtime", async () => {
 			await provider.resolveWebviewView(mockWebviewView)
-			process.env.ROO_CLI_RUNTIME = "1"
+			process.env.ADTEC_CODE_CLI_RUNTIME = "1"
 
 			const historyItem: HistoryItem = {
 				id: "test-task-id",

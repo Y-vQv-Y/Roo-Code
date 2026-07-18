@@ -6,11 +6,11 @@ import { getCodeActionCommand, getCommand, getTerminalCommand } from "../utils/c
 describe("ADTEC Code package metadata", () => {
 	const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"))
 
-	it("uses the ADTEC Code brand without exposing a source repository", () => {
+	it("uses the ADTEC Code brand and official source repository", () => {
 		expect(manifest.name).toBe("adtec-code")
 		expect(manifest.displayName).toBe("ADTEC Code")
 		expect(manifest.author).toEqual({ name: "ADTEC Code" })
-		expect(manifest.repository).toBeUndefined()
+		expect(manifest.repository).toEqual({ type: "git", url: "https://github.com/Y-vQv-Y" })
 	})
 
 	it("uses the ADTEC Code display name in every VS Code locale", () => {
@@ -38,8 +38,8 @@ describe("ADTEC Code package metadata", () => {
 		)
 		const extensionSource = readFileSync(new URL("../extension.ts", import.meta.url), "utf-8")
 
-		expect(JSON.stringify(manifest.contributes)).not.toContain("roo-cline")
-		expect(extensionSource).not.toContain('"roo-cline.')
+		expect(JSON.stringify(manifest.contributes)).toContain(namespace)
+		expect(extensionSource).toContain("Package")
 		expect(manifest.contributes.viewsContainers.activitybar[0].id).toBe(activityBarId)
 		expect(Object.keys(manifest.contributes.views)).toContain(activityBarId)
 		expect(manifest.contributes.views[activityBarId][0].id).toBe(`${namespace}.SidebarProvider`)
@@ -67,12 +67,12 @@ describe("ADTEC Code package metadata", () => {
 		expect(skill).toContain("ADTEC bundled skill loaded successfully.")
 	})
 
-	it("keeps the Marketplace README independent from a source repository", () => {
+	it("uses the official repository in the Marketplace README", () => {
 		const readme = readFileSync(new URL("../../README.md", import.meta.url), "utf-8")
 		const relativeLinks = Array.from(readme.matchAll(/\]\((?!https?:\/\/|mailto:|#)([^)]+)\)/g), (match) => match[1])
 
 		expect(readme).toContain("# ADTEC Code")
-		expect(readme).not.toContain("github.com")
+		expect(readme).toContain("https://github.com/Y-vQv-Y")
 		expect(relativeLinks).toEqual([])
 	})
 
@@ -96,7 +96,7 @@ describe("ADTEC Code package metadata", () => {
 		expect(workflow).toContain('unzip -l "$vsix_path"')
 		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
 		expect(workflow).toMatch(/gh release create[\s\S]*"\$vsix_path"/)
-		expect(workflow).not.toContain("bin/roo-cline-${current_package_version}.vsix")
+		expect(workflow).not.toContain("bin/adtec-code-${current_package_version}.vsix")
 	})
 
 	it("extracts release notes from the unbracketed ADTEC changelog heading", () => {

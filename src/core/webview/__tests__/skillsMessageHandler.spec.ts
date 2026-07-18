@@ -82,7 +82,7 @@ describe("skillsMessageHandler", () => {
 		{
 			name: "project-skill",
 			description: "Project skill description",
-			path: "/project/.roo/skills/project-skill/SKILL.md",
+			path: "/project/.adtec/skills/project-skill/SKILL.md",
 			source: "project",
 			mode: "code",
 		},
@@ -349,6 +349,22 @@ describe("skillsMessageHandler", () => {
 	})
 
 	describe("handleOpenSkillFile", () => {
+		it("rejects opening a bundled skill for editing", async () => {
+			const provider = createMockProvider(true)
+
+			await handleOpenSkillFile(provider, {
+				type: "openSkillFile",
+				skillName: "adtec-test",
+				source: "bundled",
+			} as WebviewMessage)
+
+			expect(mockFindSkillByNameAndSource).not.toHaveBeenCalled()
+			expect(openFile).not.toHaveBeenCalled()
+			expect(mockLog).toHaveBeenCalledWith(
+				"Error opening skill file: Missing required fields: skillName or source",
+			)
+		})
+
 		it("opens a skill file successfully", async () => {
 			const provider = createMockProvider(true)
 			mockFindSkillByNameAndSource.mockReturnValue(mockSkills[0])
@@ -375,7 +391,7 @@ describe("skillsMessageHandler", () => {
 			} as WebviewMessage)
 
 			expect(mockFindSkillByNameAndSource).toHaveBeenCalledWith("project-skill", "project")
-			expect(openFile).toHaveBeenCalledWith("/project/.roo/skills/project-skill/SKILL.md")
+			expect(openFile).toHaveBeenCalledWith("/project/.adtec/skills/project-skill/SKILL.md")
 		})
 
 		it("shows error when required fields are missing", async () => {

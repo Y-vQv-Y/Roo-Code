@@ -1086,11 +1086,7 @@ export const ChatRowContent = ({
 								<ErrorRow
 									type="api_failure"
 									message={apiRequestFailedMessage || apiReqStreamingFailedMessage || ""}
-									docsURL={
-										apiRequestFailedMessage?.toLowerCase().includes("powershell")
-											? "https://github.com/cline/cline/wiki/TroubleShooting-%E2%80%90-%22PowerShell-is-not-recognized-as-an-internal-or-external-command%22"
-											: undefined
-									}
+						docsURL={undefined}
 									errorDetails={apiReqStreamingFailedMessage}
 								/>
 							)}
@@ -1117,7 +1113,6 @@ export const ChatRowContent = ({
 							} else {
 								// Non-HTTP-status-code error message - store full text as errorDetails
 								body = t("chat:apiRequest.errorMessage.unknown")
-								docsURL = "https://github.com/RooCodeInc/Roo-Code/issues/new?template=bug_report.yml"
 							}
 						}
 
@@ -1184,7 +1179,7 @@ export const ChatRowContent = ({
 						<div className="group">
 							<div style={headerStyle}>
 								<MessageCircle className="w-4 shrink-0" aria-label="Speech bubble icon" />
-								<span style={{ fontWeight: "bold" }}>{t("chat:text.rooSaid")}</span>
+								<span style={{ fontWeight: "bold" }}>{t("chat:text.adtecSaid")}</span>
 								<div style={{ flexGrow: 1 }} />
 								<OpenMarkdownPreviewButton markdown={message.text} />
 							</div>

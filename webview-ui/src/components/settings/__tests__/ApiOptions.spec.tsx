@@ -213,9 +213,9 @@ vi.mock("../providers/LiteLLM", () => ({
 	),
 }))
 
-// Mock Roo provider for tests
-vi.mock("../providers/Roo", () => ({
-	Roo: ({ cloudIsAuthenticated }: any) => (
+// Mock ADTEC Code provider for tests
+vi.mock("../providers/ADTEC Code", () => ({
+	ADTEC Code: ({ cloudIsAuthenticated }: any) => (
 		<div data-testid="roo-provider">{cloudIsAuthenticated ? "Authenticated" : "Not Authenticated"}</div>
 	),
 }))
@@ -582,7 +582,7 @@ describe("ApiOptions", () => {
 		expect(screen.queryByTestId("litellm-provider")).not.toBeInTheDocument()
 	})
 
-	it("renders Roo-specific retired provider message for Roo Code Router", () => {
+	it("renders the retired provider message for the legacy router", () => {
 		renderApiOptions({
 			apiConfiguration: {
 				apiProvider: "roo" as any,
@@ -590,7 +590,7 @@ describe("ApiOptions", () => {
 		})
 
 		expect(screen.getByTestId("retired-provider-message")).toHaveTextContent(
-			"settings:providers.retiredRooProviderMessage",
+			"settings:providers.retiredProviderMessage",
 		)
 	})
 

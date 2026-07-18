@@ -133,17 +133,17 @@ vi.mock("../QueuedMessages", () => ({
 	},
 }))
 
-// Mock RooTips component
-vi.mock("@src/components/welcome/RooTips", () => ({
-	default: function MockRooTips() {
-		return <div data-testid="roo-tips">Tips content</div>
+// Mock AdtecTips component
+vi.mock("@src/components/welcome/AdtecTips", () => ({
+	default: function MockAdtecTips() {
+		return <div data-testid="adtec-tips">Tips content</div>
 	},
 }))
 
-// Mock RooHero component
-vi.mock("@src/components/welcome/RooHero", () => ({
-	default: function MockRooHero() {
-		return <div data-testid="roo-hero">Hero content</div>
+// Mock AdtecHero component
+vi.mock("@src/components/welcome/AdtecHero", () => ({
+	default: function MockAdtecHero() {
+		return <div data-testid="adtec-hero">Hero content</div>
 	},
 }))
 
@@ -519,10 +519,10 @@ describe("ChatView - Version Indicator Tests", () => {
 		mockVersionIndicator.mockReturnValue(null)
 	})
 
-	it("displays version indicator button", () => {
-		// Mock VersionIndicator to return a button
+	it("displays the non-interactive version indicator", () => {
+		// Mock VersionIndicator to return a text element
 		mockVersionIndicator.mockReturnValue(
-			React.createElement("button", {
+			React.createElement("span", {
 				"data-testid": "version-indicator",
 				"aria-label": "Version 1.0.0",
 				className: "version-indicator-button",
@@ -541,44 +541,10 @@ describe("ChatView - Version Indicator Tests", () => {
 		expect(getByTestId("version-indicator")).toBeInTheDocument()
 	})
 
-	it("opens announcement modal when version indicator is clicked", async () => {
-		// Mock VersionIndicator to return a button with onClick
-		mockVersionIndicator.mockImplementation(({ onClick }: { onClick?: () => void }) =>
-			React.createElement("button", {
-				"data-testid": "version-indicator",
-				onClick,
-			}),
-		)
-
-		const { getByTestId, queryByTestId } = renderChatView({ showAnnouncement: false })
-
-		// Hydrate state
-		mockPostMessage({
-			version: "1.0.0",
-			clineMessages: [],
-		})
-
-		// Wait for component to render
-		await waitFor(() => {
-			expect(getByTestId("version-indicator")).toBeInTheDocument()
-		})
-
-		// Click version indicator
-		const versionIndicator = getByTestId("version-indicator")
-		act(() => {
-			versionIndicator.click()
-		})
-
-		// Wait for announcement modal to appear
-		await waitFor(() => {
-			expect(queryByTestId("announcement-modal")).toBeInTheDocument()
-		})
-	})
-
 	it("version indicator has correct styling classes", () => {
-		// Mock VersionIndicator to return a button with specific classes
+		// Mock VersionIndicator to return a text element with specific classes
 		mockVersionIndicator.mockReturnValue(
-			React.createElement("button", {
+			React.createElement("span", {
 				"data-testid": "version-indicator",
 				className: "version-indicator-button absolute top-2 right-2",
 			}),
@@ -600,12 +566,11 @@ describe("ChatView - Version Indicator Tests", () => {
 	})
 
 	it("version indicator has proper accessibility attributes", () => {
-		// Mock VersionIndicator to return a button with aria-label
+		// Mock VersionIndicator to return a non-interactive element with aria-label
 		mockVersionIndicator.mockReturnValue(
-			React.createElement("button", {
+			React.createElement("span", {
 				"data-testid": "version-indicator",
-				"aria-label": "Version 1.0.0",
-				role: "button",
+				"aria-label": "ADTEC Code version 1.0.0",
 			}),
 		)
 
@@ -618,8 +583,8 @@ describe("ChatView - Version Indicator Tests", () => {
 		})
 
 		const versionIndicator = getByTestId("version-indicator")
-		expect(versionIndicator.getAttribute("aria-label")).toBe("Version 1.0.0")
-		expect(versionIndicator.getAttribute("role")).toBe("button")
+		expect(versionIndicator.getAttribute("aria-label")).toBe("ADTEC Code version 1.0.0")
+		expect(versionIndicator.getAttribute("role")).toBeNull()
 	})
 
 	it("does not display version indicator when there is an active task", () => {
@@ -646,8 +611,8 @@ describe("ChatView - Version Indicator Tests", () => {
 	})
 
 	it("displays version indicator only on welcome screen (no task)", () => {
-		// Mock VersionIndicator to return a button
-		mockVersionIndicator.mockReturnValue(React.createElement("button", { "data-testid": "version-indicator" }))
+		// Mock VersionIndicator to return a non-interactive element
+		mockVersionIndicator.mockReturnValue(React.createElement("span", { "data-testid": "version-indicator" }))
 
 		const { queryByTestId } = renderChatView()
 
@@ -681,7 +646,7 @@ describe("ChatView - Welcome Content Display Tests", () => {
 		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 	})
 
-	it("shows RooTips when user has only run 3 tasks in their history", () => {
+	it("shows AdtecTips when user has only run 3 tasks in their history", () => {
 		const { queryByTestId } = renderChatView()
 
 		mockPostMessage({
@@ -694,7 +659,7 @@ describe("ChatView - Welcome Content Display Tests", () => {
 		})
 
 		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-		expect(queryByTestId("roo-tips")).toBeInTheDocument()
+		expect(queryByTestId("adtec-tips")).toBeInTheDocument()
 	})
 
 	it("does not show removed cloud upsell when user has run 6 or more tasks", async () => {
@@ -715,8 +680,8 @@ describe("ChatView - Welcome Content Display Tests", () => {
 
 		await waitFor(() => {
 			expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-			expect(queryByTestId("roo-tips")).not.toBeInTheDocument()
-			expect(queryByTestId("roo-hero")).toBeInTheDocument()
+			expect(queryByTestId("adtec-tips")).not.toBeInTheDocument()
+			expect(queryByTestId("adtec-hero")).toBeInTheDocument()
 		})
 	})
 
@@ -742,12 +707,12 @@ describe("ChatView - Welcome Content Display Tests", () => {
 
 		await waitFor(() => {
 			expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-			expect(queryByTestId("roo-tips")).not.toBeInTheDocument()
-			expect(queryByTestId("roo-hero")).not.toBeInTheDocument()
+			expect(queryByTestId("adtec-tips")).not.toBeInTheDocument()
+			expect(queryByTestId("adtec-hero")).not.toBeInTheDocument()
 		})
 	})
 
-	it("shows RooTips for newer users", () => {
+	it("shows AdtecTips for newer users", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		mockPostMessage({
@@ -761,10 +726,10 @@ describe("ChatView - Welcome Content Display Tests", () => {
 		})
 
 		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-		expect(getByTestId("roo-tips")).toBeInTheDocument()
+		expect(getByTestId("adtec-tips")).toBeInTheDocument()
 	})
 
-	it("shows RooTips when user has fewer than 6 tasks", () => {
+	it("shows AdtecTips when user has fewer than 6 tasks", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		mockPostMessage({
@@ -777,7 +742,7 @@ describe("ChatView - Welcome Content Display Tests", () => {
 		})
 
 		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-		expect(getByTestId("roo-tips")).toBeInTheDocument()
+		expect(getByTestId("adtec-tips")).toBeInTheDocument()
 	})
 })
 

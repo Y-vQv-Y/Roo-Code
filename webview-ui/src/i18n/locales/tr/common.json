@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "Bir şeyler yanlış gitti",
-		"reportText": "Bu hatayı bildirerek iyileştirmemize yardımcı olun",
-		"githubText": "GitHub Issues sayfamızda",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "Gönderiminize dahil etmek için aşağıdaki hata mesajını kopyalayıp yapıştırın:",
 		"errorStack": "Hata Yığını:",
 		"componentStack": "Bileşen Yığını:"

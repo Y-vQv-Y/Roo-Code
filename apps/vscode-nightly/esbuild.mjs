@@ -33,9 +33,9 @@ async function main() {
 		sourcesContent: false,
 		platform: "node",
 		define: {
-			"process.env.PKG_NAME": '"roo-code-nightly"',
+			"process.env.PKG_NAME": '"adtec-code-nightly"',
 			"process.env.PKG_VERSION": `"${overrideJson.version}"`,
-			"process.env.PKG_OUTPUT_CHANNEL": '"Roo-Code-Nightly"',
+			"process.env.PKG_OUTPUT_CHANNEL": '"ADTEC-Code-Nightly"',
 			...(gitSha ? { "process.env.PKG_SHA": `"${gitSha}"` } : {}),
 		},
 	}
@@ -66,7 +66,6 @@ async function main() {
 							["../README.md", "README.md"],
 							["../CHANGELOG.md", "CHANGELOG.md"],
 							["../LICENSE", "LICENSE"],
-							["../.env", ".env", { optional: true }],
 							[".vscodeignore", ".vscodeignore"],
 							["assets", "assets"],
 							["builtin-skills", "builtin-skills"],
@@ -89,7 +88,7 @@ async function main() {
 					const generatedPackageJson = generatePackageJson({
 						packageJson,
 						overrideJson,
-						substitution: ["adtec-code", "roo-code-nightly"],
+						substitution: ["adtec-code", "adtec-code-nightly"],
 					})
 
 					fs.writeFileSync(path.join(buildDir, "package.json"), JSON.stringify(generatedPackageJson, null, 2))

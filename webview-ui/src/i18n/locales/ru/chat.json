@@ -1,5 +1,5 @@
 {
-	"greeting": "Добро пожаловать в Roo Code",
+	"greeting": "Добро пожаловать в ADTEC Code",
 	"task": {
 		"title": "Задача",
 		"expand": "Развернуть задачу",
@@ -90,10 +90,10 @@
 	"enqueueMessage": "Добавить сообщение в очередь (будет отправлено после завершения текущей задачи)",
 	"scrollToBottom": "Прокрутить чат вниз",
 	"scrollToLatestCheckpoint": "Прокрутить к предыдущему чекпоинту",
-	"about": "Roo Code — это целая команда разработчиков ИИ в вашем редакторе.",
+	"about": "ADTEC Code — это целая команда разработчиков ИИ в вашем редакторе.",
 	"docs": "Ознакомьтесь с нашей <DocsLink>документацией</DocsLink>, чтобы узнать больше.",
 	"onboarding": "Ваш список задач в этом рабочем пространстве пуст.",
-	"rooTips": {
+	"adtecTips": {
 		"customizableModes": {
 			"title": "Настраиваемые режимы",
 			"description": "Специализированные персонажи, которые придерживаются задачи и выполняют ее."
@@ -112,7 +112,7 @@
 	"modeSelector": {
 		"title": "Режимы",
 		"settings": "Настройки режимов",
-		"description": "Специализированные персоны, которые настраивают поведение Roo.",
+		"description": "Специализированные персоны, которые настраивают поведение ADTEC Code.",
 		"searchPlaceholder": "Поиск режимов...",
 		"noResults": "Ничего не найдено"
 	},
@@ -148,7 +148,7 @@
 			"500": "Ошибка сервера провайдера. На стороне провайдера что-то пошло не так, с вашим запросом все в порядке.",
 			"docs": "Документация",
 			"goToSettings": "Настройки",
-			"unknown": "Unknown API error. Please report this on GitHub.",
+			"unknown": "Unknown API error. Please contact your ADTEC Code administrator.",
 			"connection": "Ошибка подключения. Убедитесь, что у вас есть рабочее подключение к Интернету.",
 			"claudeCodeNotAuthenticated": "Вам необходимо войти в систему, чтобы использовать Claude Code. Перейдите в Настройки и нажмите «Войти в Claude Code» для аутентификации."
 		}
@@ -173,43 +173,43 @@
 		"current": "Текущая"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo хочет получить подробные инструкции для помощи с текущей задачей"
+		"wantsToFetch": "ADTEC Code хочет получить подробные инструкции для помощи с текущей задачей"
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo хочет прочитать этот файл",
-		"wantsToReadOutsideWorkspace": "Roo хочет прочитать этот файл вне рабочей области",
-		"didRead": "Roo прочитал этот файл",
-		"wantsToEdit": "Roo хочет отредактировать этот файл",
-		"wantsToEditOutsideWorkspace": "Roo хочет отредактировать этот файл вне рабочей области",
-		"wantsToEditProtected": "Roo хочет отредактировать защищённый файл конфигурации",
-		"wantsToCreate": "Roo хочет создать новый файл",
-		"wantsToSearchReplace": "Roo хочет выполнить поиск и замену в этом файле",
-		"didSearchReplace": "Roo выполнил поиск и замену в этом файле",
-		"wantsToInsert": "Roo хочет вставить содержимое в этот файл",
-		"wantsToInsertWithLineNumber": "Roo хочет вставить содержимое в этот файл на строку {{lineNumber}}",
-		"wantsToInsertAtEnd": "Roo хочет добавить содержимое в конец этого файла",
-		"wantsToReadAndXMore": "Roo хочет прочитать этот файл и еще {{count}}",
-		"wantsToReadMultiple": "Roo хочет прочитать несколько файлов",
-		"wantsToApplyBatchChanges": "Roo хочет применить изменения к нескольким файлам",
-		"wantsToGenerateImage": "Roo хочет сгенерировать изображение",
-		"wantsToGenerateImageOutsideWorkspace": "Roo хочет сгенерировать изображение вне рабочего пространства",
-		"wantsToGenerateImageProtected": "Roo хочет сгенерировать изображение в защищённом месте",
-		"didGenerateImage": "Roo сгенерировал изображение"
+		"wantsToRead": "ADTEC Code хочет прочитать этот файл",
+		"wantsToReadOutsideWorkspace": "ADTEC Code хочет прочитать этот файл вне рабочей области",
+		"didRead": "ADTEC Code прочитал этот файл",
+		"wantsToEdit": "ADTEC Code хочет отредактировать этот файл",
+		"wantsToEditOutsideWorkspace": "ADTEC Code хочет отредактировать этот файл вне рабочей области",
+		"wantsToEditProtected": "ADTEC Code хочет отредактировать защищённый файл конфигурации",
+		"wantsToCreate": "ADTEC Code хочет создать новый файл",
+		"wantsToSearchReplace": "ADTEC Code хочет выполнить поиск и замену в этом файле",
+		"didSearchReplace": "ADTEC Code выполнил поиск и замену в этом файле",
+		"wantsToInsert": "ADTEC Code хочет вставить содержимое в этот файл",
+		"wantsToInsertWithLineNumber": "ADTEC Code хочет вставить содержимое в этот файл на строку {{lineNumber}}",
+		"wantsToInsertAtEnd": "ADTEC Code хочет добавить содержимое в конец этого файла",
+		"wantsToReadAndXMore": "ADTEC Code хочет прочитать этот файл и еще {{count}}",
+		"wantsToReadMultiple": "ADTEC Code хочет прочитать несколько файлов",
+		"wantsToApplyBatchChanges": "ADTEC Code хочет применить изменения к нескольким файлам",
+		"wantsToGenerateImage": "ADTEC Code хочет сгенерировать изображение",
+		"wantsToGenerateImageOutsideWorkspace": "ADTEC Code хочет сгенерировать изображение вне рабочего пространства",
+		"wantsToGenerateImageProtected": "ADTEC Code хочет сгенерировать изображение в защищённом месте",
+		"didGenerateImage": "ADTEC Code сгенерировал изображение"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo хочет просмотреть файлы верхнего уровня в этой директории",
-		"didViewTopLevel": "Roo просмотрел файлы верхнего уровня в этой директории",
-		"wantsToViewRecursive": "Roo хочет рекурсивно просмотреть все файлы в этой директории",
-		"didViewRecursive": "Roo рекурсивно просмотрел все файлы в этой директории",
-		"wantsToSearch": "Roo хочет выполнить поиск в этой директории по <code>{{regex}}</code>",
-		"didSearch": "Roo выполнил поиск в этой директории по <code>{{regex}}</code>",
-		"wantsToSearchOutsideWorkspace": "Roo хочет выполнить поиск в этой директории (вне рабочего пространства) по <code>{{regex}}</code>",
-		"didSearchOutsideWorkspace": "Roo выполнил поиск в этой директории (вне рабочего пространства) по <code>{{regex}}</code>",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo хочет просмотреть файлы верхнего уровня в этой директории (вне рабочего пространства)",
-		"didViewTopLevelOutsideWorkspace": "Roo просмотрел файлы верхнего уровня в этой директории (вне рабочего пространства)",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo хочет рекурсивно просмотреть все файлы в этой директории (вне рабочего пространства)",
-		"didViewRecursiveOutsideWorkspace": "Roo рекурсивно просмотрел все файлы в этой директории (вне рабочего пространства)",
-		"wantsToViewMultipleDirectories": "Roo хочет просмотреть несколько директорий"
+		"wantsToViewTopLevel": "ADTEC Code хочет просмотреть файлы верхнего уровня в этой директории",
+		"didViewTopLevel": "ADTEC Code просмотрел файлы верхнего уровня в этой директории",
+		"wantsToViewRecursive": "ADTEC Code хочет рекурсивно просмотреть все файлы в этой директории",
+		"didViewRecursive": "ADTEC Code рекурсивно просмотрел все файлы в этой директории",
+		"wantsToSearch": "ADTEC Code хочет выполнить поиск в этой директории по <code>{{regex}}</code>",
+		"didSearch": "ADTEC Code выполнил поиск в этой директории по <code>{{regex}}</code>",
+		"wantsToSearchOutsideWorkspace": "ADTEC Code хочет выполнить поиск в этой директории (вне рабочего пространства) по <code>{{regex}}</code>",
+		"didSearchOutsideWorkspace": "ADTEC Code выполнил поиск в этой директории (вне рабочего пространства) по <code>{{regex}}</code>",
+		"wantsToViewTopLevelOutsideWorkspace": "ADTEC Code хочет просмотреть файлы верхнего уровня в этой директории (вне рабочего пространства)",
+		"didViewTopLevelOutsideWorkspace": "ADTEC Code просмотрел файлы верхнего уровня в этой директории (вне рабочего пространства)",
+		"wantsToViewRecursiveOutsideWorkspace": "ADTEC Code хочет рекурсивно просмотреть все файлы в этой директории (вне рабочего пространства)",
+		"didViewRecursiveOutsideWorkspace": "ADTEC Code рекурсивно просмотрел все файлы в этой директории (вне рабочего пространства)",
+		"wantsToViewMultipleDirectories": "ADTEC Code хочет просмотреть несколько директорий"
 	},
 	"commandOutput": "Вывод команды",
 	"commandExecution": {
@@ -232,24 +232,24 @@
 	"response": "Ответ",
 	"arguments": "Аргументы",
 	"text": {
-		"rooSaid": "Ру сказал"
+		"adtecSaid": "ADTEC Code said"
 	},
 	"feedback": {
 		"youSaid": "Вы сказали"
 	},
 	"mcp": {
-		"wantsToUseTool": "Roo хочет использовать инструмент на сервере MCP {{serverName}}",
-		"wantsToAccessResource": "Roo хочет получить доступ к ресурсу на сервере MCP {{serverName}}"
+		"wantsToUseTool": "ADTEC Code хочет использовать инструмент на сервере MCP {{serverName}}",
+		"wantsToAccessResource": "ADTEC Code хочет получить доступ к ресурсу на сервере MCP {{serverName}}"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo хочет переключиться в режим {{mode}}",
-		"wantsToSwitchWithReason": "Roo хочет переключиться в режим {{mode}}, потому что: {{reason}}",
-		"didSwitch": "Roo переключился в режим {{mode}}",
-		"didSwitchWithReason": "Roo переключился в режим {{mode}}, потому что: {{reason}}"
+		"wantsToSwitch": "ADTEC Code хочет переключиться в режим {{mode}}",
+		"wantsToSwitchWithReason": "ADTEC Code хочет переключиться в режим {{mode}}, потому что: {{reason}}",
+		"didSwitch": "ADTEC Code переключился в режим {{mode}}",
+		"didSwitchWithReason": "ADTEC Code переключился в режим {{mode}}, потому что: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo хочет создать новую подзадачу в режиме {{mode}}",
-		"wantsToFinish": "Roo хочет завершить эту подзадачу",
+		"wantsToCreate": "ADTEC Code хочет создать новую подзадачу в режиме {{mode}}",
+		"wantsToFinish": "ADTEC Code хочет завершить эту подзадачу",
 		"newTaskContent": "Инструкции по подзадаче",
 		"completionContent": "Подзадача завершена",
 		"resultContent": "Результаты подзадачи",
@@ -258,7 +258,7 @@
 		"goToSubtask": "Просмотреть задачу"
 	},
 	"questions": {
-		"hasQuestion": "У Roo есть вопрос"
+		"hasQuestion": "У ADTEC Code есть вопрос"
 	},
 	"taskCompleted": "Задача завершена",
 	"error": "Ошибка",
@@ -272,14 +272,14 @@
 	"diffError": {
 		"title": "Не удалось выполнить редактирование"
 	},
-	"troubleMessage": "У Roo возникли проблемы...",
+	"troubleMessage": "У ADTEC Code возникли проблемы...",
 	"errorDetails": {
 		"link": "Подробности",
 		"title": "Детали ошибки",
 		"copyToClipboard": "Скопировать в буфер обмена",
 		"copied": "Скопировано!",
 		"diagnostics": "Получить подробную информацию об ошибке",
-		"proxyProvider": "Похоже, ты используешь провайдера на основе прокси. Убедись, что ты проверил его логи и что он не переписывает запросы Roo."
+		"proxyProvider": "Похоже, ты используешь провайдера на основе прокси. Убедись, что ты проверил его логи и что он не переписывает запросы ADTEC Code."
 	},
 	"powershell": {
 		"issues": "Похоже, у вас проблемы с Windows PowerShell, пожалуйста, ознакомьтесь с этим"
@@ -302,29 +302,6 @@
 		"triggerLabel_other": "{{count}} авто-утвержденных",
 		"triggerLabelAll": "BRRR"
 	},
-	"announcement": {
-		"title": "Выпущен Roo Code {{version}}",
-		"support": "Поддержите Roo Code, поставив нам звезду на <githubLink>GitHub</githubLink>.",
-		"finalRelease": {
-			"title": "Последний релиз Roo Code",
-			"intro": "Это последний релиз Roo Code. <announcementLink>Как мы объявили несколько недель назад</announcementLink>, мы решили сосредоточиться на <roomoteLink>Roomote</roomoteLink>, нашей облачной платформе агентов, которую считаем будущим разработки программного обеспечения. Огромное спасибо за вашу поддержку на протяжении последнего года или около того.",
-			"continuity": "Это расширение должно продолжать работать неопределенно долго, но оно больше не будет получать исправления ошибок, новые функции или обновления моделей.",
-			"alternatives": "Если вы хотите пользоваться расширением, рекомендуем посмотреть <zooCodeLink>ZooCode</zooCodeLink> (форк Roo Code от сообщества) и <clineLink>Cline</clineLink> (проект, с которого изначально начался Roo Code).",
-			"signoff": "Удачного кодинга!"
-		},
-		"release": {
-			"heading": "Что нового:",
-			"gpt55": "GPT-5.5 через OpenAI Codex: Добавлена поддержка GPT-5.5 в провайдере OpenAI Codex, чтобы ты мог использовать новейшую модель прямо из Roo Code.",
-			"claudeOpus47": "Claude Opus 4.7 в Vertex AI: Добавлен Claude Opus 4.7 в провайдер Vertex AI — новейшую флагманскую модель рассуждений от Anthropic.",
-			"checkpointNav": "Навигация по предыдущим контрольным точкам: Добавлены элементы управления в чат, чтобы переходить назад по предыдущим контрольным точкам, с полной поддержкой i18n."
-		},
-		"cloudAgents": {
-			"heading": "Новое в облаке:",
-			"specialized": "Представляем <bold>Explainer</bold>, <bold>Planner</bold> и <bold>Coder</bold> - трёх специализированных облачных агентов для улучшения ваших рабочих процессов.",
-			"description": "Агенты работают вместе в облаке и могут быть запущены из веб-интерфейса или через Slack.",
-			"tryButton": "Попробовать облачных агентов"
-		}
-	},
 	"reasoning": {
 		"thinking": "Обдумывание",
 		"seconds": "{{count}}с"
@@ -345,8 +322,8 @@
 		}
 	},
 	"skill": {
-		"wantsToLoad": "Roo хочет загрузить навык",
-		"didLoad": "Roo загрузил навык"
+		"wantsToLoad": "ADTEC Code хочет загрузить навык",
+		"didLoad": "ADTEC Code загрузил навык"
 	},
 	"followUpSuggest": {
 		"copyToInput": "Скопировать во ввод (то же, что shift + клик)",
@@ -367,13 +344,13 @@
 	"profileViolationWarning": "Текущий профиль несовместим с настройками вашей организации",
 	"shellIntegration": {
 		"title": "Предупреждение о выполнении команды",
-		"description": "Ваша команда выполняется без интеграции оболочки терминала VSCode. Чтобы скрыть это предупреждение, вы можете отключить интеграцию оболочки в разделе <strong>Terminal</strong> в <settingsLink>настройках Roo Code</settingsLink> или устранить проблемы с интеграцией терминала VSCode, используя ссылку ниже.",
+		"description": "Ваша команда выполняется без интеграции оболочки терминала VSCode. Чтобы скрыть это предупреждение, вы можете отключить интеграцию оболочки в разделе <strong>Terminal</strong> в <settingsLink>настройках ADTEC Code</settingsLink> или устранить проблемы с интеграцией терминала VSCode, используя ссылку ниже.",
 		"troubleshooting": "Нажмите здесь для просмотра документации по интеграции оболочки."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "Достигнут лимит автоматически одобренных запросов",
-			"description": "Roo достиг автоматически одобренного лимита в {{count}} API-запрос(ов). Хотите сбросить счетчик и продолжить задачу?",
+			"description": "ADTEC Code достиг автоматически одобренного лимита в {{count}} API-запрос(ов). Хотите сбросить счетчик и продолжить задачу?",
 			"button": "Сбросить и продолжить"
 		},
 		"autoApprovedCostLimitReached": {
@@ -383,8 +360,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo хочет выполнить поиск в кодовой базе по <code>{{query}}</code>",
-		"wantsToSearchWithPath": "Roo хочет выполнить поиск в кодовой базе по <code>{{query}}</code> в <code>{{path}}</code>",
+		"wantsToSearch": "ADTEC Code хочет выполнить поиск в кодовой базе по <code>{{query}}</code>",
+		"wantsToSearchWithPath": "ADTEC Code хочет выполнить поиск в кодовой базе по <code>{{query}}</code> в <code>{{path}}</code>",
 		"didSearch_one": "Найден 1 результат",
 		"didSearch_other": "Найдено {{count}} результатов",
 		"resultTooltip": "Оценка схожести: {{score}} (нажмите, чтобы открыть файл)"
@@ -461,8 +438,8 @@
 		"clickToEdit": "Нажмите, чтобы редактировать сообщение"
 	},
 	"slashCommand": {
-		"wantsToRun": "Roo хочет выполнить слеш-команду",
-		"didRun": "Roo выполнил слеш-команду"
+		"wantsToRun": "ADTEC Code хочет выполнить слеш-команду",
+		"didRun": "ADTEC Code выполнил слеш-команду"
 	},
 	"todo": {
 		"partial": "{{completed}} из {{total}} задач выполнено",
@@ -481,12 +458,11 @@
 		"openMcpSettings": "Открыть настройки MCP"
 	},
 	"readCommandOutput": {
-		"title": "Roo read command output"
+		"title": "ADTEC Code read command output"
 	},
 	"retiredProvider": {
 		"title": "Провайдер больше не поддерживается",
 		"message": "This provider is no longer supported. Please select a different provider in your API profile settings.",
-		"openSettings": "Открыть настройки",
-		"rooMessage": "As part of our decision to sunset the Roo Code extension, we also ended the Roo Code Router, which only existed to support the extension. Sorry about the hassle."
+		"openSettings": "Открыть настройки"
 	}
 }

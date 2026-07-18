@@ -2,7 +2,7 @@
 	"name": "adtec-code",
 	"displayName": "ADTEC Code",
 	"description": "%extension.description%",
-	"publisher": "RooVeterinaryInc",
+	"publisher": "ADTEC",
 	"version": "0.1.0",
 	"icon": "assets/icons/adtec-logo.png",
 	"galleryBanner": {
@@ -17,6 +17,10 @@
 		"name": "ADTEC Code"
 	},
 	"homepage": "https://www.adtec.com.cn/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Y-vQv-Y"
+	},
 	"categories": [
 		"AI",
 		"Chat",
@@ -26,7 +30,6 @@
 		"Testing"
 	],
 	"keywords": [
-		"cline",
 		"claude",
 		"dev",
 		"mcp",
@@ -38,8 +41,8 @@
 		"sonnet",
 		"ai",
 		"llama",
-		"roo code",
-		"roocode"
+		"adtec",
+		"adtec code"
 	],
 	"activationEvents": [
 		"onLanguage",
@@ -408,7 +411,7 @@
 		"bundle": "node esbuild.mjs",
 		"vscode:prepublish": "pnpm bundle --production",
 		"vsix": "mkdirp ../bin && vsce package --no-dependencies --out ../bin",
-		"publish:marketplace": "vsce publish --no-dependencies && ovsx publish --no-dependencies",
+		"publish:marketplace": "node -e \"throw new Error('Public marketplace publishing is disabled for ADTEC Code')\"",
 		"watch:bundle": "pnpm bundle --watch",
 		"watch:tsc": "cd .. && tsc --noEmit --watch --project src/tsconfig.json",
 		"clean": "rimraf README.md CHANGELOG.md LICENSE dist logs mock .turbo"

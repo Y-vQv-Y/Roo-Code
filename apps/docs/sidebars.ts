@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
 		"index",
 		{
 			type: "category",
-			label: "Roo Code VSCode Extension",
+			label: "ADTEC Code VSCode Extension",
 			items: [
 				"getting-started/installing",
 				"getting-started/connecting-api-provider",
@@ -116,7 +116,7 @@ const sidebars: SidebarsConfig = {
 						"advanced-usage/prompt-engineering",
 						"advanced-usage/prompt-structure",
 						"advanced-usage/rate-limits-costs",
-						"advanced-usage/roo-code-nightly",
+						"advanced-usage/ADTEC Code-nightly",
 					],
 				},
 			],
@@ -826,11 +826,6 @@ const sidebars: SidebarsConfig = {
 			type: "doc",
 			label: "FAQ",
 			id: "faq",
-		},
-		{
-			type: "link",
-			label: "Roocabulary (GitHub)",
-			href: "https://github.com/cannuri/Roocabulary",
 		},
 	],
 }

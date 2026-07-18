@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "Alguna cosa ha anat malament",
-		"reportText": "Si us plau, ajuda'ns a millorar informant d'aquest error a",
-		"githubText": "la nostra pàgina d'incidències de GitHub",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "Copia i enganxa el següent missatge d'error per incloure'l com a part de la teva presentació:",
 		"errorStack": "Pila d'errors:",
 		"componentStack": "Pila de components:"

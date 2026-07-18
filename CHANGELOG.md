@@ -14,5 +14,4 @@ All notable changes to ADTEC Code are documented in this file.
 ### Changed
 
 - Updated extension names and localized VS Code labels to ADTEC Code.
-- Removed the public source repository field from the extension metadata.
-- Updated Marketplace documentation so packaging does not depend on a source repository.
+- Added the ADTEC Code source repository to extension metadata and support links.

@@ -48,7 +48,7 @@ describe("executeCommandTool", () => {
 	let mockHandleError: any
 	let mockPushToolResult: any
 	let mockToolUse: ToolUse<"execute_command">
-	const originalCliRuntime = process.env.ROO_CLI_RUNTIME
+	const originalCliRuntime = process.env.ADTEC_CODE_CLI_RUNTIME
 
 	beforeEach(() => {
 		// Reset mocks
@@ -108,7 +108,7 @@ describe("executeCommandTool", () => {
 	})
 
 	afterEach(() => {
-		process.env.ROO_CLI_RUNTIME = originalCliRuntime
+		process.env.ADTEC_CODE_CLI_RUNTIME = originalCliRuntime
 	})
 
 	/**
@@ -226,7 +226,7 @@ describe("executeCommandTool", () => {
 			expect(mockPushToolResult).not.toHaveBeenCalled()
 		})
 
-		it("should handle rooignore validation failures", async () => {
+		it("should handle adtecignore validation failures", async () => {
 			// Setup
 			mockToolUse.params.command = "cat .env"
 			mockToolUse.nativeArgs = { command: "cat .env" }
@@ -248,11 +248,11 @@ describe("executeCommandTool", () => {
 
 			// Verify
 			expect(validateCommandMock).toHaveBeenCalledWith("cat .env")
-			expect(mockCline.say).toHaveBeenCalledWith("rooignore_error", ".env")
+			expect(mockCline.say).toHaveBeenCalledWith("adtecignore_error", ".env")
 			expect(formatResponse.rooIgnoreError).toHaveBeenCalledWith(".env")
 			expect(mockPushToolResult).toHaveBeenCalledWith(mockRooIgnoreError)
 			expect(mockAskApproval).not.toHaveBeenCalled()
-			// executeCommandInTerminal should not be called since rooignore blocked it
+			// executeCommandInTerminal should not be called since adtecignore blocked it
 		})
 	})
 
@@ -292,12 +292,12 @@ describe("executeCommandTool", () => {
 		})
 
 		it("should ignore model timeout in CLI runtime", () => {
-			process.env.ROO_CLI_RUNTIME = "1"
+			process.env.ADTEC_CODE_CLI_RUNTIME = "1"
 			expect(executeCommandModule.resolveAgentTimeoutMs(30)).toBe(0)
 		})
 
 		it("should honor model timeout outside CLI runtime", () => {
-			delete process.env.ROO_CLI_RUNTIME
+			delete process.env.ADTEC_CODE_CLI_RUNTIME
 			expect(executeCommandModule.resolveAgentTimeoutMs(30)).toBe(30_000)
 		})
 	})

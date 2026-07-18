@@ -36,7 +36,7 @@ export type ReasoningDetail = {
  *
  * @param reasoningDetails - Array of reasoning detail objects
  * @returns Consolidated array of reasoning details
- * @see https://github.com/cline/cline/issues/8214
+ * This also preserves compatibility with historical reasoning detail payloads.
  */
 export function consolidateReasoningDetails(reasoningDetails: ReasoningDetail[]): ReasoningDetail[] {
 	if (!reasoningDetails || reasoningDetails.length === 0) {
@@ -49,7 +49,7 @@ export function consolidateReasoningDetails(reasoningDetails: ReasoningDetail[])
 	for (const detail of reasoningDetails) {
 		// Drop corrupted encrypted reasoning blocks that would otherwise trigger:
 		// "Invalid input: expected string, received undefined" for reasoning_details.*.data
-		// See: https://github.com/cline/cline/issues/8214
+		// Ignore incomplete encrypted blocks from historical provider payloads.
 		if (detail.type === "reasoning.encrypted" && !detail.data) {
 			continue
 		}
@@ -159,7 +159,7 @@ export function consolidateReasoningDetails(reasoningDetails: ReasoningDetail[])
  * @param messages - Array of OpenAI chat completion messages
  * @param modelId - The model ID to check if sanitization is needed
  * @returns Sanitized array of messages (unchanged if not a Gemini model)
- * @see https://github.com/cline/cline/issues/8214
+ * Historical provider payloads may omit the matching reasoning details.
  */
 export function sanitizeGeminiMessages(
 	messages: OpenAI.Chat.ChatCompletionMessageParam[],
@@ -476,7 +476,7 @@ export function convertToOpenAiMessages(
 				const messageWithDetails = anthropicMessage as any
 
 				// Build message with reasoning_details BEFORE tool_calls to preserve
-				// the order expected by providers like Roo. Property order matters
+				// the order expected by providers like ADTEC Code. Property order matters
 				// when sending messages back to some APIs.
 				const baseMessage: OpenAI.Chat.ChatCompletionAssistantMessageParam & {
 					reasoning_details?: any[]

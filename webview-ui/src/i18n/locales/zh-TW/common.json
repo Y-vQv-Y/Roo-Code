@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "發生錯誤",
-		"reportText": "請協助我們回報此錯誤，以利產品改善：",
-		"githubText": "我們的 GitHub Issues 頁面",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "複製並貼上以下錯誤訊息，將其作為提交內容的一部分：",
 		"errorStack": "錯誤堆疊：",
 		"componentStack": "元件堆疊："

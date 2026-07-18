@@ -87,7 +87,7 @@ describe("generateErrorDiagnostics", () => {
 		expect(String(writtenContent)).toContain(
 			"// Please attach this file to a GitHub issue if it helps diagnose the problem faster",
 		)
-		expect(String(writtenContent)).not.toContain("support@roocode.com")
+		expect(String(writtenContent)).not.toContain("developer@example.com")
 		expect(String(writtenContent)).toContain('"error":')
 		expect(String(writtenContent)).toContain('"history":')
 		expect(String(writtenContent)).toContain('"version": "1.2.3"')

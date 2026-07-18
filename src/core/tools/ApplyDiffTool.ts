@@ -49,7 +49,7 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 			const accessAllowed = task.rooIgnoreController?.validateAccess(relPath)
 
 			if (!accessAllowed) {
-				await task.say("rooignore_error", relPath)
+				await task.say("adtecignore_error", relPath)
 				pushToolResult(formatResponse.rooIgnoreError(relPath))
 				return
 			}

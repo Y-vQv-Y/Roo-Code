@@ -85,7 +85,7 @@ vi.mock("../../prompts/responses", () => ({
 		),
 		rooIgnoreError: vi.fn(
 			(filePath: string) =>
-				`Access to ${filePath} is blocked by the .rooignore file settings. You must try to continue in the task without using this file, or ask the user to update the .rooignore file.`,
+				`Access to ${filePath} is blocked by the .adtecignore file settings. You must try to continue in the task without using this file, or ask the user to update the .adtecignore file.`,
 		),
 		toolResult: vi.fn((text: string, images?: string[]) => {
 			if (images && images.length > 0) {
@@ -280,15 +280,15 @@ describe("ReadFileTool", () => {
 	})
 
 	describe("RooIgnore handling", () => {
-		it("should block access to rooignore-protected files", async () => {
+		it("should block access to adtecignore-protected files", async () => {
 			const mockTask = createMockTask({ rooIgnoreAllowed: false })
 			const callbacks = createMockCallbacks()
 
 			await readFileTool.execute({ path: "secret.env" }, mockTask as any, callbacks)
 
-			expect(mockTask.say).toHaveBeenCalledWith("rooignore_error", "secret.env")
+			expect(mockTask.say).toHaveBeenCalledWith("adtecignore_error", "secret.env")
 			expect(formatResponse.rooIgnoreError).toHaveBeenCalledWith("secret.env")
-			expect(callbacks.pushToolResult).toHaveBeenCalledWith(expect.stringContaining("blocked by the .rooignore"))
+			expect(callbacks.pushToolResult).toHaveBeenCalledWith(expect.stringContaining("blocked by the .adtecignore"))
 		})
 	})
 

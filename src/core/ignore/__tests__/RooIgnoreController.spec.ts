@@ -78,10 +78,10 @@ describe("RooIgnoreController", () => {
 
 	describe("initialization", () => {
 		/**
-		 * Tests the controller initialization when .rooignore exists
+		 * Tests the controller initialization when .adtecignore exists
 		 */
-		it("should load .rooignore patterns on initialization when file exists", async () => {
-			// Setup mocks to simulate existing .rooignore file
+		it("should load .adtecignore patterns on initialization when file exists", async () => {
+			// Setup mocks to simulate existing .adtecignore file
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets.json")
 
@@ -89,8 +89,8 @@ describe("RooIgnoreController", () => {
 			await controller.initialize()
 
 			// Verify file was checked and read
-			expect(mockFileExists).toHaveBeenCalledWith(path.join(TEST_CWD, ".rooignore"))
-			expect(mockReadFile).toHaveBeenCalledWith(path.join(TEST_CWD, ".rooignore"), "utf8")
+			expect(mockFileExists).toHaveBeenCalledWith(path.join(TEST_CWD, ".adtecignore"))
+			expect(mockReadFile).toHaveBeenCalledWith(path.join(TEST_CWD, ".adtecignore"), "utf8")
 
 			// Verify content was stored
 			expect(controller.rooIgnoreContent).toBe("node_modules\n.git\nsecrets.json")
@@ -103,10 +103,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests the controller behavior when .rooignore doesn't exist
+		 * Tests the controller behavior when .adtecignore doesn't exist
 		 */
-		it("should allow all access when .rooignore doesn't exist", async () => {
-			// Setup mocks to simulate missing .rooignore file
+		it("should allow all access when .adtecignore doesn't exist", async () => {
+			// Setup mocks to simulate missing .adtecignore file
 			mockFileExists.mockResolvedValue(false)
 
 			// Initialize controller
@@ -123,12 +123,12 @@ describe("RooIgnoreController", () => {
 		/**
 		 * Tests the file watcher setup
 		 */
-		it("should set up file watcher for .rooignore changes", async () => {
+		it("should set up file watcher for .adtecignore changes", async () => {
 			// Check that watcher was created with correct pattern
 			expect(vscode.workspace.createFileSystemWatcher).toHaveBeenCalledWith(
 				expect.objectContaining({
 					base: TEST_CWD,
-					pattern: ".rooignore",
+					pattern: ".adtecignore",
 				}),
 			)
 
@@ -141,7 +141,7 @@ describe("RooIgnoreController", () => {
 		/**
 		 * Tests error handling during initialization
 		 */
-		it("should handle errors when loading .rooignore", async () => {
+		it("should handle errors when loading .adtecignore", async () => {
 			// Setup mocks to simulate error
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockRejectedValue(new Error("Test file read error"))
@@ -153,7 +153,7 @@ describe("RooIgnoreController", () => {
 			await controller.initialize()
 
 			// Verify error was logged
-			expect(consoleSpy).toHaveBeenCalledWith("Unexpected error loading .rooignore:", expect.any(Error))
+			expect(consoleSpy).toHaveBeenCalledWith("Unexpected error loading .adtecignore:", expect.any(Error))
 
 			// Cleanup
 			consoleSpy.mockRestore()
@@ -162,7 +162,7 @@ describe("RooIgnoreController", () => {
 
 	describe("validateAccess", () => {
 		beforeEach(async () => {
-			// Setup .rooignore content
+			// Setup .adtecignore content
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets/**\n*.log")
 			await controller.initialize()
@@ -210,10 +210,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests the default behavior when no .rooignore exists
+		 * Tests the default behavior when no .adtecignore exists
 		 */
-		it("should allow all access when no .rooignore content", async () => {
-			// Create a new controller with no .rooignore
+		it("should allow all access when no .adtecignore content", async () => {
+			// Create a new controller with no .adtecignore
 			mockFileExists.mockResolvedValue(false)
 			const emptyController = new RooIgnoreController(TEST_CWD)
 			await emptyController.initialize()
@@ -248,7 +248,7 @@ describe("RooIgnoreController", () => {
 
 	describe("validateCommand", () => {
 		beforeEach(async () => {
-			// Setup .rooignore content
+			// Setup .adtecignore content
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets/**\n*.log")
 			await controller.initialize()
@@ -303,10 +303,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests behavior when no .rooignore exists
+		 * Tests behavior when no .adtecignore exists
 		 */
-		it("should allow all commands when no .rooignore exists", async () => {
-			// Create a new controller with no .rooignore
+		it("should allow all commands when no .adtecignore exists", async () => {
+			// Create a new controller with no .adtecignore
 			mockFileExists.mockResolvedValue(false)
 			const emptyController = new RooIgnoreController(TEST_CWD)
 			await emptyController.initialize()
@@ -319,7 +319,7 @@ describe("RooIgnoreController", () => {
 
 	describe("filterPaths", () => {
 		beforeEach(async () => {
-			// Setup .rooignore content
+			// Setup .adtecignore content
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets/**\n*.log")
 			await controller.initialize()
@@ -382,10 +382,10 @@ describe("RooIgnoreController", () => {
 
 	describe("getInstructions", () => {
 		/**
-		 * Tests instructions generation with .rooignore
+		 * Tests instructions generation with .adtecignore
 		 */
-		it("should generate formatted instructions when .rooignore exists", async () => {
-			// Setup .rooignore content
+		it("should generate formatted instructions when .adtecignore exists", async () => {
+			// Setup .adtecignore content
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets/**")
 			await controller.initialize()
@@ -393,7 +393,7 @@ describe("RooIgnoreController", () => {
 			const instructions = controller.getInstructions()
 
 			// Verify instruction format
-			expect(instructions).toContain("# .rooignore")
+			expect(instructions).toContain("# .adtecignore")
 			expect(instructions).toContain(LOCK_TEXT_SYMBOL)
 			expect(instructions).toContain("node_modules")
 			expect(instructions).toContain(".git")
@@ -401,10 +401,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests behavior when no .rooignore exists
+		 * Tests behavior when no .adtecignore exists
 		 */
-		it("should return undefined when no .rooignore exists", async () => {
-			// Setup no .rooignore
+		it("should return undefined when no .adtecignore exists", async () => {
+			// Setup no .adtecignore
 			mockFileExists.mockResolvedValue(false)
 			await controller.initialize()
 
@@ -437,10 +437,10 @@ describe("RooIgnoreController", () => {
 
 	describe("file watcher", () => {
 		/**
-		 * Tests behavior when .rooignore is created
+		 * Tests behavior when .adtecignore is created
 		 */
-		it("should reload .rooignore when file is created", async () => {
-			// Setup initial state without .rooignore
+		it("should reload .adtecignore when file is created", async () => {
+			// Setup initial state without .adtecignore
 			mockFileExists.mockResolvedValue(false)
 			await controller.initialize()
 
@@ -451,7 +451,7 @@ describe("RooIgnoreController", () => {
 			// Setup for the test
 			mockFileExists.mockResolvedValue(false) // Initially no file exists
 
-			// Create and initialize controller with no .rooignore
+			// Create and initialize controller with no .adtecignore
 			controller = new RooIgnoreController(TEST_CWD)
 			await controller.initialize()
 
@@ -462,7 +462,7 @@ describe("RooIgnoreController", () => {
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules")
 
-			// Force reload of .rooignore content manually
+			// Force reload of .adtecignore content manually
 			await controller.initialize()
 
 			// Now verify content was updated
@@ -473,10 +473,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests behavior when .rooignore is changed
+		 * Tests behavior when .adtecignore is changed
 		 */
-		it("should reload .rooignore when file is changed", async () => {
-			// Setup initial state with .rooignore
+		it("should reload .adtecignore when file is changed", async () => {
+			// Setup initial state with .adtecignore
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules")
 			await controller.initialize()
@@ -501,10 +501,10 @@ describe("RooIgnoreController", () => {
 		})
 
 		/**
-		 * Tests behavior when .rooignore is deleted
+		 * Tests behavior when .adtecignore is deleted
 		 */
-		it("should reset when .rooignore is deleted", async () => {
-			// Setup initial state with .rooignore
+		it("should reset when .adtecignore is deleted", async () => {
+			// Setup initial state with .adtecignore
 			mockFileExists.mockResolvedValue(true)
 			mockReadFile.mockResolvedValue("node_modules")
 			await controller.initialize()

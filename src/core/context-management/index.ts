@@ -219,7 +219,7 @@ export type ContextManagementOptions = {
 	metadata?: ApiHandlerCreateMessageMetadata
 	/** Optional environment details string to include in the condensed summary */
 	environmentDetails?: string
-	/** Optional array of file paths read by Roo during the task (will be folded via tree-sitter) */
+	/** Optional array of file paths read by ADTEC Code during the task (will be folded via tree-sitter) */
 	filesReadByRoo?: string[]
 	/** Optional current working directory for resolving file paths (required if filesReadByRoo is provided) */
 	cwd?: string

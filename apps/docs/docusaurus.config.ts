@@ -1,33 +1,23 @@
 import { themes as prismThemes } from "prism-react-renderer"
 import type { Config } from "@docusaurus/types"
 import type * as Preset from "@docusaurus/preset-classic"
-import {
-	TWITTER_URL,
-	BLUESKY_URL,
-	GITHUB_MAIN_REPO_URL,
-	GITHUB_ISSUES_MAIN_URL,
-	VSCODE_MARKETPLACE_URL,
-	OPEN_VSX_URL,
-	EXTENSION_PRIVACY_URL,
-	GITHUB_REPO_URL,
-} from "./src/constants"
+import { GITHUB_MAIN_REPO_URL, EXTENSION_PRIVACY_URL } from "./src/constants"
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-	title: "Roo Code Documentation",
+	title: "ADTEC Code Documentation",
 	tagline: "AI-powered autonomous coding agent for VS Code - Complete documentation, guides, and tutorials",
-	favicon: "img/favicon.ico",
 
 	// Set the production url of your site here
-	url: "https://roocodeinc.github.io",
+	url: "https://www.adtec.com.cn",
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: "/Roo-Code/",
+	baseUrl: "/",
 
 	// GitHub pages deployment config (if needed)
-	organizationName: "RooCodeInc",
-	projectName: "Roo-Code",
+	organizationName: "Y-vQv-Y",
+	projectName: "adtec-code",
 
 	onBrokenLinks: "warn",
 	markdown: {
@@ -53,7 +43,6 @@ const config: Config = {
 				docs: {
 					sidebarPath: "./sidebars.ts",
 					routeBasePath: "/",
-					editUrl: `${GITHUB_REPO_URL}/edit/main/apps/docs/`,
 					showLastUpdateTime: true,
 				},
 				blog: false, // Disable blog feature
@@ -170,7 +159,7 @@ const config: Config = {
 						from: ["/advanced-usage/mcp", "/mcp/overview"],
 					},
 					{
-						to: "/features/mcp/using-mcp-in-roo",
+						to: "/features/mcp/using-mcp-in-adtec",
 						from: ["/mcp/using-mcp-in-roo"],
 					},
 					{
@@ -259,51 +248,51 @@ const config: Config = {
 						from: ["/features/tools/write-to-file"],
 					},
 					{
-						to: "/advanced-usage/roo-code-nightly",
+						to: "/advanced-usage/adtec-code-nightly",
 						from: ["/advanced-usage/prerelease-build"],
 					},
-					// Redirect removed Roo Code Router provider aliases
+					// Redirect removed ADTEC Code Router provider aliases
 					{
 						to: "/providers",
 						from: ["/providers/roo"],
 					},
 					{
 						to: "/providers",
-						from: ["/providers/roo-code-cloud"],
+						from: ["/providers/adtec-code-cloud"],
 					},
 					{
 						to: "/providers",
-						from: ["/roo-code-provider", "/roo-code-provider/overview"],
+						from: ["/adtec-code-provider", "/adtec-code-provider/overview"],
 					},
 					// Redirect removed Cloud, Router, Credits, and billing pages
 					{
 						to: "/",
 						from: [
 							"/sunset",
-							"/roo-code-cloud",
-							"/roo-code-cloud/overview",
-							"/roo-code-cloud/login",
-							"/roo-code-cloud/connect",
-							"/roo-code-cloud/cloud-agents",
-							"/roo-code-cloud/environments",
-							"/roo-code-cloud/task-sync",
-							"/roo-code-cloud/task-sharing",
-							"/roo-code-cloud/analytics",
-							"/roo-code-cloud/github-integration",
-							"/roo-code-cloud/slack-integration",
-							"/roo-code-cloud/team-plan",
-							"/roo-code-cloud/what-is-roo-code-cloud",
-							"/roo-code-cloud/dashboard",
-							"/roo-code-cloud/roomote-control",
+							"/adtec-code-cloud",
+							"/adtec-code-cloud/overview",
+							"/adtec-code-cloud/login",
+							"/adtec-code-cloud/connect",
+							"/adtec-code-cloud/cloud-agents",
+							"/adtec-code-cloud/environments",
+							"/adtec-code-cloud/task-sync",
+							"/adtec-code-cloud/task-sharing",
+							"/adtec-code-cloud/analytics",
+							"/adtec-code-cloud/github-integration",
+							"/adtec-code-cloud/slack-integration",
+							"/adtec-code-cloud/team-plan",
+							"/adtec-code-cloud/what-is-adtec-code-cloud",
+							"/adtec-code-cloud/dashboard",
+							"/adtec-code-cloud/legacy-control",
 						],
 					},
 					{
 						to: "/providers",
-						from: ["/roo-code-router", "/roo-code-router/overview", "/providers/roo-code-router"],
+						from: ["/adtec-code-router", "/adtec-code-router/overview", "/providers/adtec-code-router"],
 					},
 					{
 						to: "/advanced-usage/rate-limits-costs",
-						from: ["/credits", "/credits/overview", "/roo-code-cloud/billing-subscriptions"],
+						from: ["/credits", "/credits/overview", "/adtec-code-cloud/billing-subscriptions"],
 					},
 					// Redirect removed Human Relay provider page
 					{
@@ -354,11 +343,8 @@ const config: Config = {
 			{
 				name: "keywords",
 				content:
-					"Roo Code, AI coding assistant, VS Code extension, autonomous coding agent, AI pair programmer, code generation, documentation",
+					"ADTEC Code, AI coding assistant, VS Code extension, autonomous coding agent, AI pair programmer, code generation, documentation",
 			},
-			{ name: "twitter:card", content: "summary_large_image" },
-			{ name: "twitter:site", content: "@roocode" },
-			{ name: "twitter:creator", content: "@roocode" },
 			{ property: "og:type", content: "website" },
 			{ property: "og:locale", content: "en_US" },
 		],
@@ -367,13 +353,8 @@ const config: Config = {
 			disableSwitch: false,
 			respectPrefersColorScheme: false,
 		},
-		image: "/img/social-share.png", // Default Open Graph image
 		navbar: {
-			logo: {
-				alt: "Roo Code Logo",
-				src: "img/roo-code-logo-dark.svg",
-				srcDark: "img/roo-code-logo-white.svg",
-			},
+			title: "ADTEC Code",
 			items: [
 				{
 					type: "search",
@@ -383,24 +364,13 @@ const config: Config = {
 		},
 		footer: {
 			style: "dark",
-			logo: {
-				alt: "Roo Code Logo",
-				src: "img/roo-code-logo-dark.svg",
-				srcDark: "img/roo-code-logo-white.svg",
-				width: 120,
-				height: 24,
-			},
 			links: [
 				{
-					title: "Social",
+					title: "ADTEC",
 					items: [
 						{
-							label: "Twitter",
-							href: TWITTER_URL,
-						},
-						{
-							label: "Bluesky",
-							href: BLUESKY_URL,
+							label: "Website",
+							href: "https://www.adtec.com.cn/",
 						},
 						{
 							label: "GitHub",
@@ -409,32 +379,10 @@ const config: Config = {
 					],
 				},
 				{
-					title: "GitHub",
+					title: "Internal",
 					items: [
 						{
-							label: "Issues",
-							href: GITHUB_ISSUES_MAIN_URL,
-						},
-					],
-				},
-				{
-					title: "Download",
-					items: [
-						{
-							label: "VS Code Marketplace",
-							href: VSCODE_MARKETPLACE_URL,
-						},
-						{
-							label: "Open VSX Registry",
-							href: OPEN_VSX_URL,
-						},
-					],
-				},
-				{
-					title: "Privacy",
-					items: [
-						{
-							label: "Extension Privacy Policy",
+							label: "Privacy Policy",
 							href: EXTENSION_PRIVACY_URL,
 						},
 					],

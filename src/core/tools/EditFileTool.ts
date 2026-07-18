@@ -212,7 +212,7 @@ export class EditFileTool extends BaseTool<"edit_file"> {
 				// Finalize the partial tool preview before emitting any say() messages.
 				await finalizePartialToolAskIfNeeded(relPath)
 				task.didToolFailInCurrentTurn = true
-				await task.say("rooignore_error", relPath)
+				await task.say("adtecignore_error", relPath)
 				pushToolResult(formatResponse.rooIgnoreError(relPath))
 				return
 			}

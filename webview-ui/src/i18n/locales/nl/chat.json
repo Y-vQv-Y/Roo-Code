@@ -1,5 +1,5 @@
 {
-	"greeting": "Welkom bij Roo Code",
+	"greeting": "Welkom bij ADTEC Code",
 	"task": {
 		"title": "Taak",
 		"expand": "Taak uitvouwen",
@@ -90,10 +90,10 @@
 	"enqueueMessage": "Bericht aan de wachtrij toevoegen (wordt verzonden nadat de huidige taak is voltooid)",
 	"scrollToBottom": "Scroll naar onderaan de chat",
 	"scrollToLatestCheckpoint": "Scroll naar het vorige checkpoint",
-	"about": "Roo Code is een heel AI-ontwikkelteam in je editor.",
+	"about": "ADTEC Code is een heel AI-ontwikkelteam in je editor.",
 	"docs": "Bekijk onze <DocsLink>documentatie</DocsLink> voor meer informatie.",
 	"onboarding": "Je takenlijst in deze werkruimte is leeg.",
-	"rooTips": {
+	"adtecTips": {
 		"customizableModes": {
 			"title": "Aanpasbare modi",
 			"description": "Gespecialiseerde persona's die op schema blijven en presteren."
@@ -112,7 +112,7 @@
 	"modeSelector": {
 		"title": "Modi",
 		"settings": "Modus Instellingen",
-		"description": "Gespecialiseerde persona's die het gedrag van Roo aanpassen.",
+		"description": "Gespecialiseerde persona's die het gedrag van ADTEC Code aanpassen.",
 		"searchPlaceholder": "Zoek modi...",
 		"noResults": "Geen resultaten gevonden"
 	},
@@ -148,7 +148,7 @@
 			"500": "Provider-serverfout. Er is iets mis aan de kant van de provider, er is niets mis met je verzoek.",
 			"docs": "Documentatie",
 			"goToSettings": "Instellingen",
-			"unknown": "Unknown API error. Please report this on GitHub.",
+			"unknown": "Unknown API error. Please contact your ADTEC Code administrator.",
 			"connection": "Verbindingsfout. Zorg ervoor dat je een werkende internetverbinding hebt.",
 			"claudeCodeNotAuthenticated": "Je moet inloggen om Claude Code te gebruiken. Ga naar Instellingen en klik op \"Inloggen bij Claude Code\" om te authenticeren."
 		}
@@ -173,43 +173,43 @@
 		"current": "Huidig"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo wil gedetailleerde instructies ophalen om te helpen met de huidige taak"
+		"wantsToFetch": "ADTEC Code wil gedetailleerde instructies ophalen om te helpen met de huidige taak"
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo wil dit bestand lezen",
-		"wantsToReadOutsideWorkspace": "Roo wil dit bestand buiten de werkruimte lezen",
-		"didRead": "Roo heeft dit bestand gelezen",
-		"wantsToEdit": "Roo wil dit bestand bewerken",
-		"wantsToEditOutsideWorkspace": "Roo wil dit bestand buiten de werkruimte bewerken",
-		"wantsToEditProtected": "Roo wil een beveiligd configuratiebestand bewerken",
-		"wantsToCreate": "Roo wil een nieuw bestand aanmaken",
-		"wantsToSearchReplace": "Roo wil zoeken en vervangen in dit bestand",
-		"didSearchReplace": "Roo heeft zoeken en vervangen uitgevoerd op dit bestand",
-		"wantsToInsert": "Roo wil inhoud invoegen in dit bestand",
-		"wantsToInsertWithLineNumber": "Roo wil inhoud invoegen in dit bestand op regel {{lineNumber}}",
-		"wantsToInsertAtEnd": "Roo wil inhoud toevoegen aan het einde van dit bestand",
-		"wantsToReadAndXMore": "Roo wil dit bestand en nog {{count}} andere lezen",
-		"wantsToReadMultiple": "Roo wil meerdere bestanden lezen",
-		"wantsToApplyBatchChanges": "Roo wil wijzigingen toepassen op meerdere bestanden",
-		"wantsToGenerateImage": "Roo wil een afbeelding genereren",
-		"wantsToGenerateImageOutsideWorkspace": "Roo wil een afbeelding genereren buiten de werkruimte",
-		"wantsToGenerateImageProtected": "Roo wil een afbeelding genereren op een beschermde locatie",
-		"didGenerateImage": "Roo heeft een afbeelding gegenereerd"
+		"wantsToRead": "ADTEC Code wil dit bestand lezen",
+		"wantsToReadOutsideWorkspace": "ADTEC Code wil dit bestand buiten de werkruimte lezen",
+		"didRead": "ADTEC Code heeft dit bestand gelezen",
+		"wantsToEdit": "ADTEC Code wil dit bestand bewerken",
+		"wantsToEditOutsideWorkspace": "ADTEC Code wil dit bestand buiten de werkruimte bewerken",
+		"wantsToEditProtected": "ADTEC Code wil een beveiligd configuratiebestand bewerken",
+		"wantsToCreate": "ADTEC Code wil een nieuw bestand aanmaken",
+		"wantsToSearchReplace": "ADTEC Code wil zoeken en vervangen in dit bestand",
+		"didSearchReplace": "ADTEC Code heeft zoeken en vervangen uitgevoerd op dit bestand",
+		"wantsToInsert": "ADTEC Code wil inhoud invoegen in dit bestand",
+		"wantsToInsertWithLineNumber": "ADTEC Code wil inhoud invoegen in dit bestand op regel {{lineNumber}}",
+		"wantsToInsertAtEnd": "ADTEC Code wil inhoud toevoegen aan het einde van dit bestand",
+		"wantsToReadAndXMore": "ADTEC Code wil dit bestand en nog {{count}} andere lezen",
+		"wantsToReadMultiple": "ADTEC Code wil meerdere bestanden lezen",
+		"wantsToApplyBatchChanges": "ADTEC Code wil wijzigingen toepassen op meerdere bestanden",
+		"wantsToGenerateImage": "ADTEC Code wil een afbeelding genereren",
+		"wantsToGenerateImageOutsideWorkspace": "ADTEC Code wil een afbeelding genereren buiten de werkruimte",
+		"wantsToGenerateImageProtected": "ADTEC Code wil een afbeelding genereren op een beschermde locatie",
+		"didGenerateImage": "ADTEC Code heeft een afbeelding gegenereerd"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo wil de bovenliggende bestanden in deze map bekijken",
-		"didViewTopLevel": "Roo heeft de bovenliggende bestanden in deze map bekeken",
-		"wantsToViewRecursive": "Roo wil alle bestanden in deze map recursief bekijken",
-		"didViewRecursive": "Roo heeft alle bestanden in deze map recursief bekeken",
-		"wantsToSearch": "Roo wil deze map doorzoeken op <code>{{regex}}</code>",
-		"didSearch": "Roo heeft deze map doorzocht op <code>{{regex}}</code>",
-		"wantsToSearchOutsideWorkspace": "Roo wil deze map (buiten werkruimte) doorzoeken op <code>{{regex}}</code>",
-		"didSearchOutsideWorkspace": "Roo heeft deze map (buiten werkruimte) doorzocht op <code>{{regex}}</code>",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo wil de bovenliggende bestanden in deze map (buiten werkruimte) bekijken",
-		"didViewTopLevelOutsideWorkspace": "Roo heeft de bovenliggende bestanden in deze map (buiten werkruimte) bekeken",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo wil alle bestanden in deze map (buiten werkruimte) recursief bekijken",
-		"didViewRecursiveOutsideWorkspace": "Roo heeft alle bestanden in deze map (buiten werkruimte) recursief bekeken",
-		"wantsToViewMultipleDirectories": "Roo wil meerdere mappen bekijken"
+		"wantsToViewTopLevel": "ADTEC Code wil de bovenliggende bestanden in deze map bekijken",
+		"didViewTopLevel": "ADTEC Code heeft de bovenliggende bestanden in deze map bekeken",
+		"wantsToViewRecursive": "ADTEC Code wil alle bestanden in deze map recursief bekijken",
+		"didViewRecursive": "ADTEC Code heeft alle bestanden in deze map recursief bekeken",
+		"wantsToSearch": "ADTEC Code wil deze map doorzoeken op <code>{{regex}}</code>",
+		"didSearch": "ADTEC Code heeft deze map doorzocht op <code>{{regex}}</code>",
+		"wantsToSearchOutsideWorkspace": "ADTEC Code wil deze map (buiten werkruimte) doorzoeken op <code>{{regex}}</code>",
+		"didSearchOutsideWorkspace": "ADTEC Code heeft deze map (buiten werkruimte) doorzocht op <code>{{regex}}</code>",
+		"wantsToViewTopLevelOutsideWorkspace": "ADTEC Code wil de bovenliggende bestanden in deze map (buiten werkruimte) bekijken",
+		"didViewTopLevelOutsideWorkspace": "ADTEC Code heeft de bovenliggende bestanden in deze map (buiten werkruimte) bekeken",
+		"wantsToViewRecursiveOutsideWorkspace": "ADTEC Code wil alle bestanden in deze map (buiten werkruimte) recursief bekijken",
+		"didViewRecursiveOutsideWorkspace": "ADTEC Code heeft alle bestanden in deze map (buiten werkruimte) recursief bekeken",
+		"wantsToViewMultipleDirectories": "ADTEC Code wil meerdere mappen bekijken"
 	},
 	"commandOutput": "Commando-uitvoer",
 	"commandExecution": {
@@ -231,24 +231,24 @@
 	"response": "Antwoord",
 	"arguments": "Argumenten",
 	"text": {
-		"rooSaid": "Roo zei"
+		"adtecSaid": "ADTEC Code said"
 	},
 	"feedback": {
 		"youSaid": "Jij zei"
 	},
 	"mcp": {
-		"wantsToUseTool": "Roo wil een tool gebruiken op de {{serverName}} MCP-server",
-		"wantsToAccessResource": "Roo wil een bron benaderen op de {{serverName}} MCP-server"
+		"wantsToUseTool": "ADTEC Code wil een tool gebruiken op de {{serverName}} MCP-server",
+		"wantsToAccessResource": "ADTEC Code wil een bron benaderen op de {{serverName}} MCP-server"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo wil overschakelen naar {{mode}} modus",
-		"wantsToSwitchWithReason": "Roo wil overschakelen naar {{mode}} modus omdat: {{reason}}",
-		"didSwitch": "Roo is overgeschakeld naar {{mode}} modus",
-		"didSwitchWithReason": "Roo is overgeschakeld naar {{mode}} modus omdat: {{reason}}"
+		"wantsToSwitch": "ADTEC Code wil overschakelen naar {{mode}} modus",
+		"wantsToSwitchWithReason": "ADTEC Code wil overschakelen naar {{mode}} modus omdat: {{reason}}",
+		"didSwitch": "ADTEC Code is overgeschakeld naar {{mode}} modus",
+		"didSwitchWithReason": "ADTEC Code is overgeschakeld naar {{mode}} modus omdat: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo wil een nieuwe subtaak aanmaken in {{mode}} modus",
-		"wantsToFinish": "Roo wil deze subtaak voltooien",
+		"wantsToCreate": "ADTEC Code wil een nieuwe subtaak aanmaken in {{mode}} modus",
+		"wantsToFinish": "ADTEC Code wil deze subtaak voltooien",
 		"newTaskContent": "Subtaak-instructies",
 		"completionContent": "Subtaak voltooid",
 		"resultContent": "Subtaakresultaten",
@@ -257,7 +257,7 @@
 		"goToSubtask": "Taak weergeven"
 	},
 	"questions": {
-		"hasQuestion": "Roo heeft een vraag"
+		"hasQuestion": "ADTEC Code heeft een vraag"
 	},
 	"taskCompleted": "Taak voltooid",
 	"error": "Fout",
@@ -271,14 +271,14 @@
 	"diffError": {
 		"title": "Bewerking mislukt"
 	},
-	"troubleMessage": "Roo ondervindt problemen...",
+	"troubleMessage": "ADTEC Code ondervindt problemen...",
 	"errorDetails": {
 		"link": "Details",
 		"title": "Foutdetails",
 		"copyToClipboard": "Naar klembord kopiëren",
 		"copied": "Gekopieerd!",
 		"diagnostics": "Gedetailleerde foutinformatie ophalen",
-		"proxyProvider": "Je lijkt een proxy-gebaseerde provider te gebruiken. Zorg ervoor dat je de logs controleert en dat het geen Roo-verzoeken herschrijft."
+		"proxyProvider": "Je lijkt een proxy-gebaseerde provider te gebruiken. Zorg ervoor dat je de logs controleert en dat het geen ADTEC Code-verzoeken herschrijft."
 	},
 	"powershell": {
 		"issues": "Het lijkt erop dat je problemen hebt met Windows PowerShell, zie deze"
@@ -301,29 +301,6 @@
 		"triggerLabel_other": "{{count}} automatisch goedgekeurd",
 		"triggerLabelAll": "BRRR"
 	},
-	"announcement": {
-		"title": "Roo Code {{version}} uitgebracht",
-		"support": "Steun Roo Code door ons een ster te geven op <githubLink>GitHub</githubLink>.",
-		"finalRelease": {
-			"title": "De laatste Roo Code-release",
-			"intro": "Dit is de laatste Roo Code-release. <announcementLink>Zoals we een paar weken geleden hebben aangekondigd</announcementLink>, hebben we besloten onze focus te verleggen naar <roomoteLink>Roomote</roomoteLink>, ons cloud-agentplatform, waarvan we geloven dat het de toekomst van softwareontwikkeling is. Heel erg bedankt voor je steun in het afgelopen jaar of daaromtrent.",
-			"continuity": "Deze extensie zou voor onbepaalde tijd moeten blijven werken, maar ontvangt geen bugfixes, nieuwe functies of modelupdates meer.",
-			"alternatives": "Als je een extensie wilt gebruiken, raden we aan om <zooCodeLink>ZooCode</zooCodeLink> (een Roo Code-fork door de community) en <clineLink>Cline</clineLink> (waar Roo Code oorspronkelijk begon) te bekijken.",
-			"signoff": "Veel codeerplezier!"
-		},
-		"release": {
-			"heading": "Wat is er nieuw:",
-			"gpt55": "GPT-5.5 via OpenAI Codex: GPT-5.5-ondersteuning toegevoegd in de OpenAI Codex-provider, zodat je het nieuwste model direct vanuit Roo Code kunt gebruiken.",
-			"claudeOpus47": "Claude Opus 4.7 op Vertex AI: Claude Opus 4.7 toegevoegd aan de Vertex AI-provider voor Anthropic's nieuwste vlaggenschip-reasoningmodel.",
-			"checkpointNav": "Navigatie naar vorige checkpoints: Bediening toegevoegd in de chat om terug te springen door eerdere checkpoints, met volledige i18n-ondersteuning."
-		},
-		"cloudAgents": {
-			"heading": "Nieuw in de Cloud:",
-			"specialized": "Introductie van <bold>Explainer</bold>, <bold>Planner</bold> en <bold>Coder</bold> - drie gespecialiseerde cloud-agents om je workflows te verbeteren.",
-			"description": "De agents werken samen in de cloud en kunnen worden geactiveerd vanaf het web of via Slack.",
-			"tryButton": "Probeer Cloud-agents"
-		}
-	},
 	"reasoning": {
 		"thinking": "Denkt na",
 		"seconds": "{{count}}s"
@@ -344,8 +321,8 @@
 		}
 	},
 	"skill": {
-		"wantsToLoad": "Roo wil een vaardigheid laden",
-		"didLoad": "Roo heeft een vaardigheid geladen"
+		"wantsToLoad": "ADTEC Code wil een vaardigheid laden",
+		"didLoad": "ADTEC Code heeft een vaardigheid geladen"
 	},
 	"followUpSuggest": {
 		"copyToInput": "Kopiëren naar invoer (zelfde als shift + klik)",
@@ -366,24 +343,24 @@
 	"profileViolationWarning": "Het huidige profiel is niet compatibel met de instellingen van uw organisatie",
 	"shellIntegration": {
 		"title": "Waarschuwing commando-uitvoering",
-		"description": "Je commando wordt uitgevoerd zonder VSCode-terminal shell-integratie. Om deze waarschuwing te onderdrukken kun je shell-integratie uitschakelen in het gedeelte <strong>Terminal</strong> van de <settingsLink>Roo Code-instellingen</settingsLink> of de VSCode-terminalintegratie oplossen via de onderstaande link.",
+		"description": "Je commando wordt uitgevoerd zonder VSCode-terminal shell-integratie. Om deze waarschuwing te onderdrukken kun je shell-integratie uitschakelen in het gedeelte <strong>Terminal</strong> van de <settingsLink>ADTEC Code-instellingen</settingsLink> of de VSCode-terminalintegratie oplossen via de onderstaande link.",
 		"troubleshooting": "Klik hier voor shell-integratie documentatie."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "Limiet voor automatisch goedgekeurde verzoeken bereikt",
-			"description": "Roo heeft de automatisch goedgekeurde limiet van {{count}} API-verzoek(en) bereikt. Wil je de teller resetten en doorgaan met de taak?",
+			"description": "ADTEC Code heeft de automatisch goedgekeurde limiet van {{count}} API-verzoek(en) bereikt. Wil je de teller resetten en doorgaan met de taak?",
 			"button": "Resetten en doorgaan"
 		},
 		"autoApprovedCostLimitReached": {
 			"title": "Limiet voor automatisch goedgekeurde kosten bereikt",
 			"button": "Resetten en doorgaan",
-			"description": "Roo heeft de automatisch goedgekeurde kostenlimiet van ${{count}} bereikt. Wilt u de kosten resetten en doorgaan met de taak?"
+			"description": "ADTEC Code heeft de automatisch goedgekeurde kostenlimiet van ${{count}} bereikt. Wilt u de kosten resetten en doorgaan met de taak?"
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo wil de codebase doorzoeken op <code>{{query}}</code>",
-		"wantsToSearchWithPath": "Roo wil de codebase doorzoeken op <code>{{query}}</code> in <code>{{path}}</code>",
+		"wantsToSearch": "ADTEC Code wil de codebase doorzoeken op <code>{{query}}</code>",
+		"wantsToSearchWithPath": "ADTEC Code wil de codebase doorzoeken op <code>{{query}}</code> in <code>{{path}}</code>",
 		"didSearch_one": "1 resultaat gevonden",
 		"didSearch_other": "{{count}} resultaten gevonden",
 		"resultTooltip": "Gelijkenisscore: {{score}} (klik om bestand te openen)"
@@ -460,8 +437,8 @@
 		"clickToEdit": "Klik om bericht te bewerken"
 	},
 	"slashCommand": {
-		"wantsToRun": "Roo wil een slash commando uitvoeren",
-		"didRun": "Roo heeft een slash commando uitgevoerd"
+		"wantsToRun": "ADTEC Code wil een slash commando uitvoeren",
+		"didRun": "ADTEC Code heeft een slash commando uitgevoerd"
 	},
 	"todo": {
 		"partial": "{{completed}} van {{total}} to-do's voltooid",
@@ -480,12 +457,11 @@
 		"openMcpSettings": "MCP-instellingen openen"
 	},
 	"readCommandOutput": {
-		"title": "Roo read command output"
+		"title": "ADTEC Code read command output"
 	},
 	"retiredProvider": {
 		"title": "Provider wordt niet meer ondersteund",
 		"message": "This provider is no longer supported. Please select a different provider in your API profile settings.",
-		"openSettings": "Instellingen openen",
-		"rooMessage": "As part of our decision to sunset the Roo Code extension, we also ended the Roo Code Router, which only existed to support the extension. Sorry about the hassle."
+		"openSettings": "Instellingen openen"
 	}
 }

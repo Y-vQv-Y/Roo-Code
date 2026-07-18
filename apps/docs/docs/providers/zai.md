@@ -1,19 +1,19 @@
 ---
 sidebar_label: Z AI
-description: Configure Z AI models in Roo Code. Access GLM family models with region-aware routing for international and China mainland users.
+description: Configure Z AI models in ADTEC Code. Access GLM family models with region-aware routing for international and China mainland users.
 keywords:
     - z ai
     - zai
     - zhipu ai
     - glm models
-    - roo code
+    - ADTEC Code
     - api provider
     - china ai
     - international ai
     - openai compatible
 ---
 
-# Using Z AI With Roo Code
+# Using Z AI With ADTEC Code
 
 Z AI (Zhipu AI) provides advanced language models with the GLM family. The provider offers region-aware routing with separate endpoints for international users and China mainland users.
 
@@ -41,7 +41,7 @@ Z AI (Zhipu AI) provides advanced language models with the GLM family. The provi
 
 ## Available Models
 
-Roo Code automatically fetches all available models from Z AI's API based on your selected region.
+ADTEC Code automatically fetches all available models from Z AI's API based on your selected region.
 
 For the complete, up-to-date model list and specifications, see the official provider documentation:
 
@@ -50,9 +50,9 @@ For the complete, up-to-date model list and specifications, see the official pro
 
 ---
 
-## Configuration in Roo Code
+## Configuration in ADTEC Code
 
-1. **Open Roo Code Settings:** Click the gear icon (<Codicon name="gear" />) in the Roo Code panel.
+1. **Open ADTEC Code Settings:** Click the gear icon (<Codicon name="gear" />) in the ADTEC Code panel.
 2. **Select Provider:** Choose "Z AI" from the "API Provider" dropdown.
 3. **Select Region:** Choose your region:
     - "International" (default) for global access

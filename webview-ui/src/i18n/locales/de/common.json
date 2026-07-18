@@ -1,8 +1,7 @@
 {
 	"errorBoundary": {
 		"title": "Etwas ist schiefgelaufen",
-		"reportText": "Bitte hilf uns, besser zu werden, indem du diesen Fehler meldest auf",
-		"githubText": "unserer GitHub Issues-Seite",
+		"reportText": "Please contact your ADTEC Code administrator and provide the error details below.",
 		"copyInstructions": "Kopiere die folgende Fehlermeldung und füge sie deiner Meldung bei:",
 		"errorStack": "Fehler-Stack:",
 		"componentStack": "Komponenten-Stack:"

@@ -189,7 +189,7 @@ export async function handleSwitchWorktree(
 		const worktreeUri = vscode.Uri.file(worktreePath)
 
 		if (newWindow) {
-			// Set the auto-open path so the new window opens Roo Code sidebar.
+			// Set the auto-open path so the new window opens ADTEC Code sidebar.
 			await provider.contextProxy.setValue("worktreeAutoOpenPath", worktreePath)
 
 			// Open in new window.
@@ -226,11 +226,11 @@ export async function handleGetWorktreeDefaults(provider: ClineProvider): Promis
 	const workspaceFolders = vscode.workspace.workspaceFolders
 	const projectName = workspaceFolders?.[0]?.name || "project"
 
-	const dotRooPath = path.join(os.homedir(), ".roo")
+	const dotRooPath = path.join(os.homedir(), ".adtec")
 	const suggestedPath = path.join(dotRooPath, "worktrees", `${projectName}-${suffix}`)
 
 	return {
-		suggestedBranch: `worktree/roo-${suffix}`,
+		suggestedBranch: `worktree/adtec-${suffix}`,
 		suggestedPath,
 	}
 }

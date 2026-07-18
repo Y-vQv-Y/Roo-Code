@@ -26,6 +26,10 @@ ADTEC Code can include read-only Skills bundled with the extension. Workspace an
 
 Visit https://www.adtec.com.cn/ for information about Advanced Digital Technology.
 
+## Source Repository
+
+Source code and internal issue tracking: https://github.com/Y-vQv-Y
+
 ## License
 
 Licensed under the Apache License 2.0.

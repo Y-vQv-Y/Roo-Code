@@ -179,7 +179,7 @@ export class MessageProcessor {
 
 		if (!clineMessages) {
 			if (this.options.debug) {
-				debugLog("[MessageProcessor] State message missing clineMessages")
+				debugLog("[MessageProcessor] State message missing task messages")
 			}
 			return
 		}
@@ -231,7 +231,7 @@ export class MessageProcessor {
 	private handleMessageUpdated(message: ExtensionMessage): void {
 		if (!message.clineMessage) {
 			if (this.options.debug) {
-				debugLog("[MessageProcessor] messageUpdated missing clineMessage")
+				debugLog("[MessageProcessor] messageUpdated missing task message")
 			}
 			return
 		}

@@ -60,12 +60,7 @@ class ErrorBoundary extends Component<ErrorProps, ErrorState> {
 				<h2 className="text-lg font-bold mt-0 mb-2">
 					{t("errorBoundary.title")} (v{version})
 				</h2>
-				<p className="mb-4">
-					{t("errorBoundary.reportText")}{" "}
-					<a href="https://github.com/RooCodeInc/Roo-Code/issues" target="_blank" rel="noreferrer">
-						{t("errorBoundary.githubText")}
-					</a>
-				</p>
+				<p className="mb-4">{t("errorBoundary.reportText")}</p>
 				<p className="mb-2">{t("errorBoundary.copyInstructions")}</p>
 
 				<div className="mb-4">
