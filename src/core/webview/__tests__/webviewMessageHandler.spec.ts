@@ -850,6 +850,13 @@ describe("webviewMessageHandler - requestCommands", () => {
 				source: "global",
 				modeSlugs: ["code"],
 			},
+			{
+				name: "bundled-skill-slug",
+				description: "Bundled skill-generated command",
+				path: "/extension/builtin-skills/bundled-skill-slug/SKILL.md",
+				source: "bundled",
+				modeSlugs: ["code"],
+			},
 		])
 
 		vi.mocked(mockClineProvider.getSkillsManager).mockReturnValue({
@@ -877,6 +884,12 @@ describe("webviewMessageHandler - requestCommands", () => {
 					source: "global",
 					filePath: "/mock/.adtec/skills/another-skill-slug/SKILL.md",
 					description: "Another skill-generated command",
+				},
+				{
+					name: "bundled-skill-slug",
+					source: "built-in",
+					filePath: "/extension/builtin-skills/bundled-skill-slug/SKILL.md",
+					description: "Bundled skill-generated command",
 				},
 			]),
 		)

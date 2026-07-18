@@ -150,7 +150,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			existingCommandNames.add(skill.name)
 			commandList.push({
 				name: skill.name,
-				source: skill.source,
+				source: skill.source === "bundled" ? "built-in" : skill.source,
 				filePath: skill.path,
 				description: skill.description,
 			})
