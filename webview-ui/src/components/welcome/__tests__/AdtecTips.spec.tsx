@@ -1,46 +1,44 @@
-import React from "react"
-import { render, screen } from "@/utils/test-utils"
+import { fireEvent, render, screen } from "@/utils/test-utils"
 
 import AdtecTips from "../AdtecTips"
+import { vscode } from "@src/utils/vscode"
 
 vi.mock("react-i18next", () => ({
 	useTranslation: () => ({
 		t: (key: string) => key, // Simple mock that returns the key
 	}),
-	Trans: ({
-		children,
-		components,
-	}: {
-		children?: React.ReactNode
-		components?: Record<string, React.ReactElement>
-	}) => {
-		// Simple mock that renders children or the first component if no children
-		return children || (components && Object.values(components)[0]) || null
-	},
 }))
 
-vi.mock("@vscode/webview-ui-toolkit/react", () => ({
-	VSCodeLink: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a>,
-}))
+vi.mock("@src/utils/vscode", () => ({ vscode: { postMessage: vi.fn() } }))
 
 describe("AdtecTips Component", () => {
 	beforeEach(() => {
-		vi.useFakeTimers()
+		vi.clearAllMocks()
+		render(<AdtecTips />)
 	})
 
-	afterEach(() => {
-		vi.runOnlyPendingTimers()
-		vi.useRealTimers()
+	test("renders internal feature buttons without external links", () => {
+		expect(screen.getAllByRole("button")).toHaveLength(2)
+		expect(screen.queryByRole("link")).not.toBeInTheDocument()
 	})
 
-	describe("when cycle is false (default)", () => {
-		beforeEach(() => {
-			render(<AdtecTips />)
+	test("opens mode settings inside the webview", () => {
+		fireEvent.click(screen.getByRole("button", { name: "adtecTips.customizableModes.title" }))
+
+		expect(vscode.postMessage).toHaveBeenCalledWith({
+			type: "switchTab",
+			tab: "settings",
+			values: { section: "modes" },
 		})
+	})
 
-		test("renders only the top two tips", () => {
-			// Ensure only two tips are present plus the docs link in the Trans component (3 total links)
-			expect(screen.getAllByRole("link")).toHaveLength(3)
+	test("opens provider settings inside the webview", () => {
+		fireEvent.click(screen.getByRole("button", { name: "adtecTips.modelAgnostic.title" }))
+
+		expect(vscode.postMessage).toHaveBeenCalledWith({
+			type: "switchTab",
+			tab: "settings",
+			values: { section: "providers" },
 		})
 	})
 })

@@ -91,7 +91,6 @@
 	"scrollToBottom": "Cuộn xuống cuối cuộc trò chuyện",
 	"scrollToLatestCheckpoint": "Cuộn đến checkpoint trước đó",
 	"about": "ADTEC Code là một đội ngũ phát triển AI đầy đủ trong trình chỉnh sửa của bạn.",
-	"docs": "Kiểm tra <DocsLink>tài liệu</DocsLink> của chúng tôi để tìm hiểu thêm.",
 	"onboarding": "Danh sách nhiệm vụ của bạn trong không gian làm việc này đang trống.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Mang theo mô hình của riêng bạn",
-			"description": "Sử dụng khóa nhà cung cấp của riêng bạn hoặc thậm chí chạy suy luận cục bộ — không phụ phí, không khóa, không hạn chế"
+			"description": "Sử dụng khóa nhà cung cấp của riêng bạn."
 		}
 	},
 	"selectMode": "Chọn chế độ tương tác",

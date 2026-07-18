@@ -91,7 +91,6 @@
 	"scrollToBottom": "Desplazarse al final del chat",
 	"scrollToLatestCheckpoint": "Desplazarse al checkpoint anterior",
 	"about": "ADTEC Code es todo un equipo de desarrollo de IA en tu editor.",
-	"docs": "Consulta nuestra <DocsLink>documentación</DocsLink> para saber más.",
 	"onboarding": "Tu lista de tareas en este espacio de trabajo está vacía.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Trae tu propio modelo",
-			"description": "Usa tu propia clave de proveedor o incluso ejecuta inferencia local — sin sobrecostes, sin ataduras, sin restricciones"
+			"description": "Usa tu propia clave de proveedor."
 		}
 	},
 	"selectMode": "Seleccionar modo de interacción",

@@ -118,7 +118,6 @@
 	"scrollToBottom": "Scroll to bottom of chat",
 	"scrollToLatestCheckpoint": "Scroll to previous checkpoint",
 	"about": "ADTEC Code is a whole AI dev team in your editor",
-	"docs": "Check our <DocsLink>docs</DocsLink> to get started",
 	"onboarding": "What would you like to do?",
 	"adtecTips": {
 		"customizableModes": {
@@ -127,7 +126,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Bring your own model, no markup or lock-in",
-			"description": "Use your own provider key or even run local inference — ADTEC Code doesn't charge for it"
+			"description": "Use your own provider key."
 		}
 	},
 	"selectMode": "Select mode for interaction",

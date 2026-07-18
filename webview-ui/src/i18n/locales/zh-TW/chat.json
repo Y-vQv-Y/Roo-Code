@@ -118,7 +118,6 @@
 	"scrollToBottom": "捲動至對話底部",
 	"scrollToLatestCheckpoint": "捲動至上一個檢查點",
 	"about": "ADTEC Code 是編輯器中的完整 AI 開發團隊。",
-	"docs": "請參閱 <DocsLink>說明文件</DocsLink> 開始使用。",
 	"onboarding": "想要做什麼呢？",
 	"adtecTips": {
 		"customizableModes": {
@@ -127,7 +126,7 @@
 		},
 		"modelAgnostic": {
 			"title": "自備模型，無加價無鎖定",
-			"description": "使用自己的供應商金鑰，甚至可執行本機推論 - ADTEC Code 不額外收費"
+			"description": "使用自己的供應商金鑰。"
 		}
 	},
 	"selectMode": "選擇互動模式",

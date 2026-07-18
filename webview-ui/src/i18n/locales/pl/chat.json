@@ -91,7 +91,6 @@
 	"scrollToBottom": "Przewiń do dołu czatu",
 	"scrollToLatestCheckpoint": "Przewiń do poprzedniego punktu kontrolnego",
 	"about": "ADTEC Code to cały zespół deweloperów AI w Twoim edytorze.",
-	"docs": "Sprawdź naszą <DocsLink>dokumentację</DocsLink>, aby dowiedzieć się więcej.",
 	"onboarding": "Twoja lista zadań w tym obszarze roboczym jest pusta.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Przynieś własny model",
-			"description": "Użyj własnego klucza dostawcy lub nawet uruchom lokalne wnioskowanie — bez narzutów, bez blokad, bez ograniczeń"
+			"description": "Użyj własnego klucza dostawcy."
 		}
 	},
 	"selectMode": "Wybierz tryb interakcji",

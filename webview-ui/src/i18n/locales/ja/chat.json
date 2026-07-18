@@ -91,7 +91,6 @@
 	"scrollToBottom": "チャットの最下部にスクロール",
 	"scrollToLatestCheckpoint": "前のチェックポイントまでスクロール",
 	"about": "ADTEC Codeは、エディタに常駐するAI開発チームです。",
-	"docs": "詳細については、<DocsLink>ドキュメント</DocsLink>をご確認ください。",
 	"onboarding": "このワークスペースのタスクリストは空です。",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "独自のモデルを持ち込む",
-			"description": "独自のプロバイダーキーを使用したり、ローカルで推論を実行したりできます — マークアップ、ロックイン、制限はありません"
+			"description": "独自のプロバイダーキーを使用できます。"
 		}
 	},
 	"selectMode": "対話モードを選択",

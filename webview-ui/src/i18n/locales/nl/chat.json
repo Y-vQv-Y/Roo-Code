@@ -91,7 +91,6 @@
 	"scrollToBottom": "Scroll naar onderaan de chat",
 	"scrollToLatestCheckpoint": "Scroll naar het vorige checkpoint",
 	"about": "ADTEC Code is een heel AI-ontwikkelteam in je editor.",
-	"docs": "Bekijk onze <DocsLink>documentatie</DocsLink> voor meer informatie.",
 	"onboarding": "Je takenlijst in deze werkruimte is leeg.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Breng je eigen model mee",
-			"description": "Gebruik je eigen providersleutel of voer zelfs lokale inferentie uit — geen opslag, geen lock-in, geen beperkingen"
+			"description": "Gebruik je eigen providersleutel."
 		}
 	},
 	"selectMode": "Selecteer modus voor interactie",

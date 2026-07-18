@@ -91,7 +91,6 @@
 	"scrollToBottom": "Scorri fino alla fine della chat",
 	"scrollToLatestCheckpoint": "Scorri al checkpoint precedente",
 	"about": "ADTEC Code è un intero team di sviluppo AI nel tuo editor.",
-	"docs": "Consulta la nostra <DocsLink>documentazione</DocsLink> per saperne di più.",
 	"onboarding": "La tua lista di attività in questo spazio di lavoro è vuota.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Porta il tuo modello",
-			"description": "Usa la tua chiave provider o esegui l'inferenza locale — nessun ricarico, nessun vincolo, nessuna restrizione"
+			"description": "Usa la tua chiave provider."
 		}
 	},
 	"selectMode": "Seleziona modalità di interazione",

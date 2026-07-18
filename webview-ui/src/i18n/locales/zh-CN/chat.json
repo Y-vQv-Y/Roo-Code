@@ -91,7 +91,6 @@
 	"scrollToBottom": "滚动到聊天底部",
 	"scrollToLatestCheckpoint": "滚动到上一个检查点",
 	"about": "ADTEC Code 是您编辑器中的整个 AI 开发团队。",
-	"docs": "查看我们的 <DocsLink>文档</DocsLink> 了解更多信息。",
 	"onboarding": "此工作区中的任务列表为空。",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "自带模型",
-			"description": "使用您自己的提供商密钥，甚至可以在本地运行推理 — 无加价，无锁定，无限制"
+			"description": "使用您自己的提供商密钥。"
 		}
 	},
 	"selectMode": "选择交互模式",

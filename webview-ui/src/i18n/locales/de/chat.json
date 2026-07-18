@@ -91,7 +91,6 @@
 	"scrollToBottom": "Zum Chat-Ende scrollen",
 	"scrollToLatestCheckpoint": "Zum vorherigen Checkpoint scrollen",
 	"about": "ADTEC Code ist ein ganzes KI-Entwicklerteam in deinem Editor.",
-	"docs": "Schau in unsere <DocsLink>Dokumentation</DocsLink>, um mehr zu erfahren.",
 	"onboarding": "Deine Aufgabenliste in diesem Arbeitsbereich ist leer.",
 	"adtecTips": {
 		"customizableModes": {
@@ -100,7 +99,7 @@
 		},
 		"modelAgnostic": {
 			"title": "Bring dein eigenes Modell mit",
-			"description": "Verwende deinen eigenen Anbieter-Schlüssel oder führe sogar lokale Inferenz aus – kein Aufschlag, keine Bindung, keine Einschränkungen"
+			"description": "Verwende deinen eigenen Anbieter-Schlüssel."
 		}
 	},
 	"selectMode": "Interaktionsmodus auswählen",
