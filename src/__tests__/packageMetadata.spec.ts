@@ -26,8 +26,17 @@ describe("ADTEC Code package metadata", () => {
 
 	it("references the provided ADTEC logo", () => {
 		expect(manifest.icon).toBe("assets/icons/adtec-logo.png")
-		expect(manifest.contributes.viewsContainers.activitybar[0].icon).toBe("assets/icons/adtec-logo.png")
+		expect(manifest.contributes.viewsContainers.activitybar[0].icon).toBe(
+			"assets/icons/adtec-activitybar.png",
+		)
 		expect(existsSync(fileURLToPath(new URL(`../${manifest.icon}`, import.meta.url)))).toBe(true)
+		expect(
+			existsSync(
+				fileURLToPath(
+					new URL(`../${manifest.contributes.viewsContainers.activitybar[0].icon}`, import.meta.url),
+				),
+			),
+		).toBe(true)
 	})
 
 	it("uses the package name as the namespace for every VS Code contribution", () => {

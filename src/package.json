@@ -55,7 +55,7 @@
 				{
 					"id": "adtec-code-ActivityBar",
 					"title": "%views.activitybar.title%",
-					"icon": "assets/icons/adtec-logo.png"
+					"icon": "assets/icons/adtec-activitybar.png"
 				}
 			]
 		},

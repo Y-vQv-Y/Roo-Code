@@ -52,6 +52,7 @@ jobs:
           grep -q "extension/assets/codicons/codicon.ttf" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/assets/icons/adtec-logo.png" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/assets/icons/adtec-activitybar.png" /tmp/adtec-code-vsix-contents.txt || exit 1
           grep -q "extension/builtin-skills/adtec-test/SKILL.md" /tmp/adtec-code-vsix-contents.txt || exit 1
 
           # Verify the installed extension metadata and bundled skill contract.
