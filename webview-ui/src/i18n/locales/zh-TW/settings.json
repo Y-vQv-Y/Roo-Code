@@ -873,12 +873,20 @@
 		"maxTokens": "最大 Token 數",
 		"maxThinkingTokens": "最大思考 Token 數"
 	},
+	"contextWindow": {
+		"label": "上下文視窗",
+		"auto": "自動（{{value}}）",
+		"description": "設定用於 Token 計算和自動壓縮的上下文預算。獨立的自動濃縮閾值會控制壓縮開始的時機；一律保留 10% 的安全緩衝。",
+		"unknownCapability": "提供者未回報此模型的上下文上限；選擇更大的預算前請先確認。"
+	},
 	"validation": {
 		"apiKey": "請提供有效的 API 金鑰。",
 		"awsRegion": "請選擇要用於 Amazon Bedrock 的區域。",
 		"googleCloud": "請提供有效的 Google Cloud 專案 ID 和區域。",
 		"modelId": "請提供有效的模型 ID。",
 		"modelSelector": "請提供有效的模型選擇器。",
+		"modelDisabled": "此模型已被提供者停用。請選擇其他模型以繼續。",
+		"modelOutage": "提供者目前回報此模型發生服務中斷。",
 		"openAi": "請提供有效的基礎 URL、API 金鑰和模型 ID。",
 		"arn": {
 			"invalidFormat": "ARN 格式無效，請檢查格式要求。",

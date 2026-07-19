@@ -529,7 +529,8 @@
 			"high": "Tinggi",
 			"xhigh": "Sangat tinggi",
 			"medium": "Sedang",
-			"low": "Rendah"
+			"low": "Rendah",
+			"max": "Maksimum"
 		},
 		"verbosity": {
 			"label": "Verbositas Output",
@@ -862,12 +863,20 @@
 		"maxTokens": "Token Maksimum",
 		"maxThinkingTokens": "Token Thinking Maksimum"
 	},
+	"contextWindow": {
+		"label": "Jendela konteks",
+		"auto": "Otomatis ({{value}})",
+		"description": "Mengatur anggaran konteks yang digunakan untuk penghitungan token dan kompresi otomatis. Ambang kondensasi otomatis terpisah mengatur kapan kompresi dimulai; buffer keamanan 10% selalu disediakan.",
+		"unknownCapability": "Penyedia belum melaporkan batas konteks model ini; verifikasi sebelum memilih anggaran yang lebih besar."
+	},
 	"validation": {
 		"apiKey": "Kamu harus menyediakan API key yang valid.",
 		"awsRegion": "Kamu harus memilih region untuk digunakan dengan Amazon Bedrock.",
 		"googleCloud": "Kamu harus menyediakan Google Cloud Project ID dan Region yang valid.",
 		"modelId": "Kamu harus menyediakan model ID yang valid.",
 		"modelSelector": "Kamu harus menyediakan model selector yang valid.",
+		"modelDisabled": "Model ini dinonaktifkan oleh penyedia. Pilih model lain untuk melanjutkan.",
+		"modelOutage": "Penyedia saat ini melaporkan gangguan untuk model ini.",
 		"openAi": "Kamu harus menyediakan base URL, API key, dan model ID yang valid.",
 		"arn": {
 			"invalidFormat": "Format ARN tidak valid. Silakan periksa persyaratan format.",

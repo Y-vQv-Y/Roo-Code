@@ -529,7 +529,8 @@
 			"high": "Yüksek",
 			"xhigh": "Çok yüksek",
 			"medium": "Orta",
-			"low": "Düşük"
+			"low": "Düşük",
+			"max": "Maksimum"
 		},
 		"verbosity": {
 			"label": "Çıktı Ayrıntı Düzeyi",
@@ -862,12 +863,20 @@
 		"maxTokens": "Maksimum token",
 		"maxThinkingTokens": "Maksimum düşünme tokeni"
 	},
+	"contextWindow": {
+		"label": "Bağlam penceresi",
+		"auto": "Otomatik ({{value}})",
+		"description": "Belirteç sayımı ve otomatik sıkıştırma için kullanılacak bağlam bütçesini ayarlar. Ayrı otomatik yoğunlaştırma eşiği sıkıştırmanın ne zaman başlayacağını belirler; %10 güvenlik payı her zaman ayrılır.",
+		"unknownCapability": "Sağlayıcı bu modelin bağlam sınırını bildirmedi; daha büyük bir bütçe seçmeden önce doğrulayın."
+	},
 	"validation": {
 		"apiKey": "Geçerli bir API anahtarı sağlamalısınız.",
 		"awsRegion": "Amazon Bedrock kullanmak için bir bölge seçmelisiniz.",
 		"googleCloud": "Geçerli bir Google Cloud proje kimliği ve bölge sağlamalısınız.",
 		"modelId": "Geçerli bir model kimliği sağlamalısınız.",
 		"modelSelector": "Geçerli bir model seçici sağlamalısınız.",
+		"modelDisabled": "Bu model sağlayıcı tarafından devre dışı bırakıldı. Devam etmek için başka bir model seçin.",
+		"modelOutage": "Sağlayıcı şu anda bu model için bir kesinti bildiriyor.",
 		"openAi": "Geçerli bir temel URL, API anahtarı ve model kimliği sağlamalısınız.",
 		"arn": {
 			"invalidFormat": "Geçersiz ARN formatı. Lütfen format gereksinimlerini kontrol edin.",

@@ -529,7 +529,8 @@
 			"high": "Cao",
 			"xhigh": "Rất cao",
 			"medium": "Trung bình",
-			"low": "Thấp"
+			"low": "Thấp",
+			"max": "Tối đa"
 		},
 		"verbosity": {
 			"label": "Mức độ chi tiết đầu ra",
@@ -862,12 +863,20 @@
 		"maxTokens": "Tokens tối đa",
 		"maxThinkingTokens": "Tokens suy nghĩ tối đa"
 	},
+	"contextWindow": {
+		"label": "Cửa sổ ngữ cảnh",
+		"auto": "Tự động ({{value}})",
+		"description": "Đặt ngân sách ngữ cảnh dùng để đếm token và nén tự động. Ngưỡng tự động cô đọng riêng kiểm soát thời điểm bắt đầu nén; luôn dành riêng vùng an toàn 10%.",
+		"unknownCapability": "Nhà cung cấp chưa báo cáo giới hạn ngữ cảnh của mô hình này; hãy xác minh trước khi chọn ngân sách lớn hơn."
+	},
 	"validation": {
 		"apiKey": "Bạn phải cung cấp khóa API hợp lệ.",
 		"awsRegion": "Bạn phải chọn một vùng để sử dụng Amazon Bedrock.",
 		"googleCloud": "Bạn phải cung cấp ID dự án và vùng Google Cloud hợp lệ.",
 		"modelId": "Bạn phải cung cấp ID mô hình hợp lệ.",
 		"modelSelector": "Bạn phải cung cấp bộ chọn mô hình hợp lệ.",
+		"modelDisabled": "Nhà cung cấp đã tắt mô hình này. Hãy chọn mô hình khác để tiếp tục.",
+		"modelOutage": "Nhà cung cấp hiện đang báo cáo sự cố với mô hình này.",
 		"openAi": "Bạn phải cung cấp URL cơ sở, khóa API và ID mô hình hợp lệ.",
 		"arn": {
 			"invalidFormat": "Định dạng ARN không hợp lệ. Vui lòng kiểm tra yêu cầu về định dạng.",

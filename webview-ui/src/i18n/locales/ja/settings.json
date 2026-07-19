@@ -529,7 +529,8 @@
 			"high": "高",
 			"xhigh": "非常に高い",
 			"medium": "中",
-			"low": "低"
+			"low": "低",
+			"max": "最大"
 		},
 		"verbosity": {
 			"label": "出力の冗長性",
@@ -862,12 +863,20 @@
 		"maxTokens": "最大 tokens",
 		"maxThinkingTokens": "最大思考 tokens"
 	},
+	"contextWindow": {
+		"label": "コンテキストウィンドウ",
+		"auto": "自動（{{value}}）",
+		"description": "トークン計算と自動圧縮に使用するコンテキスト予算を設定します。別の自動圧縮しきい値で圧縮の開始時点を制御します。安全マージンとして常に10%を確保します。",
+		"unknownCapability": "プロバイダーからこのモデルのコンテキスト上限が報告されていません。大きな予算を選択する前に確認してください。"
+	},
 	"validation": {
 		"apiKey": "有効なAPIキーを入力してください。",
 		"awsRegion": "Amazon Bedrockを使用するにはリージョンを選択してください。",
 		"googleCloud": "有効なGoogle CloudプロジェクトIDとリージョンを入力してください。",
 		"modelId": "有効なモデルIDを入力してください。",
 		"modelSelector": "有効なモデルセレクターを入力してください。",
+		"modelDisabled": "このモデルはプロバイダーによって無効になっています。続行するには別のモデルを選択してください。",
+		"modelOutage": "プロバイダーは現在このモデルの障害を報告しています。",
 		"openAi": "有効なベースURL、APIキー、モデルIDを入力してください。",
 		"arn": {
 			"invalidFormat": "ARNの形式が無効です。フォーマット要件を確認してください。",

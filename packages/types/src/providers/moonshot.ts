@@ -131,7 +131,10 @@ export const getMoonshotModelInfo = (modelId: string): ModelInfo => {
 
 	const v1Match = modelId.match(/^moonshot-v1-(8k|32k|128k)(-vision-preview)?$/)
 	if (v1Match) {
-		const contextWindow = Number(v1Match[1].replace("k", "")) * 1_024
+		const contextSize = v1Match[1]
+		if (!contextSize) return moonshotModelInfoSaneDefaults
+
+		const contextWindow = Number(contextSize.replace("k", "")) * 1_024
 		return {
 			...moonshotModelInfoSaneDefaults,
 			maxTokens: contextWindow,
@@ -141,8 +144,8 @@ export const getMoonshotModelInfo = (modelId: string): ModelInfo => {
 			supportsTemperature: true,
 			defaultTemperature: 0,
 			description: v1Match[2]
-				? `Moonshot V1 vision model for understanding image content with a ${v1Match[1].toUpperCase()} context window.`
-				: `Moonshot V1 model for generating long-form text with a ${v1Match[1].toUpperCase()} context window.`,
+				? `Moonshot V1 vision model for understanding image content with a ${contextSize.toUpperCase()} context window.`
+				: `Moonshot V1 model for generating long-form text with a ${contextSize.toUpperCase()} context window.`,
 		}
 	}
 

@@ -40,6 +40,24 @@ jobs:
               run: pnpm lint
             - name: Check types
               run: pnpm check-types
+            # Keep declaration generation in the push/PR gate. The regular
+            # check-types task does not exercise tsup's DTS worker, which is
+            # the path used by the VSIX build.
+            - name: Build shared type declarations
+              run: pnpm --filter @roo-code/types build
+            # Use the same Turbo dependency graph and VSIX entry point as the
+            # release workflow. This builds the webview, shared packages and
+            # extension bundle before validating VSIX packaging.
+            - name: Package VS Code extension
+              run: pnpm vsix
+            - name: Upload VSIX artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: adtec-code-vsix-${{ github.sha }}
+                  path: bin/*.vsix
+                  if-no-files-found: error
+            - name: Build CLI
+              run: pnpm --filter @adtec-code/cli build
 
     unit-test:
         name: platform-unit-test (${{ matrix.name }})

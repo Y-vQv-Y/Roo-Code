@@ -529,7 +529,8 @@
 			"high": "Hoog",
 			"xhigh": "Zeer hoog",
 			"medium": "Middel",
-			"low": "Laag"
+			"low": "Laag",
+			"max": "Maximum"
 		},
 		"verbosity": {
 			"label": "Uitvoerbaarheid",
@@ -862,12 +863,20 @@
 		"maxTokens": "Max tokens",
 		"maxThinkingTokens": "Max denk-tokens"
 	},
+	"contextWindow": {
+		"label": "Contextvenster",
+		"auto": "Automatisch ({{value}})",
+		"description": "Stelt het contextbudget in voor het tellen van tokens en automatische compressie. De aparte drempel voor automatisch condenseren bepaalt wanneer compressie begint; er wordt altijd een veiligheidsmarge van 10% gereserveerd.",
+		"unknownCapability": "De provider heeft de contextlimiet van dit model niet gemeld. Controleer deze voordat je een groter budget selecteert."
+	},
 	"validation": {
 		"apiKey": "Je moet een geldige API-sleutel opgeven.",
 		"awsRegion": "Je moet een regio kiezen om Amazon Bedrock te gebruiken.",
 		"googleCloud": "Je moet een geldig Google Cloud Project-ID en regio opgeven.",
 		"modelId": "Je moet een geldig model-ID opgeven.",
 		"modelSelector": "Je moet een geldige modelselector opgeven.",
+		"modelDisabled": "Dit model is door de provider uitgeschakeld. Selecteer een ander model om door te gaan.",
+		"modelOutage": "De provider meldt momenteel een storing voor dit model.",
 		"openAi": "Je moet een geldige basis-URL, API-sleutel en model-ID opgeven.",
 		"arn": {
 			"invalidFormat": "Ongeldig ARN-formaat. Controleer de formaatvereisten.",

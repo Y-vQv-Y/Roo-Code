@@ -529,7 +529,8 @@
 			"high": "Wysoki",
 			"xhigh": "Bardzo wysoki",
 			"medium": "Średni",
-			"low": "Niski"
+			"low": "Niski",
+			"max": "Maksymalny"
 		},
 		"verbosity": {
 			"label": "Szczegółowość danych wyjściowych",
@@ -862,12 +863,20 @@
 		"maxTokens": "Maksymalna liczba tokenów",
 		"maxThinkingTokens": "Maksymalna liczba tokenów myślenia"
 	},
+	"contextWindow": {
+		"label": "Okno kontekstu",
+		"auto": "Automatycznie ({{value}})",
+		"description": "Ustawia budżet kontekstu używany do zliczania tokenów i automatycznej kompresji. Oddzielny próg automatycznego kondensowania określa moment rozpoczęcia kompresji; zawsze rezerwowany jest 10% margines bezpieczeństwa.",
+		"unknownCapability": "Dostawca nie zgłosił limitu kontekstu tego modelu; sprawdź go przed wybraniem większego budżetu."
+	},
 	"validation": {
 		"apiKey": "Musisz podać prawidłowy klucz API.",
 		"awsRegion": "Musisz wybrać region, aby korzystać z Amazon Bedrock.",
 		"googleCloud": "Musisz podać prawidłowe ID projektu i region Google Cloud.",
 		"modelId": "Musisz podać prawidłowe ID modelu.",
 		"modelSelector": "Musisz podać prawidłowy selektor modelu.",
+		"modelDisabled": "Ten model jest wyłączony przez dostawcę. Wybierz inny model, aby kontynuować.",
+		"modelOutage": "Dostawca zgłasza obecnie awarię tego modelu.",
 		"openAi": "Musisz podać prawidłowy bazowy URL, klucz API i ID modelu.",
 		"arn": {
 			"invalidFormat": "Nieprawidłowy format ARN. Sprawdź wymagania dotyczące formatu.",

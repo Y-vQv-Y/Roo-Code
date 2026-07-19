@@ -2,6 +2,12 @@
 
 All notable changes to ADTEC Code are documented in this file.
 
+## 0.1.1
+
+- Fixed strict TypeScript declaration generation for dynamically resolved Moonshot model metadata.
+- Added full VSIX and CLI build validation to the GitHub Actions QA gate.
+- Added tag-triggered internal VSIX release packaging for ADTEC Code.
+
 ## 0.1.0
 
 ### Added

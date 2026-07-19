@@ -1,6 +1,9 @@
 name: Package and Release ADTEC Code
 
 on:
+  push:
+    tags:
+      - 'v*'
   pull_request:
     types: [closed]
   workflow_dispatch:
@@ -18,6 +21,7 @@ jobs:
         github.event.pull_request.merged == true &&
         github.event.pull_request.base.ref == 'main' &&
         contains(github.event.pull_request.title, 'Changeset version bump') ) ||
+        ( github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') ) ||
         github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
@@ -68,11 +72,25 @@ jobs:
           # Clean up temporary file.
           rm /tmp/adtec-code-vsix-contents.txt
       - name: Create and Push Git Tag
+        if: github.event_name != 'push'
         run: |
           current_package_version=$(node -p "require('./src/package.json').version")
-          git tag -a "v${current_package_version}" -m "Release v${current_package_version}"
-          git push origin "v${current_package_version}" --no-verify
-          echo "Successfully created and pushed git tag v${current_package_version}"
+          release_tag="v${current_package_version}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${release_tag}" >/dev/null 2>&1; then
+            git fetch origin "refs/tags/${release_tag}:refs/tags/${release_tag}"
+            tagged_commit=$(git rev-list -n 1 "$release_tag")
+            current_commit=$(git rev-parse HEAD)
+            if [ "$tagged_commit" != "$current_commit" ]; then
+              echo "Tag $release_tag already points at $tagged_commit, not $current_commit"
+              exit 1
+            fi
+            echo "Reusing existing tag $release_tag"
+          else
+            git tag -a "$release_tag" -m "Release $release_tag"
+            git push origin "$release_tag" --no-verify
+            echo "Successfully created and pushed git tag $release_tag"
+          fi
       # Public Marketplace publishing is disabled for internal ADTEC Code distributions.
       - name: Create GitHub Release
         env:
@@ -102,9 +120,23 @@ jobs:
           fi
 
           # Create release with changelog content
-          gh release create "v${current_package_version}" \
-            --title "Release v${current_package_version}" \
-            --notes "$changelog_content" \
-            --target ${{ env.GIT_REF }} \
-            "$vsix_path"
-          echo "Successfully created GitHub Release v${current_package_version}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            release_tag="${GITHUB_REF_NAME}"
+          else
+            release_tag="v${current_package_version}"
+          fi
+
+          if gh release view "$release_tag" >/dev/null 2>&1; then
+            gh release edit "$release_tag" \
+              --title "Release ${release_tag}" \
+              --notes "$changelog_content"
+            gh release upload "$release_tag" "$vsix_path" --clobber
+            echo "Successfully updated GitHub Release ${release_tag}"
+          else
+            gh release create "$release_tag" \
+              --title "Release ${release_tag}" \
+              --notes "$changelog_content" \
+              --target ${{ env.GIT_REF }} \
+              "$vsix_path"
+            echo "Successfully created GitHub Release ${release_tag}"
+          fi

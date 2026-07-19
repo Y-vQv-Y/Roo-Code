@@ -529,7 +529,8 @@
 			"high": "Alt",
 			"xhigh": "Molt alt",
 			"medium": "Mitjà",
-			"low": "Baix"
+			"low": "Baix",
+			"max": "Màxim"
 		},
 		"verbosity": {
 			"label": "Verbositat de la sortida",
@@ -862,12 +863,20 @@
 		"maxTokens": "Tokens màxims",
 		"maxThinkingTokens": "Tokens de pensament màxims"
 	},
+	"contextWindow": {
+		"label": "Finestra de context",
+		"auto": "Automàtic ({{value}})",
+		"description": "Estableix el pressupost de context utilitzat per al recompte de tokens i la compressió automàtica. El llindar independent de condensació automàtica controla quan comença la compressió; sempre es reserva un marge de seguretat del 10%.",
+		"unknownCapability": "El proveïdor no ha informat del límit de context d'aquest model; verifiqueu-lo abans de seleccionar un pressupost més gran."
+	},
 	"validation": {
 		"apiKey": "Heu de proporcionar una clau API vàlida.",
 		"awsRegion": "Heu de triar una regió per utilitzar Amazon Bedrock.",
 		"googleCloud": "Heu de proporcionar un ID de projecte i regió de Google Cloud vàlids.",
 		"modelId": "Heu de proporcionar un ID de model vàlid.",
 		"modelSelector": "Heu de proporcionar un selector de model vàlid.",
+		"modelDisabled": "Aquest model està desactivat pel proveïdor. Seleccioneu un altre model per continuar.",
+		"modelOutage": "El proveïdor informa actualment d'una interrupció per a aquest model.",
 		"openAi": "Heu de proporcionar una URL base, clau API i ID de model vàlids.",
 		"arn": {
 			"invalidFormat": "Format ARN no vàlid. Si us plau, comproveu els requisits del format.",
