@@ -356,7 +356,7 @@ describe("skillsMessageHandler", () => {
 				type: "openSkillFile",
 				skillName: "adtec-test",
 				source: "bundled",
-			} as WebviewMessage)
+			} as unknown as WebviewMessage)
 
 			expect(mockFindSkillByNameAndSource).not.toHaveBeenCalled()
 			expect(openFile).not.toHaveBeenCalled()

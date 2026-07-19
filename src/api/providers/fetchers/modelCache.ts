@@ -109,6 +109,8 @@ const readFetchedAt = (options: ModelCacheOptions): number | undefined => {
 	} catch {
 		return undefined
 	}
+
+	return undefined
 }
 
 const isStale = (options: ModelCacheOptions) => {

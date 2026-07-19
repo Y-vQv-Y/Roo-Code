@@ -40,6 +40,7 @@ import {
 	TodoItem,
 	getApiProtocol,
 	getModelId,
+	isProviderName,
 	isRetiredProvider,
 	isIdleAsk,
 	isInteractiveAsk,
@@ -894,7 +895,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			const modelId = requestContext?.model.id ?? getModelId(this.apiConfiguration)
 			const apiProvider = requestContext?.model.provider ?? this.apiConfiguration.apiProvider
 			const apiProtocol = requestContext?.model.protocol ?? getApiProtocol(
-				apiProvider && !isRetiredProvider(apiProvider) ? apiProvider : undefined,
+				isProviderName(apiProvider) && !isRetiredProvider(apiProvider) ? apiProvider : undefined,
 				modelId,
 			)
 			const isAnthropicProtocol = apiProtocol === "anthropic"
