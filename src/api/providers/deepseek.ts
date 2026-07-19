@@ -3,7 +3,8 @@ import OpenAI from "openai"
 
 import {
 	deepSeekModels,
-	deepSeekDefaultModelId,
+	deepSeekModelInfoSaneDefaults,
+	normalizeDeepSeekModelId,
 	DEEP_SEEK_DEFAULT_TEMPERATURE,
 	OPENAI_AZURE_AI_INFERENCE_PATH,
 } from "@roo-code/types"
@@ -27,7 +28,7 @@ export class DeepSeekHandler extends OpenAiHandler {
 		super({
 			...options,
 			openAiApiKey: options.deepSeekApiKey ?? "not-provided",
-			openAiModelId: options.apiModelId ?? deepSeekDefaultModelId,
+			openAiModelId: normalizeDeepSeekModelId(options.apiModelId),
 			openAiBaseUrl: options.deepSeekBaseUrl || "https://api.deepseek.com",
 			openAiStreamingEnabled: true,
 			includeMaxTokens: true,
@@ -35,8 +36,11 @@ export class DeepSeekHandler extends OpenAiHandler {
 	}
 
 	override getModel() {
-		const id = this.options.apiModelId ?? deepSeekDefaultModelId
-		const info = deepSeekModels[id as keyof typeof deepSeekModels] || deepSeekModels[deepSeekDefaultModelId]
+		const id = normalizeDeepSeekModelId(this.options.apiModelId)
+		const info =
+			this.options.modelInfoOverrides?.[`deepseek/${id}`] ??
+			deepSeekModels[id as keyof typeof deepSeekModels] ??
+			deepSeekModelInfoSaneDefaults
 		const params = getModelParams({
 			format: "openai",
 			modelId: id,
@@ -52,16 +56,17 @@ export class DeepSeekHandler extends OpenAiHandler {
 		messages: Anthropic.Messages.MessageParam[],
 		metadata?: ApiHandlerCreateMessageMetadata,
 	): ApiStream {
-		const modelId = this.options.apiModelId ?? deepSeekDefaultModelId
-		const { info: modelInfo } = this.getModel()
+		const { id: modelId, info: modelInfo, maxTokens } = this.getModel()
 
-		// Check if this is a thinking-enabled model (deepseek-reasoner)
-		const isThinkingModel = modelId.includes("deepseek-reasoner")
+		// V4 models think by default. An explicit false keeps the API's
+		// non-thinking mode available for callers that need lower latency.
+		const isLegacyNonThinkingAlias = this.options.apiModelId === "deepseek-chat"
+		const isThinkingModel = !isLegacyNonThinkingAlias && this.options.enableReasoningEffort !== false
 
 		// Convert messages to R1 format (merges consecutive same-role messages)
 		// This is required for DeepSeek which does not support successive messages with the same role
-		// For thinking models (deepseek-reasoner), enable mergeToolResultText to preserve reasoning_content
-		// during tool call sequences. Without this, environment_details text after tool_results would
+		// For thinking models, preserve reasoning_content during tool call sequences.
+		// Without this, environment_details text after tool_results would
 		// create user messages that cause DeepSeek to drop all previous reasoning_content.
 		// See: https://api-docs.deepseek.com/guides/thinking_mode
 		const convertedMessages = convertToR1Format([{ role: "user", content: systemPrompt }, ...messages], {
@@ -74,15 +79,14 @@ export class DeepSeekHandler extends OpenAiHandler {
 			messages: convertedMessages,
 			stream: true as const,
 			stream_options: { include_usage: true },
-			// Enable thinking mode for deepseek-reasoner or when tools are used with thinking model
-			...(isThinkingModel && { thinking: { type: "enabled" } }),
+			// DeepSeek V4 defaults to thinking mode. Send an explicit switch so the
+			// user's toggle also works when non-thinking mode is selected.
+			thinking: { type: isThinkingModel ? "enabled" : "disabled" },
+			...(maxTokens && maxTokens > 0 ? { max_tokens: maxTokens } : {}),
 			tools: this.convertToolsForOpenAI(metadata?.tools),
 			tool_choice: metadata?.tool_choice,
 			parallel_tool_calls: metadata?.parallelToolCalls ?? true,
 		}
-
-		// Add max_tokens if needed
-		this.addMaxTokensIfNeeded(requestOptions, modelInfo)
 
 		// Check if base URL is Azure AI Inference (for DeepSeek via Azure)
 		const isAzureAiInference = this._isAzureAiInference(this.options.deepSeekBaseUrl)

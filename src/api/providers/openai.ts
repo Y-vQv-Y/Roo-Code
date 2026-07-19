@@ -5,12 +5,12 @@ import axios from "axios"
 import {
 	type ModelInfo,
 	azureOpenAiDefaultApiVersion,
-	openAiModelInfoSaneDefaults,
+	openAiCompatibleModelInfoSaneDefaults,
 	DEEP_SEEK_DEFAULT_TEMPERATURE,
 	OPENAI_AZURE_AI_INFERENCE_PATH,
 } from "@roo-code/types"
 
-import type { ApiHandlerOptions } from "../../shared/api"
+import { getModelMaxOutputTokens, type ApiHandlerOptions } from "../../shared/api"
 
 import { TagMatcher } from "../../utils/tag-matcher"
 
@@ -281,7 +281,10 @@ export class OpenAiHandler extends BaseProvider implements SingleCompletionHandl
 
 	override getModel() {
 		const id = this.options.openAiModelId ?? ""
-		const info: ModelInfo = this.options.openAiCustomModelInfo ?? openAiModelInfoSaneDefaults
+		const info: ModelInfo =
+			this.options.openAiCustomModelInfo ??
+			this.options.modelInfoOverrides?.[`openai/${id}`] ??
+			openAiCompatibleModelInfoSaneDefaults
 		const params = getModelParams({
 			format: "openai",
 			modelId: id,
@@ -527,24 +530,36 @@ export class OpenAiHandler extends BaseProvider implements SingleCompletionHandl
 	): void {
 		// Only add max_completion_tokens if includeMaxTokens is true
 		if (this.options.includeMaxTokens === true) {
-			// Use user-configured modelMaxTokens if available, otherwise fall back to model's default maxTokens
-			// Using max_completion_tokens as max_tokens is deprecated
-			requestOptions.max_completion_tokens = this.options.modelMaxTokens || modelInfo.maxTokens
+			const maxTokens = getModelMaxOutputTokens({
+				modelId: this.getModel().id,
+				model: modelInfo,
+				settings: this.options,
+				format: "openai",
+			})
+
+			// Using max_completion_tokens as max_tokens is deprecated.
+			if (maxTokens !== undefined) {
+				requestOptions.max_completion_tokens = maxTokens
+			}
 		}
 	}
 }
 
-export async function getOpenAiModels(baseUrl?: string, apiKey?: string, openAiHeaders?: Record<string, string>) {
+export async function getOpenAiModelCatalog(
+	baseUrl?: string,
+	apiKey?: string,
+	openAiHeaders?: Record<string, string>,
+): Promise<{ ids: string[]; models: Record<string, ModelInfo> }> {
 	try {
 		if (!baseUrl) {
-			return []
+			return { ids: [], models: {} }
 		}
 
 		// Trim whitespace from baseUrl to handle cases where users accidentally include spaces
 		const trimmedBaseUrl = baseUrl.trim()
 
 		if (!URL.canParse(trimmedBaseUrl)) {
-			return []
+			return { ids: [], models: {} }
 		}
 
 		const config: Record<string, any> = {}
@@ -561,10 +576,67 @@ export async function getOpenAiModels(baseUrl?: string, apiKey?: string, openAiH
 			config["headers"] = headers
 		}
 
-		const response = await axios.get(`${trimmedBaseUrl}/models`, config)
-		const modelsArray = response.data?.data?.map((model: any) => model.id) || []
-		return [...new Set<string>(modelsArray)]
+		const response = await axios.get(`${trimmedBaseUrl.replace(/\/+$/, "")}/models`, config)
+		const rawModels = Array.isArray(response.data?.data) ? response.data.data : []
+		const models: Record<string, ModelInfo> = {}
+
+		for (const rawModel of rawModels) {
+			const id = typeof rawModel === "string" ? rawModel : rawModel?.id
+			if (typeof id !== "string" || !id.trim()) continue
+
+			const modelData = typeof rawModel === "object" && rawModel !== null ? rawModel : {}
+			const contextWindow = [
+				modelData.context_window,
+				modelData.context_length,
+				modelData.max_context_length,
+				modelData.input_token_limit,
+			].find((value) => typeof value === "number" && Number.isFinite(value) && value > 0) as number | undefined
+			const maxTokens = [
+				modelData.max_output_tokens,
+				modelData.max_completion_tokens,
+				modelData.output_token_limit,
+			].find((value) => typeof value === "number" && Number.isFinite(value) && value > 0) as number | undefined
+			const rawContextConfig = modelData.context_window_config ?? modelData.contextWindowConfig
+			const positiveContextValue = (value: unknown) =>
+				typeof value === "number" && Number.isInteger(value) && value > 0 ? value : undefined
+			const contextWindowConfig =
+				rawContextConfig && typeof rawContextConfig === "object"
+					? {
+							...(typeof rawContextConfig.is_configurable === "boolean"
+								? { isConfigurable: rawContextConfig.is_configurable }
+								: typeof rawContextConfig.isConfigurable === "boolean"
+									? { isConfigurable: rawContextConfig.isConfigurable }
+									: {}),
+							...(positiveContextValue(rawContextConfig.min) ? { min: positiveContextValue(rawContextConfig.min) } : {}),
+							...(positiveContextValue(rawContextConfig.max) ? { max: positiveContextValue(rawContextConfig.max) } : {}),
+							...(positiveContextValue(rawContextConfig.default)
+								? { default: positiveContextValue(rawContextConfig.default) }
+								: {}),
+						}
+					: undefined
+			const status = ["active", "alpha", "beta", "deprecated", "outage", "disabled"].includes(modelData.status)
+				? modelData.status
+				: undefined
+
+			models[id] = {
+				...openAiCompatibleModelInfoSaneDefaults,
+				...(contextWindow ? { contextWindow } : {}),
+				...(contextWindowConfig && Object.keys(contextWindowConfig).length > 0 ? { contextWindowConfig } : {}),
+				...(maxTokens ? { maxTokens } : {}),
+				...(typeof modelData.description === "string" ? { description: modelData.description } : {}),
+				...(status ? { status } : {}),
+				metadataSource: "provider",
+				metadataUpdatedAt: Date.now(),
+				capabilityConfidence: contextWindow ? "provider-reported" : "unknown",
+			}
+		}
+
+		return { ids: Object.keys(models), models }
 	} catch (error) {
-		return []
+		return { ids: [], models: {} }
 	}
+}
+
+export async function getOpenAiModels(baseUrl?: string, apiKey?: string, openAiHeaders?: Record<string, string>) {
+	return (await getOpenAiModelCatalog(baseUrl, apiKey, openAiHeaders)).ids
 }

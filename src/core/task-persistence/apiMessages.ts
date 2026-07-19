@@ -20,6 +20,12 @@ export type ApiMessage = Anthropic.MessageParam & {
 	text?: string
 	// For OpenRouter reasoning_details array format (used by Gemini 3, etc.)
 	reasoning_details?: any[]
+	// Protocol provenance for provider-specific reasoning metadata.
+	modelProvider?: string
+	modelId?: string
+	modelProtocol?: "anthropic" | "openai"
+	// Compression creates a new epoch; model switches preserve the current one.
+	contextEpoch?: string
 	// For DeepSeek/Z.ai interleaved thinking: reasoning_content that must be preserved during tool call sequences
 	// See: https://api-docs.deepseek.com/guides/thinking_mode#tool-calls
 	reasoning_content?: string

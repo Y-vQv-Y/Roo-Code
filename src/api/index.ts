@@ -117,64 +117,69 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 		)
 	}
 
+	const handlerOptions = {
+		...options,
+		...(apiProvider && !isRetiredProvider(apiProvider) ? { apiProvider } : {}),
+	}
+
 	switch (apiProvider) {
 		case "anthropic":
-			return new AnthropicHandler(options)
+			return new AnthropicHandler(handlerOptions)
 		case "openrouter":
-			return new OpenRouterHandler(options)
+			return new OpenRouterHandler(handlerOptions)
 		case "bedrock":
-			return new AwsBedrockHandler(options)
+			return new AwsBedrockHandler(handlerOptions)
 		case "vertex":
 			return options.apiModelId?.startsWith("claude")
-				? new AnthropicVertexHandler(options)
-				: new VertexHandler(options)
+				? new AnthropicVertexHandler(handlerOptions)
+				: new VertexHandler(handlerOptions)
 		case "openai":
-			return new OpenAiHandler(options)
+			return new OpenAiHandler(handlerOptions)
 		case "ollama":
-			return new NativeOllamaHandler(options)
+			return new NativeOllamaHandler(handlerOptions)
 		case "lmstudio":
-			return new LmStudioHandler(options)
+			return new LmStudioHandler(handlerOptions)
 		case "gemini":
-			return new GeminiHandler(options)
+			return new GeminiHandler(handlerOptions)
 		case "openai-codex":
-			return new OpenAiCodexHandler(options)
+			return new OpenAiCodexHandler(handlerOptions)
 		case "openai-native":
-			return new OpenAiNativeHandler(options)
+			return new OpenAiNativeHandler(handlerOptions)
 		case "deepseek":
-			return new DeepSeekHandler(options)
+			return new DeepSeekHandler(handlerOptions)
 		case "qwen-code":
-			return new QwenCodeHandler(options)
+			return new QwenCodeHandler(handlerOptions)
 		case "moonshot":
-			return new MoonshotHandler(options)
+			return new MoonshotHandler(handlerOptions)
 		case "vscode-lm":
-			return new VsCodeLmHandler(options)
+			return new VsCodeLmHandler(handlerOptions)
 		case "mistral":
-			return new MistralHandler(options)
+			return new MistralHandler(handlerOptions)
 		case "requesty":
-			return new RequestyHandler(options)
+			return new RequestyHandler(handlerOptions)
 		case "unbound":
-			return new UnboundHandler(options)
+			return new UnboundHandler(handlerOptions)
 		case "fake-ai":
-			return new FakeAIHandler(options)
+			return new FakeAIHandler(handlerOptions)
 		case "xai":
-			return new XAIHandler(options)
+			return new XAIHandler(handlerOptions)
 		case "litellm":
-			return new LiteLLMHandler(options)
+			return new LiteLLMHandler(handlerOptions)
 		case "sambanova":
-			return new SambaNovaHandler(options)
+			return new SambaNovaHandler(handlerOptions)
 		case "zai":
-			return new ZAiHandler(options)
+			return new ZAiHandler(handlerOptions)
 		case "fireworks":
-			return new FireworksHandler(options)
+			return new FireworksHandler(handlerOptions)
 		case "vercel-ai-gateway":
-			return new VercelAiGatewayHandler(options)
+			return new VercelAiGatewayHandler(handlerOptions)
 		case "minimax":
-			return new MiniMaxHandler(options)
+			return new MiniMaxHandler(handlerOptions)
 		case "baseten":
-			return new BasetenHandler(options)
+			return new BasetenHandler(handlerOptions)
 		case "poe":
-			return new PoeHandler(options)
+			return new PoeHandler(handlerOptions)
 		default:
-			return new AnthropicHandler(options)
+			return new AnthropicHandler(handlerOptions)
 	}
 }

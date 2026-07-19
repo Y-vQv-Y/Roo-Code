@@ -57,7 +57,7 @@ jobs:
         run: pnpm bundle
 
       - name: Build CLI
-        run: pnpm --filter @roo-code/cli build
+        run: pnpm --filter @adtec-code/cli build
 
       - name: Create release tarball
         id: tarball
@@ -86,7 +86,7 @@ jobs:
           node -e "
             const pkg = require('./apps/cli/package.json');
             const newPkg = {
-              name: '@roo-code/cli',
+              name: '@adtec-code/cli',
               version: '$VERSION',
               type: 'module',
               dependencies: {
@@ -107,6 +107,11 @@ jobs:
           # Copy extension bundle.
           echo "Copying extension bundle..."
           cp -r src/dist/* "$RELEASE_DIR/extension/"
+
+          # Bundled skills are runtime resources, not part of the extension JS bundle.
+          echo "Copying bundled skills..."
+          mkdir -p "$RELEASE_DIR/extension/builtin-skills"
+          cp -r src/builtin-skills/* "$RELEASE_DIR/extension/builtin-skills/"
 
           # Add package.json to extension directory for CommonJS.
           echo '{"type": "commonjs"}' > "$RELEASE_DIR/extension/package.json"
@@ -185,6 +190,8 @@ jobs:
           test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/lib/index.js" || { echo "Missing lib/index.js"; exit 1; }
           test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/package.json" || { echo "Missing package.json"; exit 1; }
           test -d "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/extension" || { echo "Missing extension directory"; exit 1; }
+          test -f "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/extension/builtin-skills/adtec-test/SKILL.md" || { echo "Missing bundled skill"; exit 1; }
+          grep -Fq "ADTEC bundled skill loaded successfully." "$VERIFY_DIR/adtec-code-cli-${PLATFORM}/extension/builtin-skills/adtec-test/SKILL.md" || { echo "Invalid bundled skill"; exit 1; }
 
           echo "Tarball verification passed!"
 

@@ -70,7 +70,11 @@ export abstract class RouterProvider extends BaseProvider {
 
 		// Fall back to global cache (synchronous disk/memory cache)
 		// This ensures models are available before fetchModel() is called
-		const cachedModels = getModelsFromCache(this.name)
+		const cachedModels = getModelsFromCache({
+			provider: this.name,
+			apiKey: this.client.apiKey,
+			baseUrl: this.client.baseURL,
+		})
 		if (cachedModels?.[id]) {
 			// Also populate instance models for future calls
 			this.models = cachedModels

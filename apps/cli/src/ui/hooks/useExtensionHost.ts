@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback, useMemo } from "react"
 import { useApp } from "ink"
 import { randomUUID } from "crypto"
 import pWaitFor from "p-wait-for"
-import type { ExtensionMessage, HistoryItem, WebviewMessage } from "@roo-code/types"
+import { isDynamicProvider, type ExtensionMessage, type HistoryItem, type WebviewMessage } from "@roo-code/types"
 
 import { ExtensionHostInterface, ExtensionHostOptions } from "@/agent/index.js"
 import { arePathsEqual } from "@/lib/utils/path.js"
@@ -69,16 +69,21 @@ export function useExtensionHost({
 	continueSession,
 	mode,
 	reasoningEffort,
+	consecutiveMistakeLimit,
 	user,
 	provider,
 	apiKey,
+	baseUrl,
 	model,
+	contextWindow,
 	workspacePath,
 	extensionPath,
 	nonInteractive,
 	ephemeral,
 	debug,
 	exitOnComplete,
+	terminalShell,
+	exitOnError,
 	onExtensionMessage,
 	createExtensionHost,
 }: UseExtensionHostOptions): UseExtensionHostReturn {
@@ -109,15 +114,20 @@ export function useExtensionHost({
 					mode,
 					user,
 					reasoningEffort,
+					consecutiveMistakeLimit,
 					provider,
 					apiKey,
+					baseUrl,
 					model,
+					contextWindow,
 					workspacePath,
 					extensionPath,
 					nonInteractive,
 					ephemeral,
 					debug,
 					exitOnComplete,
+					terminalShell,
+					exitOnError,
 					disableOutput: true,
 				})
 
@@ -158,6 +168,25 @@ export function useExtensionHost({
 				// postStateToWebview which includes taskHistory).
 				host.sendToExtension({ type: "requestCommands" })
 				host.sendToExtension({ type: "requestModes" })
+				if (isDynamicProvider(provider)) {
+					host.sendToExtension({ type: "requestRouterModels", values: { provider } })
+				} else if (provider === "ollama") {
+					host.sendToExtension({ type: "requestOllamaModels" })
+				} else if (provider === "lmstudio") {
+					host.sendToExtension({ type: "requestLmStudioModels" })
+				} else if (provider === "openai" || provider === "deepseek" || provider === "moonshot") {
+					const providerBaseUrl =
+						baseUrl ||
+						(provider === "openai"
+							? "https://api.openai.com/v1"
+							: provider === "deepseek"
+								? "https://api.deepseek.com"
+								: "https://api.moonshot.ai/v1")
+					host.sendToExtension({
+						type: "requestOpenAiModels",
+						values: { provider, baseUrl: providerBaseUrl, apiKey },
+					})
+				}
 
 				if (requestedSessionId || continueSession) {
 					await pWaitFor(() => hasReceivedTaskHistory, {

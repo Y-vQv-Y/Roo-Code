@@ -3,7 +3,6 @@ import { reasoningEffortsExtended } from "@roo-code/types"
 export const DEFAULT_FLAGS = {
 	mode: "code",
 	reasoningEffort: "medium" as const,
-	model: "anthropic/claude-opus-4.6",
 	consecutiveMistakeLimit: 10,
 }
 
@@ -15,9 +14,8 @@ export const REASONING_EFFORTS = [...reasoningEffortsExtended, "unspecified", "d
  */
 export const FOLLOWUP_TIMEOUT_SECONDS = 60
 
-export const ASCII_ROO = `  _,'   ___
- <__\\__/   \\
-    \\_  /  _\\
-      \\,\\ / \\\\
-        //   \\\\
-      ,/'     \`\\_,`
+export const ASCII_ADTEC = `    /\\
+   /  \\
+  / /\\ \\
+ / ____ \\
+/_/    \\_\\`

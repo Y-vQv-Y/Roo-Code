@@ -8,7 +8,7 @@ import OpenAI from "openai"
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
 import { streamText, generateText, LanguageModel, ToolSet } from "ai"
 
-import type { ModelInfo } from "@roo-code/types"
+import { getEffectiveContextWindow, getModelContextWindow, type ModelInfo } from "@roo-code/types"
 
 import type { ApiHandlerOptions } from "../../shared/api"
 
@@ -18,6 +18,10 @@ import { ApiStream, ApiStreamUsageChunk } from "../transform/stream"
 import { DEFAULT_HEADERS } from "./constants"
 import { BaseProvider } from "./base-provider"
 import type { SingleCompletionHandler, ApiHandlerCreateMessageMetadata } from "../index"
+
+export type OpenAICompatibleProviderOptions = NonNullable<
+	Parameters<typeof streamText>[0]["providerOptions"]
+>[string]
 
 /**
  * Configuration options for creating an OpenAI-compatible provider.
@@ -81,6 +85,14 @@ export abstract class OpenAICompatibleHandler extends BaseProvider implements Si
 	 */
 	abstract override getModel(): { id: string; info: ModelInfo; maxTokens?: number; temperature?: number }
 
+	/** Optional provider-specific fields for a model request. */
+	protected getProviderOptions(_model: {
+		id: string
+		info: ModelInfo
+	}): OpenAICompatibleProviderOptions | undefined {
+		return undefined
+	}
+
 	/**
 	 * Process usage metrics from the AI SDK response.
 	 * Can be overridden by subclasses to handle provider-specific usage formats.
@@ -141,10 +153,19 @@ export abstract class OpenAICompatibleHandler extends BaseProvider implements Si
 	 * Get the max tokens parameter to include in the request.
 	 */
 	protected getMaxOutputTokens(): number | undefined {
-		const modelInfo = this.config.modelInfo
-		const maxTokens = this.config.modelMaxTokens || modelInfo.maxTokens
+		const model = this.getModel()
+		const modelInfo = model.info
+		const maxTokens = this.config.modelMaxTokens || model.maxTokens || modelInfo.maxTokens
+		const contextWindow = getEffectiveContextWindow(
+			modelInfo,
+			getModelContextWindow(this.options, this.options.apiProvider ?? this.config.providerName, model.id),
+		)
 
-		return maxTokens ?? undefined
+		if (typeof maxTokens !== "number" || maxTokens <= 0) {
+			return undefined
+		}
+
+		return Math.min(maxTokens, contextWindow)
 	}
 
 	/**
@@ -166,14 +187,19 @@ export abstract class OpenAICompatibleHandler extends BaseProvider implements Si
 		const aiSdkTools = convertToolsForAiSdk(openAiTools) as ToolSet | undefined
 
 		// Build the request options
+		const providerOptions = this.getProviderOptions(model)
 		const requestOptions: Parameters<typeof streamText>[0] = {
 			model: languageModel,
 			system: systemPrompt,
 			messages: aiSdkMessages,
-			temperature: model.temperature ?? this.config.temperature ?? 0,
+			temperature:
+				model.info.supportsTemperature === false
+					? undefined
+					: (model.temperature ?? this.config.temperature ?? 0),
 			maxOutputTokens: this.getMaxOutputTokens(),
 			tools: aiSdkTools,
 			toolChoice: this.mapToolChoice(metadata?.tool_choice),
+			...(providerOptions ? { providerOptions: { [this.config.providerName]: providerOptions } } : {}),
 		}
 
 		// Use streamText for streaming responses
@@ -198,13 +224,16 @@ export abstract class OpenAICompatibleHandler extends BaseProvider implements Si
 	 * Complete a prompt using the AI SDK generateText.
 	 */
 	async completePrompt(prompt: string): Promise<string> {
+		const model = this.getModel()
 		const languageModel = this.getLanguageModel()
 
+		const providerOptions = this.getProviderOptions(model)
 		const { text } = await generateText({
 			model: languageModel,
 			prompt,
 			maxOutputTokens: this.getMaxOutputTokens(),
-			temperature: this.config.temperature ?? 0,
+			temperature: model.info.supportsTemperature === false ? undefined : (this.config.temperature ?? 0),
+			...(providerOptions ? { providerOptions: { [this.config.providerName]: providerOptions } } : {}),
 		})
 
 		return text

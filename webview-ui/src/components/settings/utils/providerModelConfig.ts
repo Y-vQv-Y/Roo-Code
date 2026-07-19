@@ -13,6 +13,7 @@ import {
 	sambaNovaDefaultModelId,
 	internationalZAiDefaultModelId,
 	mainlandZAiDefaultModelId,
+	zaiApiLineConfigs,
 	fireworksDefaultModelId,
 	minimaxDefaultModelId,
 	basetenDefaultModelId,
@@ -29,7 +30,7 @@ export const PROVIDER_SERVICE_CONFIG: Partial<Record<ProviderName, ProviderServi
 	anthropic: { serviceName: "Anthropic", serviceUrl: "https://console.anthropic.com" },
 	bedrock: { serviceName: "Amazon Bedrock", serviceUrl: "https://aws.amazon.com/bedrock" },
 	deepseek: { serviceName: "DeepSeek", serviceUrl: "https://platform.deepseek.com" },
-	moonshot: { serviceName: "Moonshot", serviceUrl: "https://platform.moonshot.cn" },
+	moonshot: { serviceName: "Moonshot / Kimi", serviceUrl: "https://platform.kimi.ai" },
 	gemini: { serviceName: "Google Gemini", serviceUrl: "https://ai.google.dev" },
 	mistral: { serviceName: "Mistral", serviceUrl: "https://console.mistral.ai" },
 	"openai-native": { serviceName: "OpenAI", serviceUrl: "https://platform.openai.com" },
@@ -74,7 +75,7 @@ export const getProviderServiceConfig = (provider: ProviderName): ProviderServic
 export const getDefaultModelIdForProvider = (provider: ProviderName, apiConfiguration?: ProviderSettings): string => {
 	// Handle Z.ai's China/International entrypoint distinction
 	if (provider === "zai" && apiConfiguration) {
-		return apiConfiguration.zaiApiLine === "china_coding"
+		return zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
 			? mainlandZAiDefaultModelId
 			: internationalZAiDefaultModelId
 	}
@@ -155,4 +156,5 @@ export const handleModelChangeSideEffects = <K extends keyof ProviderSettings>(
 	setApiConfigurationField("reasoningEffort" as K, undefined as ProviderSettings[K])
 	setApiConfigurationField("modelMaxTokens" as K, undefined as ProviderSettings[K])
 	setApiConfigurationField("modelMaxThinkingTokens" as K, undefined as ProviderSettings[K])
+	setApiConfigurationField("modelContextWindow" as K, undefined as ProviderSettings[K])
 }

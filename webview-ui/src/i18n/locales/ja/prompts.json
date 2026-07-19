@@ -49,7 +49,7 @@
 		"title": "モード固有のカスタム指示（オプション）",
 		"resetToDefault": "デフォルトにリセット",
 		"description": "{{modeName}}モードに特化した行動ガイドラインを追加します。",
-		"loadFromFile": "{{mode}}モード固有のカスタム指示は、ワークスペースの<span>.adtec/rules-{{slug}}/</span>フォルダまたはグローバル<0>.adtec/rules-{{slug}}/</0>からも読み込むことができます（.adtecrules-{{slug}}と.clinerules-{{slug}}は非推奨で、まもなく動作しなくなります）。"
+		"loadFromFile": "{{mode}}モード固有のカスタム指示は、ワークスペースの<span>.adtec/rules-{{slug}}/</span>フォルダまたはグローバル<0>.adtec/rules-{{slug}}/</0>からも読み込むことができます。"
 	},
 	"exportMode": {
 		"title": "モードをエクスポート",
@@ -73,7 +73,7 @@
 	"globalCustomInstructions": {
 		"title": "すべてのモードのカスタム指示",
 		"description": "これらの指示はすべてのモードに適用されます。モード固有の指示で強化できる基本的な動作セットを提供します。<0>詳細はこちら</0>",
-		"loadFromFile": "指示は、ワークスペースの<span>.adtec/rules/</span>フォルダまたはグローバル<0>.adtec/rules/</0>からも読み込むことができます（.adtecrulesと.clinerulesは非推奨で、まもなく動作しなくなります）。"
+		"loadFromFile": "指示は、ワークスペースの<span>.adtec/rules/</span>フォルダまたはグローバル<0>.adtec/rules/</0>からも読み込むことができます。"
 	},
 	"systemPrompt": {
 		"preview": "システムプロンプトのプレビュー",

@@ -3,7 +3,11 @@ import {
 	type ProviderSettings,
 	type DynamicProvider,
 	type LocalProvider,
+	type ProviderName,
+	type ReasoningEffortExtended,
 	ANTHROPIC_DEFAULT_MAX_TOKENS,
+	getEffectiveContextWindow,
+	getModelContextWindow,
 	isDynamicProvider,
 	isLocalProvider,
 } from "@roo-code/types"
@@ -11,6 +15,8 @@ import {
 // ApiHandlerOptions
 // Extend ProviderSettings (minus apiProvider) with handler-specific toggles.
 export type ApiHandlerOptions = Omit<ProviderSettings, "apiProvider"> & {
+	/** Active provider identity used for provider/model-scoped metadata. */
+	apiProvider?: ProviderName
 	/**
 	 * When true and using OpenAI Responses API models that support reasoning summaries,
 	 * include reasoning.summary: "auto" so the API returns summaries (we already parse
@@ -62,11 +68,7 @@ export const shouldUseReasoningEffort = ({
 	// Selected effort from settings or model default
 	const selectedEffort = (settings?.reasoningEffort ?? (model as any).reasoningEffort) as
 		| "disable"
-		| "none"
-		| "minimal"
-		| "low"
-		| "medium"
-		| "high"
+		| ReasoningEffortExtended
 		| undefined
 
 	// "disable" explicitly omits reasoning
@@ -86,13 +88,7 @@ export const shouldUseReasoningEffort = ({
 
 	// Not explicitly supported: only allow when the model itself defines a default effort
 	// Ignore settings-only selections when capability is absent/false
-	const modelDefaultEffort = (model as any).reasoningEffort as
-		| "none"
-		| "minimal"
-		| "low"
-		| "medium"
-		| "high"
-		| undefined
+	const modelDefaultEffort = (model as any).reasoningEffort as ReasoningEffortExtended | undefined
 	return !!modelDefaultEffort
 }
 
@@ -113,8 +109,18 @@ export const getModelMaxOutputTokens = ({
 	settings?: ProviderSettings
 	format?: "anthropic" | "openai" | "gemini" | "openrouter"
 }): number | undefined => {
+	const effectiveContextWindow = getEffectiveContextWindow(
+		model,
+		settings ? getModelContextWindow(settings, settings.apiProvider, modelId) : undefined,
+	)
+
 	if (shouldUseReasoningBudget({ model, settings })) {
-		return settings?.modelMaxTokens || DEFAULT_HYBRID_REASONING_MODEL_MAX_TOKENS
+		const reasoningMaxTokens = settings?.modelMaxTokens || DEFAULT_HYBRID_REASONING_MODEL_MAX_TOKENS
+		return Math.min(reasoningMaxTokens, effectiveContextWindow)
+	}
+
+	if (settings?.modelMaxTokens && settings.modelMaxTokens > 0) {
+		return Math.min(settings.modelMaxTokens, effectiveContextWindow)
 	}
 
 	const isAnthropicContext =
@@ -134,17 +140,17 @@ export const getModelMaxOutputTokens = ({
 
 	// If model has explicit maxTokens, clamp it to 20% of the context window
 	// Exception: GPT-5 models should use their exact configured max output tokens
-	if (model.maxTokens) {
+	if (model.maxTokens && model.maxTokens > 0) {
 		// Check if this is a GPT-5 model (case-insensitive)
 		const isGpt5Model = modelId.toLowerCase().includes("gpt-5")
 
 		// GPT-5 models bypass the 20% cap and use their full configured max tokens
 		if (isGpt5Model) {
-			return model.maxTokens
+			return Math.min(model.maxTokens, effectiveContextWindow)
 		}
 
 		// All other models are clamped to 20% of context window
-		return Math.min(model.maxTokens, Math.ceil(model.contextWindow * 0.2))
+		return Math.min(model.maxTokens, Math.ceil(effectiveContextWindow * 0.2))
 	}
 
 	// For non-Anthropic formats without explicit maxTokens, return undefined

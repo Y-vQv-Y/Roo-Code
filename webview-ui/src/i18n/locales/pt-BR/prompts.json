@@ -49,7 +49,7 @@
 		"title": "Instruções personalizadas específicas do modo (opcional)",
 		"resetToDefault": "Restaurar para padrão",
 		"description": "Adicione diretrizes comportamentais específicas para o modo {{modeName}}.",
-		"loadFromFile": "Instruções personalizadas específicas para o modo {{mode}} também podem ser carregadas da pasta <span>.adtec/rules-{{slug}}/</span> no seu espaço de trabalho ou do global <0>.adtec/rules-{{slug}}/</0> (.adtecrules-{{slug}} e .clinerules-{{slug}} estão obsoletos e deixarão de funcionar em breve)."
+		"loadFromFile": "Instruções personalizadas específicas para o modo {{mode}} também podem ser carregadas da pasta <span>.adtec/rules-{{slug}}/</span> no seu espaço de trabalho ou do global <0>.adtec/rules-{{slug}}/</0>."
 	},
 	"exportMode": {
 		"title": "Exportar modo",
@@ -73,7 +73,7 @@
 	"globalCustomInstructions": {
 		"title": "Instruções personalizadas para todos os modos",
 		"description": "Estas instruções se aplicam a todos os modos. Elas fornecem um conjunto base de comportamentos que podem ser aprimorados por instruções específicas do modo abaixo. <0>Saiba mais</0>",
-		"loadFromFile": "Instruções também podem ser carregadas da pasta <span>.adtec/rules/</span> no seu espaço de trabalho ou do global <0>.adtec/rules/</0> (.adtecrules e .clinerules estão obsoletos e deixarão de funcionar em breve)."
+		"loadFromFile": "Instruções também podem ser carregadas da pasta <span>.adtec/rules/</span> no seu espaço de trabalho ou do global <0>.adtec/rules/</0>."
 	},
 	"systemPrompt": {
 		"preview": "Visualizar prompt do sistema",

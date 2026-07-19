@@ -3,7 +3,7 @@ import { Text, Box } from "ink"
 
 import type { TokenUsage } from "@roo-code/types"
 
-import { ASCII_ROO } from "@/types/constants.js"
+import { ASCII_ADTEC } from "@/types/constants.js"
 
 import { ExtensionHostOptions } from "@/agent/index.js"
 import { useTerminalSize } from "../hooks/TerminalSizeContext.js"
@@ -43,7 +43,7 @@ function Header({
 			<Box width={columns}>
 				<Box flexDirection="row">
 					<Box marginY={1}>
-						<Text color="magenta">{ASCII_ROO}</Text>
+						<Text color="magenta">{ASCII_ADTEC}</Text>
 					</Box>
 					<Box flexDirection="column" marginLeft={1} marginTop={1}>
 						{user && <Text color={theme.dimText}>Welcome back, {user.name}</Text>}

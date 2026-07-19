@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react"
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { convertHeadersToObject } from "./utils/headers"
 import { useDebounce } from "react-use"
 import { VSCodeLink, VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
@@ -7,6 +7,8 @@ import { ExternalLinkIcon } from "@radix-ui/react-icons"
 import {
 	type ProviderName,
 	type ProviderSettings,
+	type ExtensionMessage,
+	type ModelRecord,
 	isRetiredProvider,
 	DEFAULT_CONSECUTIVE_MISTAKE_LIMIT,
 	openRouterDefaultModelId,
@@ -28,10 +30,14 @@ import {
 	sambaNovaDefaultModelId,
 	internationalZAiDefaultModelId,
 	mainlandZAiDefaultModelId,
+	zaiApiLineConfigs,
 	fireworksDefaultModelId,
 	vercelAiGatewayDefaultModelId,
 	minimaxDefaultModelId,
 	unboundDefaultModelId,
+	deepSeekModelInfoSaneDefaults,
+	moonshotModelInfoSaneDefaults,
+	getMoonshotModelInfo,
 } from "@roo-code/types"
 
 import {
@@ -99,13 +105,13 @@ import { inputEventTransform, noTransform } from "./transforms"
 import { ModelPicker } from "./ModelPicker"
 import { ApiErrorMessage } from "./ApiErrorMessage"
 import { ThinkingBudget } from "./ThinkingBudget"
+import { ContextWindowSetting } from "./ContextWindowSetting"
 import { Verbosity } from "./Verbosity"
 import { TodoListSettingsControl } from "./TodoListSettingsControl"
 import { TemperatureControl } from "./TemperatureControl"
 import { RateLimitSecondsControl } from "./RateLimitSecondsControl"
 import { ConsecutiveMistakeLimitControl } from "./ConsecutiveMistakeLimitControl"
 import { BedrockCustomArn } from "./providers/BedrockCustomArn"
-import { buildDocLink } from "@src/utils/docLinks"
 import { BookOpenText } from "lucide-react"
 
 export interface ApiOptionsProps {
@@ -164,6 +170,68 @@ const ApiOptions = ({
 	)
 
 	const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false)
+	const [discoveredModels, setDiscoveredModels] = useState<
+		Partial<Record<"deepseek" | "moonshot", ModelRecord>>
+	>({})
+
+	useEffect(() => {
+		const handleModelsMessage = (event: MessageEvent<ExtensionMessage>) => {
+			const message = event.data
+			if (message.type !== "openAiModels") return
+
+			const provider = message.values?.provider as "deepseek" | "moonshot" | undefined
+			if (provider !== "deepseek" && provider !== "moonshot") return
+
+			const modelIds = message.openAiModels ?? []
+			if (modelIds.length === 0) {
+				// Empty responses also represent transient auth/network failures. Keep
+				// the last known-good catalog and metadata instead of erasing it.
+				return
+			}
+
+			const staticModelInfo = getStaticModelsForProvider(provider)
+
+			const fallbackModelInfo =
+				provider === "deepseek" ? deepSeekModelInfoSaneDefaults : moonshotModelInfoSaneDefaults
+			const resolveModelInfo = (id: string) => {
+				const baseInfo =
+					provider === "moonshot"
+						? getMoonshotModelInfo(id)
+						: (staticModelInfo[id] ?? fallbackModelInfo)
+				const reportedInfo = message.openAiModelInfo?.[id]
+
+				return reportedInfo?.capabilityConfidence === "provider-reported"
+					? {
+							...baseInfo,
+							contextWindow: reportedInfo.contextWindow,
+							contextWindowConfig: reportedInfo.contextWindowConfig ?? baseInfo.contextWindowConfig,
+							maxTokens: reportedInfo.maxTokens ?? baseInfo.maxTokens,
+							description: reportedInfo.description ?? baseInfo.description,
+							status: reportedInfo.status ?? baseInfo.status,
+							metadataSource: reportedInfo.metadataSource,
+							metadataUpdatedAt: reportedInfo.metadataUpdatedAt,
+							capabilityConfidence: reportedInfo.capabilityConfidence,
+						}
+					: baseInfo
+			}
+
+			setDiscoveredModels((previous) => ({
+				...previous,
+				[provider]: Object.fromEntries(
+					modelIds.map((id) => [id, resolveModelInfo(id)]),
+				),
+			}))
+
+			const modelInfoOverrides = { ...(apiConfiguration.modelInfoOverrides ?? {}) }
+			modelIds.forEach((id) => {
+				modelInfoOverrides[`${provider}/${id}`] = resolveModelInfo(id)
+			})
+			setApiConfigurationField("modelInfoOverrides", modelInfoOverrides, false)
+		}
+
+		window.addEventListener("message", handleModelsMessage)
+		return () => window.removeEventListener("message", handleModelsMessage)
+	}, [apiConfiguration, setApiConfigurationField])
 
 	const handleInputChange = useCallback(
 		<K extends keyof ProviderSettings, E>(
@@ -186,6 +254,15 @@ const ApiOptions = ({
 		: selectedProvider
 	const isRetiredSelectedProvider =
 		typeof apiConfiguration.apiProvider === "string" && isRetiredProvider(apiConfiguration.apiProvider)
+	const modelSelectionKey = `${selectedProvider ?? ""}/${selectedModelId ?? ""}`
+	const previousModelSelectionKey = useRef(modelSelectionKey)
+
+	useEffect(() => {
+		if (previousModelSelectionKey.current !== modelSelectionKey) {
+			setApiConfigurationField("modelContextWindow", undefined, false)
+			previousModelSelectionKey.current = modelSelectionKey
+		}
+	}, [modelSelectionKey, setApiConfigurationField])
 
 	const { data: routerModels, refetch: refetchRouterModels } = useRouterModels()
 
@@ -237,6 +314,34 @@ const ApiOptions = ({
 				vscode.postMessage({ type: "requestLmStudioModels" })
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
+			} else if (selectedProvider === "deepseek") {
+				setDiscoveredModels((previous) => {
+					const next = { ...previous }
+					delete next.deepseek
+					return next
+				})
+				vscode.postMessage({
+					type: "requestOpenAiModels",
+					values: {
+						provider: "deepseek",
+						baseUrl: apiConfiguration?.deepSeekBaseUrl || "https://api.deepseek.com",
+						apiKey: apiConfiguration?.deepSeekApiKey,
+					},
+				})
+			} else if (selectedProvider === "moonshot") {
+				setDiscoveredModels((previous) => {
+					const next = { ...previous }
+					delete next.moonshot
+					return next
+				})
+				vscode.postMessage({
+					type: "requestOpenAiModels",
+					values: {
+						provider: "moonshot",
+						baseUrl: apiConfiguration?.moonshotBaseUrl || "https://api.moonshot.ai/v1",
+						apiKey: apiConfiguration?.moonshotApiKey,
+					},
+				})
 			} else if (selectedProvider === "litellm" || selectedProvider === "poe") {
 				vscode.postMessage({ type: "requestRouterModels" })
 			}
@@ -249,6 +354,10 @@ const ApiOptions = ({
 			apiConfiguration?.openAiApiKey,
 			apiConfiguration?.ollamaBaseUrl,
 			apiConfiguration?.lmStudioBaseUrl,
+			apiConfiguration?.deepSeekBaseUrl,
+			apiConfiguration?.deepSeekApiKey,
+			apiConfiguration?.moonshotBaseUrl,
+			apiConfiguration?.moonshotApiKey,
 			apiConfiguration?.litellmBaseUrl,
 			apiConfiguration?.litellmApiKey,
 			apiConfiguration?.poeApiKey,
@@ -274,6 +383,7 @@ const ApiOptions = ({
 	const onProviderChange = useCallback(
 		(value: ProviderName) => {
 			setApiConfigurationField("apiProvider", value)
+			setApiConfigurationField("modelContextWindow", undefined, false)
 
 			// It would be much easier to have a single attribute that stores
 			// the modelId, but we have a separate attribute for each of
@@ -352,7 +462,7 @@ const ApiOptions = ({
 				zai: {
 					field: "apiModelId",
 					default:
-						apiConfiguration.zaiApiLine === "china_coding"
+						zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
 							? mainlandZAiDefaultModelId
 							: internationalZAiDefaultModelId,
 				},
@@ -389,15 +499,19 @@ const ApiOptions = ({
 			return undefined
 		}
 
-		// Get the URL slug - use custom mapping if available, otherwise use the provider key.
-		const slugs: Record<string, string> = {
-			"openai-native": "openai",
-			openai: "openai-compatible",
+		const service = getProviderServiceConfig(selectedProvider)
+		const officialDocumentationUrls: Partial<Record<ProviderName, string>> = {
+			deepseek: "https://api-docs.deepseek.com/quick_start/pricing",
+			moonshot: "https://platform.kimi.ai/docs/models",
+		}
+		const url = officialDocumentationUrls[selectedProvider] ?? service.serviceUrl
+
+		if (!url) {
+			return undefined
 		}
 
-		const slug = slugs[selectedProvider] || selectedProvider
 		return {
-			url: buildDocLink(`providers/${slug}`, "provider_docs"),
+			url,
 			name,
 		}
 	}, [selectedProvider])
@@ -705,10 +819,10 @@ const ApiOptions = ({
 								apiConfiguration={apiConfiguration}
 								setApiConfigurationField={setApiConfigurationField}
 								defaultModelId={getDefaultModelIdForProvider(activeSelectedProvider, apiConfiguration)}
-								models={getStaticModelsForProvider(
-									activeSelectedProvider,
-									t("settings:labels.useCustomArn"),
-								)}
+								models={
+									discoveredModels[activeSelectedProvider as "deepseek" | "moonshot"] ??
+									getStaticModelsForProvider(activeSelectedProvider, t("settings:labels.useCustomArn"))
+								}
 								modelIdKey="apiModelId"
 								serviceName={getProviderServiceConfig(activeSelectedProvider).serviceName}
 								serviceUrl={getProviderServiceConfig(activeSelectedProvider).serviceUrl}
@@ -739,6 +853,17 @@ const ApiOptions = ({
 							apiConfiguration={apiConfiguration}
 							setApiConfigurationField={setApiConfigurationField}
 							modelInfo={selectedModelInfo}
+						/>
+					)}
+
+					{!fromWelcomeView && (
+						<ContextWindowSetting
+							key={`${selectedProvider}-${selectedModelId}`}
+							apiConfiguration={apiConfiguration}
+							setApiConfigurationField={setApiConfigurationField}
+							modelInfo={selectedModelInfo}
+							provider={activeSelectedProvider}
+							modelId={selectedModelId}
 						/>
 					)}
 

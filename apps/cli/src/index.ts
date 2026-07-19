@@ -2,7 +2,7 @@ import { Command } from "commander"
 
 import { DEFAULT_FLAGS } from "@/types/constants.js"
 import { VERSION } from "@/lib/utils/version.js"
-import { run, listCommands, listModes, listModels, listSessions, upgrade } from "@/commands/index.js"
+import { run, listCommands, listModes, listModels, listSessions, listSkills, upgrade } from "@/commands/index.js"
 
 const program = new Command()
 
@@ -35,13 +35,19 @@ program
 	.option("-d, --debug", "Enable debug output (includes detailed debug information)", false)
 	.option("-a, --require-approval", "Require manual approval for actions", false)
 	.option("-k, --api-key <key>", "API key for the LLM provider")
+	.option("--base-url <url>", "Override the selected provider API base URL")
 	.option("--provider <provider>", "API provider (anthropic, openai, openrouter, etc.)")
-	.option("-m, --model <model>", "Model to use", DEFAULT_FLAGS.model)
+	.option("-m, --model <model>", "Model to use (defaults to the selected provider's current default)")
+	.option(
+		"--context-window <tokens>",
+		"Context budget in tokens; clamped to the model's real provider limit",
+		(value) => Number.parseInt(value, 10),
+	)
 	.option("--mode <mode>", "Mode to start in (code, architect, ask, debug, etc.)", DEFAULT_FLAGS.mode)
 	.option("--terminal-shell <path>", "Absolute path to shell executable for inline terminal commands")
 	.option(
 		"-r, --reasoning-effort <effort>",
-		"Reasoning effort level (unspecified, disabled, none, minimal, low, medium, high, xhigh)",
+		"Reasoning effort level (unspecified, disabled, none, minimal, low, medium, high, xhigh, max)",
 		DEFAULT_FLAGS.reasoningEffort,
 	)
 	.option(
@@ -61,7 +67,7 @@ program
 
 const listCommand = program
 	.command("list")
-	.description("List commands, modes, models, or sessions")
+	.description("List commands, modes, models, skills, or sessions")
 	.enablePositionalOptions()
 	.passThroughOptions()
 
@@ -70,6 +76,8 @@ const applyListOptions = (command: Command) =>
 		.option("-w, --workspace <path>", "Workspace directory path (defaults to current working directory)")
 		.option("-e, --extension <path>", "Path to the extension bundle directory")
 		.option("-k, --api-key <key>", "API key for the LLM provider")
+		.option("--base-url <url>", "Override the selected provider API base URL")
+		.option("--provider <provider>", "Provider whose models should be listed", "openrouter")
 		.option("--format <format>", 'Output format: "json" (default) or "text"', "json")
 		.option("-d, --debug", "Enable debug output", false)
 
@@ -116,6 +124,12 @@ applyListOptions(listCommand.command("models").description("List available model
 applyListOptions(listCommand.command("sessions").description("List task sessions")).action(
 	async (options: Parameters<typeof listSessions>[0]) => {
 		await runListAction(() => listSessions(options))
+	},
+)
+
+applyListOptions(listCommand.command("skills").description("List bundled and user skills")).action(
+	async (options: Parameters<typeof listSkills>[0]) => {
+		await runListAction(() => listSkills(options))
 	},
 )
 

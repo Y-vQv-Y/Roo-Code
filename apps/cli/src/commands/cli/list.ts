@@ -5,14 +5,15 @@ import { fileURLToPath } from "url"
 import pWaitFor from "p-wait-for"
 
 import type { TaskSessionEntry } from "@roo-code/core/cli"
-import type { Command, ModelRecord, WebviewMessage } from "@roo-code/types"
-import { openRouterDefaultModelId } from "@roo-code/types"
+import type { Command, ModelRecord, SkillMetadata, WebviewMessage } from "@roo-code/types"
+import { getProviderDefaultModelId, getStaticProviderModels, isDynamicProvider } from "@roo-code/types"
 
 import { ExtensionHost, type ExtensionHostOptions } from "@/agent/index.js"
 import { readWorkspaceTaskSessions } from "@/lib/task-history/index.js"
 import { getDefaultExtensionPath } from "@/lib/utils/extension.js"
 import { getApiKeyFromEnv } from "@/lib/utils/provider.js"
 import { isRecord } from "@/lib/utils/guards.js"
+import { isSupportedProvider, providerRequiresApiKey, type SupportedProvider } from "@/types/index.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -24,6 +25,8 @@ type BaseListOptions = {
 	workspace?: string
 	extension?: string
 	apiKey?: string
+	baseUrl?: string
+	provider?: string
 	format?: string
 	debug?: boolean
 }
@@ -31,6 +34,7 @@ type BaseListOptions = {
 type CommandLike = Pick<Command, "name" | "source" | "filePath" | "description" | "argumentHint">
 type ModeLike = { slug: string; name: string }
 type SessionLike = TaskSessionEntry
+type SkillLike = Pick<SkillMetadata, "name" | "description" | "source" | "modeSlugs">
 type ListHostOptions = { ephemeral: boolean }
 
 export function parseFormat(rawFormat: string | undefined): ListFormat {
@@ -80,8 +84,47 @@ function outputModesText(modes: ModeLike[]): void {
 }
 
 function outputModelsText(models: ModelRecord): void {
-	for (const modelId of Object.keys(models).sort()) {
-		process.stdout.write(`${modelId}\n`)
+	for (const [modelId, info] of Object.entries(models).sort(([a], [b]) => a.localeCompare(b))) {
+		const status = info.status ? `\t${info.status}` : ""
+		const confidence = info.capabilityConfidence ?? (info.metadataSource === "provider" ? "provider-reported" : "catalog")
+		process.stdout.write(
+			`${modelId}\tcontext=${info.contextWindow}\tmax_output=${info.maxTokens ?? "unknown"}\tconfidence=${confidence}${status}\n`,
+		)
+	}
+}
+
+function enrichDiscoveredModels(discovered: ModelRecord, catalog: ModelRecord | undefined): ModelRecord {
+	return Object.fromEntries(
+		Object.entries(discovered).map(([modelId, reported]) => {
+			const known = catalog?.[modelId]
+			if (!known) return [modelId, reported]
+
+			if (reported.capabilityConfidence !== "provider-reported") {
+				return [modelId, { ...known, status: reported.status ?? known.status }]
+			}
+
+			return [
+				modelId,
+				{
+					...known,
+					contextWindow: reported.contextWindow,
+					contextWindowConfig: reported.contextWindowConfig ?? known.contextWindowConfig,
+					maxTokens: reported.maxTokens ?? known.maxTokens,
+					description: reported.description ?? known.description,
+					status: reported.status ?? known.status,
+					metadataSource: reported.metadataSource,
+					metadataUpdatedAt: reported.metadataUpdatedAt,
+					capabilityConfidence: reported.capabilityConfidence,
+				},
+			]
+		}),
+	)
+}
+
+function outputSkillsText(skills: SkillLike[]): void {
+	for (const skill of skills) {
+		const modes = skill.modeSlugs?.length ? skill.modeSlugs.join(",") : "all"
+		process.stdout.write(`${skill.name}\t${skill.source}\tmodes=${modes}\t${skill.description}\n`)
 	}
 }
 
@@ -105,15 +148,17 @@ function outputSessionsText(sessions: SessionLike[]): void {
 async function createListHost(options: BaseListOptions, hostOptions: ListHostOptions): Promise<ExtensionHost> {
 	const workspacePath = resolveWorkspacePath(options.workspace)
 	const extensionPath = resolveExtensionPath(options.extension)
-	const apiKey = options.apiKey || getApiKeyFromEnv("openrouter")
+	const provider = resolveProvider(options.provider)
+	const apiKey = options.apiKey || getApiKeyFromEnv(provider)
 
 	const extensionHostOptions: ExtensionHostOptions = {
 		mode: "code",
 		reasoningEffort: undefined,
 		user: null,
-		provider: "openrouter",
-		model: openRouterDefaultModelId,
+		provider,
+		model: getProviderDefaultModelId(provider),
 		apiKey,
+		baseUrl: options.baseUrl,
 		workspacePath,
 		extensionPath,
 		nonInteractive: true,
@@ -137,6 +182,14 @@ async function createListHost(options: BaseListOptions, hostOptions: ListHostOpt
 	return host
 }
 
+function resolveProvider(provider: string | undefined): SupportedProvider {
+	const resolved = provider ?? "openrouter"
+	if (!isSupportedProvider(resolved)) {
+		throw new Error(`Unsupported CLI provider: ${resolved}`)
+	}
+	return resolved
+}
+
 /**
  * Send a request to the extension and wait for a matching response message.
  * Returns `undefined` from `extract` to skip non-matching messages, or the
@@ -144,9 +197,10 @@ async function createListHost(options: BaseListOptions, hostOptions: ListHostOpt
  */
 function requestFromExtension<T>(
 	host: ExtensionHost,
-	requestType: WebviewMessage["type"],
+	request: WebviewMessage,
 	extract: (message: Record<string, unknown>) => T | undefined,
 ): Promise<T> {
+	const requestType = request.type
 	return new Promise<T>((resolve, reject) => {
 		let settled = false
 
@@ -192,12 +246,12 @@ function requestFromExtension<T>(
 		}, REQUEST_TIMEOUT_MS)
 
 		host.on("extensionWebviewMessage", onMessage)
-		host.sendToExtension({ type: requestType })
+		host.sendToExtension(request)
 	})
 }
 
 function requestCommands(host: ExtensionHost): Promise<CommandLike[]> {
-	return requestFromExtension(host, "requestCommands", (message) => {
+	return requestFromExtension(host, { type: "requestCommands" }, (message) => {
 		if (message.type !== "commands") {
 			return undefined
 		}
@@ -206,7 +260,7 @@ function requestCommands(host: ExtensionHost): Promise<CommandLike[]> {
 }
 
 function requestModes(host: ExtensionHost): Promise<ModeLike[]> {
-	return requestFromExtension(host, "requestModes", (message) => {
+	return requestFromExtension(host, { type: "requestModes" }, (message) => {
 		if (message.type !== "modes") {
 			return undefined
 		}
@@ -214,15 +268,50 @@ function requestModes(host: ExtensionHost): Promise<ModeLike[]> {
 	})
 }
 
-function requestOpenRouterModels(host: ExtensionHost): Promise<ModelRecord> {
-	return requestFromExtension(host, "requestRouterModels", (message) => {
+function requestRouterModels(host: ExtensionHost, provider: SupportedProvider): Promise<ModelRecord> {
+	return requestFromExtension(host, { type: "requestRouterModels", values: { provider, refresh: true } }, (message) => {
 		if (message.type !== "routerModels") {
 			return undefined
 		}
 
 		const routerModels = isRecord(message.routerModels) ? message.routerModels : {}
-		const openRouterModels = routerModels.openrouter
-		return isRecord(openRouterModels) ? (openRouterModels as ModelRecord) : {}
+		const providerModels = routerModels[provider]
+		return isRecord(providerModels) ? (providerModels as ModelRecord) : {}
+	})
+}
+
+function requestOpenAiCompatibleModels(
+	host: ExtensionHost,
+	provider: "openai" | "openai-native" | "deepseek" | "moonshot",
+	baseUrl: string,
+	apiKey: string,
+): Promise<ModelRecord> {
+	return requestFromExtension(
+		host,
+		{ type: "requestOpenAiModels", values: { provider, baseUrl, apiKey } },
+		(message) => {
+			const values = isRecord(message.values) ? message.values : undefined
+			if (message.type !== "openAiModels" || values?.provider !== provider) return undefined
+			return isRecord(message.openAiModelInfo) ? (message.openAiModelInfo as ModelRecord) : {}
+		},
+	)
+}
+
+function requestLocalModels(host: ExtensionHost, provider: "ollama" | "lmstudio"): Promise<ModelRecord> {
+	const requestType = provider === "ollama" ? "requestOllamaModels" : "requestLmStudioModels"
+	const responseType = provider === "ollama" ? "ollamaModels" : "lmStudioModels"
+	const responseField = provider === "ollama" ? "ollamaModels" : "lmStudioModels"
+	return requestFromExtension(host, { type: requestType }, (message) => {
+		if (message.type !== responseType) return undefined
+		const models = message[responseField]
+		return isRecord(models) ? (models as ModelRecord) : {}
+	})
+}
+
+function requestSkills(host: ExtensionHost): Promise<SkillLike[]> {
+	return requestFromExtension(host, { type: "requestSkills" }, (message) => {
+		if (message.type !== "skills") return undefined
+		return Array.isArray(message.skills) ? (message.skills as SkillLike[]) : []
 	})
 }
 
@@ -285,16 +374,76 @@ export async function listModes(options: BaseListOptions): Promise<void> {
 
 export async function listModels(options: BaseListOptions): Promise<void> {
 	const format = parseFormat(options.format)
+	const provider = resolveProvider(options.provider)
+	// Z.ai's international catalog is the default line in the VS Code settings.
+	// Mainland coding models require an explicit API-line setting, which the CLI
+	// does not silently infer from the provider name.
+	const staticModels = getStaticProviderModels(provider, { isChina: false })
+	const apiKey = options.apiKey || getApiKeyFromEnv(provider)
+
+	if (staticModels && !(apiKey && (provider === "deepseek" || provider === "moonshot" || provider === "openai-native"))) {
+		if (format === "json") outputJson({ provider, source: "catalog", models: staticModels })
+		else outputModelsText(staticModels)
+		return
+	}
+
+	if (providerRequiresApiKey(provider) && !apiKey && provider !== "openrouter" && provider !== "vercel-ai-gateway") {
+		throw new Error(`No API key provided for ${provider}`)
+	}
 
 	await withHostAndSignalHandlers(options, { ephemeral: true }, async (host) => {
-		const models = await requestOpenRouterModels(host)
+		let models: ModelRecord
+		let source: "provider" | "catalog-fallback" = "provider"
+		if (isDynamicProvider(provider)) {
+			models = await requestRouterModels(host, provider)
+		} else if (provider === "ollama" || provider === "lmstudio") {
+			models = await requestLocalModels(host, provider)
+		} else if (
+			provider === "openai" ||
+			provider === "openai-native" ||
+			provider === "deepseek" ||
+			provider === "moonshot"
+		) {
+			const configuredBaseUrl = options.baseUrl?.replace(/\/+$/, "")
+			const baseUrl =
+				provider === "openai-native"
+					? configuredBaseUrl
+						? configuredBaseUrl.endsWith("/v1")
+							? configuredBaseUrl
+							: `${configuredBaseUrl}/v1`
+						: "https://api.openai.com/v1"
+					: configuredBaseUrl ||
+						(provider === "openai"
+							? "https://api.openai.com/v1"
+							: provider === "deepseek"
+								? "https://api.deepseek.com"
+								: "https://api.moonshot.ai/v1")
+			const discovered = await requestOpenAiCompatibleModels(host, provider, baseUrl, apiKey!)
+			if (Object.keys(discovered).length > 0) {
+				models = enrichDiscoveredModels(discovered, staticModels)
+			} else {
+				models = staticModels ?? {}
+				source = "catalog-fallback"
+			}
+		} else {
+			models = staticModels ?? {}
+		}
 
 		if (format === "json") {
-			outputJson({ models })
+			outputJson({ provider, source, models })
 			return
 		}
 
 		outputModelsText(models)
+	})
+}
+
+export async function listSkills(options: BaseListOptions): Promise<void> {
+	const format = parseFormat(options.format)
+	await withHostAndSignalHandlers(options, { ephemeral: true }, async (host) => {
+		const skills = await requestSkills(host)
+		if (format === "json") outputJson({ skills })
+		else outputSkillsText(skills)
 	})
 }
 

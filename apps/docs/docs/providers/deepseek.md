@@ -1,20 +1,20 @@
 ---
 sidebar_label: DeepSeek
-description: Configure DeepSeek's chat and reasoning models in ADTEC Code. Access deepseek-chat and deepseek-reasoner for coding and complex reasoning tasks.
+description: Configure DeepSeek V4-Pro and V4-Flash in ADTEC Code through DeepSeek's OpenAI-compatible API.
 keywords:
     - deepseek
-    - deepseek chat
-    - deepseek reasoner
+    - deepseek v4
+    - deepseek v4 pro
+    - deepseek v4 flash
     - ADTEC Code
     - api provider
     - reasoning ai
     - coding ai
-    - deepseek r1
 ---
 
 # Using DeepSeek With ADTEC Code
 
-ADTEC Code supports accessing models through the DeepSeek API, including `deepseek-chat` and `deepseek-reasoner`.
+ADTEC Code supports the current DeepSeek V4 models: `deepseek-v4-pro` and `deepseek-v4-flash`.
 
 **Website:** [https://platform.deepseek.com/](https://platform.deepseek.com/)
 
@@ -31,7 +31,12 @@ ADTEC Code supports accessing models through the DeepSeek API, including `deepse
 
 ## Available Models
 
-ADTEC Code supports all models available through the DeepSeek API.
+| Model | Context | Maximum output | Description |
+| --- | ---: | ---: | --- |
+| `deepseek-v4-pro` | 1M tokens | 384K tokens | Flagship model with thinking and non-thinking modes. |
+| `deepseek-v4-flash` | 1M tokens | 384K tokens | Faster model with thinking and non-thinking modes. |
+
+Both models support JSON output and tool calls. ADTEC Code uses DeepSeek's OpenAI-compatible base URL `https://api.deepseek.com`. DeepSeek also publishes an Anthropic-compatible endpoint at `https://api.deepseek.com/anthropic` for clients that use the Anthropic protocol.
 
 For the complete, up-to-date model list, see [DeepSeek's API documentation](https://api-docs.deepseek.com/quick_start/pricing).
 

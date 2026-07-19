@@ -3,9 +3,61 @@ import type { ModelInfo } from "../model.js"
 // https://openai.com/api/pricing/
 export type OpenAiNativeModelId = keyof typeof openAiNativeModels
 
-export const openAiNativeDefaultModelId: OpenAiNativeModelId = "gpt-5.1-codex-max"
+export const openAiNativeDefaultModelId: OpenAiNativeModelId = "gpt-5.6-sol"
 
 export const openAiNativeModels = {
+	"gpt-5.6": {
+		maxTokens: 128_000,
+		contextWindow: 1_050_000,
+		includedTools: ["apply_patch"],
+		excludedTools: ["apply_diff", "write_to_file"],
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["none", "low", "medium", "high", "xhigh", "max"],
+		reasoningEffort: "medium",
+		supportsVerbosity: true,
+		supportsTemperature: false,
+		description: "GPT-5.6: latest GPT-5.6 alias, routed to the Sol flagship tier.",
+	},
+	"gpt-5.6-sol": {
+		maxTokens: 128_000,
+		contextWindow: 1_050_000,
+		includedTools: ["apply_patch"],
+		excludedTools: ["apply_diff", "write_to_file"],
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["none", "low", "medium", "high", "xhigh", "max"],
+		reasoningEffort: "medium",
+		supportsVerbosity: true,
+		supportsTemperature: false,
+		description: "GPT-5.6 Sol: flagship tier for quality-first coding, reasoning, and professional work.",
+	},
+	"gpt-5.6-terra": {
+		maxTokens: 128_000,
+		contextWindow: 1_050_000,
+		includedTools: ["apply_patch"],
+		excludedTools: ["apply_diff", "write_to_file"],
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["none", "low", "medium", "high", "xhigh", "max"],
+		reasoningEffort: "medium",
+		supportsVerbosity: true,
+		supportsTemperature: false,
+		description: "GPT-5.6 Terra: balanced tier for cost, latency, and quality.",
+	},
+	"gpt-5.6-luna": {
+		maxTokens: 128_000,
+		contextWindow: 400_000,
+		includedTools: ["apply_patch"],
+		excludedTools: ["apply_diff", "write_to_file"],
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["none", "low", "medium", "high", "xhigh", "max"],
+		reasoningEffort: "medium",
+		supportsVerbosity: true,
+		supportsTemperature: false,
+		description: "GPT-5.6 Luna: throughput and latency-oriented tier for simpler workloads.",
+	},
 	"gpt-5.1-codex-max": {
 		maxTokens: 128000,
 		contextWindow: 400000,
@@ -597,6 +649,18 @@ export const openAiModelInfoSaneDefaults: ModelInfo = {
 	supportsPromptCache: false,
 	inputPrice: 0,
 	outputPrice: 0,
+}
+
+/**
+ * OpenAI-compatible /models endpoints commonly return only model IDs. Keep a
+ * conservative fallback until the provider reports a real limit or the user
+ * supplies verified model metadata in the provider settings.
+ */
+export const openAiCompatibleModelInfoSaneDefaults: ModelInfo = {
+	...openAiModelInfoSaneDefaults,
+	contextWindow: 128_000,
+	metadataSource: "fallback",
+	capabilityConfidence: "unknown",
 }
 
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation

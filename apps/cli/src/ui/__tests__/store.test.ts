@@ -159,7 +159,7 @@ describe("useCLIStore", () => {
 		})
 
 		it("should PRESERVE routerModels", () => {
-			const models = { openai: { "gpt-4": { contextWindow: 128000 } } }
+			const models = { openai: { "gpt-4": { contextWindow: 128000, supportsPromptCache: false } } }
 			useCLIStore.getState().setRouterModels(models)
 
 			useCLIStore.getState().resetForTaskSwitch()

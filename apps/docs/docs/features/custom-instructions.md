@@ -186,7 +186,7 @@ Rules are loaded in this order:
 
 1. **Global Rules** (from `~/.adtec/`)
 2. **Project Rules** (from `project/.adtec/`) - take precedence over global rules when they conflict
-3. [Generic only] **Legacy Files** (workspace root `.adtecrules`, `.clinerules`) - used only if no generic rules directory content was loaded
+3. [Generic only] **Legacy File** (workspace root `.adtecrules`) - used only if no generic rules directory content was loaded
 
 Within each level, mode-specific rules are loaded before general rules.
 

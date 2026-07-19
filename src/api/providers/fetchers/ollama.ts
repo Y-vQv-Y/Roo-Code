@@ -51,6 +51,9 @@ export const parseOllamaModel = (rawModel: OllamaModelInfoResponse): ModelInfo |
 	const modelInfo: ModelInfo = Object.assign({}, ollamaDefaultModelInfo, {
 		description: `Family: ${rawModel.details.family}, Context: ${contextWindow}, Size: ${rawModel.details.parameter_size}`,
 		contextWindow: contextWindow || ollamaDefaultModelInfo.contextWindow,
+		metadataSource: contextWindow ? "provider" : "fallback",
+		metadataUpdatedAt: Date.now(),
+		capabilityConfidence: contextWindow ? "provider-reported" : "fallback",
 		supportsPromptCache: true,
 		supportsImages: rawModel.capabilities?.includes("vision"),
 		maxTokens: contextWindow || ollamaDefaultModelInfo.contextWindow,

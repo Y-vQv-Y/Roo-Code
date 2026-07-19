@@ -1,17 +1,24 @@
-import { moonshotModels, moonshotDefaultModelId, type ModelInfo } from "@roo-code/types"
+import {
+	moonshotDefaultModelId,
+	getMoonshotModelInfo,
+	type ModelInfo,
+} from "@roo-code/types"
 
 import type { ApiHandlerOptions } from "../../shared/api"
 
 import type { ApiStreamUsageChunk } from "../transform/stream"
 import { getModelParams } from "../transform/model-params"
 
-import { OpenAICompatibleHandler, OpenAICompatibleConfig } from "./openai-compatible"
+import {
+	OpenAICompatibleHandler,
+	OpenAICompatibleConfig,
+	type OpenAICompatibleProviderOptions,
+} from "./openai-compatible"
 
 export class MoonshotHandler extends OpenAICompatibleHandler {
 	constructor(options: ApiHandlerOptions) {
 		const modelId = options.apiModelId ?? moonshotDefaultModelId
-		const modelInfo =
-			moonshotModels[modelId as keyof typeof moonshotModels] || moonshotModels[moonshotDefaultModelId]
+		const modelInfo = getMoonshotModelInfo(modelId)
 
 		const config: OpenAICompatibleConfig = {
 			providerName: "moonshot",
@@ -28,7 +35,7 @@ export class MoonshotHandler extends OpenAICompatibleHandler {
 
 	override getModel() {
 		const id = this.options.apiModelId ?? moonshotDefaultModelId
-		const info = moonshotModels[id as keyof typeof moonshotModels] || moonshotModels[moonshotDefaultModelId]
+		const info = this.options.modelInfoOverrides?.[`moonshot/${id}`] ?? getMoonshotModelInfo(id)
 		const params = getModelParams({
 			format: "openai",
 			modelId: id,
@@ -37,6 +44,26 @@ export class MoonshotHandler extends OpenAICompatibleHandler {
 			defaultTemperature: 0,
 		})
 		return { id, info, ...params }
+	}
+
+	protected override getProviderOptions(model: {
+		id: string
+		info: ModelInfo
+	}): OpenAICompatibleProviderOptions | undefined {
+		// Kimi exposes model-specific fields through the OpenAI-compatible body.
+		if (model.id === "kimi-k3") {
+			return { reasoning_effort: "max" }
+		}
+
+		if (model.id === "kimi-k2.7-code" || model.id === "kimi-k2.7-code-highspeed") {
+			return { thinking: { type: "enabled", keep: "all" } }
+		}
+
+		if (model.id === "kimi-k2.6" || model.id === "kimi-k2.5") {
+			return { thinking: { type: this.options.enableReasoningEffort === false ? "disabled" : "enabled" } }
+		}
+
+		return undefined
 	}
 
 	/**
@@ -64,13 +91,4 @@ export class MoonshotHandler extends OpenAICompatibleHandler {
 		}
 	}
 
-	/**
-	 * Override to always include max_tokens for Moonshot (not max_completion_tokens).
-	 * Moonshot requires max_tokens parameter to be sent.
-	 */
-	protected override getMaxOutputTokens(): number | undefined {
-		const modelInfo = this.config.modelInfo
-		// Moonshot always requires max_tokens
-		return this.options.modelMaxTokens || modelInfo.maxTokens || undefined
-	}
 }

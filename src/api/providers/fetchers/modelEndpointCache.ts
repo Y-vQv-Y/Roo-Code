@@ -91,7 +91,9 @@ export const getModelEndpoints = async ({
 	}
 
 	try {
-		modelProviders = await readModelEndpoints(router)
+		// Use the model-specific cache key. Passing only the router name here
+		// prevents fallback from finding the endpoint cache written above.
+		modelProviders = await readModelEndpoints(key)
 		// console.log(`[getModelProviders] read ${key} endpoints from file cache`)
 	} catch (error) {
 		console.error(`[getModelProviders] error reading ${key} endpoints from file cache`, error)

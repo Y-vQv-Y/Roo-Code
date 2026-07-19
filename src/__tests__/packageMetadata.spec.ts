@@ -108,6 +108,21 @@ describe("ADTEC Code package metadata", () => {
 		expect(workflow).not.toContain("bin/adtec-code-${current_package_version}.vsix")
 	})
 
+	it("packages the branded CLI with bundled skills", () => {
+		const cliPackage = JSON.parse(
+			readFileSync(new URL("../../apps/cli/package.json", import.meta.url), "utf-8"),
+		)
+		const workflow = readFileSync(
+			new URL("../../.github/workflows/cli-release.yml", import.meta.url),
+			"utf-8",
+		)
+
+		expect(cliPackage.name).toBe("@adtec-code/cli")
+		expect(workflow).toContain("pnpm --filter @adtec-code/cli build")
+		expect(workflow).toContain('cp -r src/builtin-skills/* "$RELEASE_DIR/extension/builtin-skills/"')
+		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
+	})
+
 	it("extracts release notes from the unbracketed ADTEC changelog heading", () => {
 		const workflow = readFileSync(new URL("../../.github/workflows/marketplace-publish.yml", import.meta.url), "utf-8")
 

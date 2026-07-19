@@ -1,4 +1,11 @@
-import type { ProviderSettings } from "@roo-code/types"
+import {
+	getEffectiveContextWindow,
+	getModelContextWindow,
+	getStaticProviderModelInfo,
+	isProviderName,
+	type ModelInfo,
+	type ProviderSettings,
+} from "@roo-code/types"
 
 import type { RouterModels } from "@/ui/store.js"
 
@@ -12,7 +19,7 @@ const DEFAULT_CONTEXT_WINDOW = 200_000
  * @returns The context window size, or DEFAULT_CONTEXT_WINDOW (200K) if not found
  */
 export function getContextWindow(routerModels: RouterModels | null, apiConfiguration: ProviderSettings | null): number {
-	if (!routerModels || !apiConfiguration) {
+	if (!apiConfiguration) {
 		return DEFAULT_CONTEXT_WINDOW
 	}
 
@@ -23,10 +30,26 @@ export function getContextWindow(routerModels: RouterModels | null, apiConfigura
 		return DEFAULT_CONTEXT_WINDOW
 	}
 
-	const providerModels = routerModels[provider]
-	const modelInfo = providerModels?.[modelId]
+	const providerModels = routerModels?.[provider as keyof RouterModels]
+	const dynamicInfo = providerModels?.[modelId]
+	const staticInfo = isProviderName(provider)
+		? getStaticProviderModelInfo(provider, modelId, {
+				isChina: provider === "zai" && apiConfiguration.zaiApiLine?.startsWith("china") === true,
+			})
+		: undefined
+	const customInfo =
+		provider === "openai"
+			? apiConfiguration.openAiCustomModelInfo ?? apiConfiguration.modelInfoOverrides?.[`openai/${modelId}`]
+			: apiConfiguration.modelInfoOverrides?.[`${provider}/${modelId}`]
+	const providerReportedInfo = dynamicInfo?.capabilityConfidence === "provider-reported" ? dynamicInfo : undefined
+	const modelInfo = (customInfo ?? providerReportedInfo ?? staticInfo ?? dynamicInfo) as ModelInfo | undefined
 
-	return modelInfo?.contextWindow ?? DEFAULT_CONTEXT_WINDOW
+	return modelInfo
+		? getEffectiveContextWindow(
+				modelInfo,
+				getModelContextWindow(apiConfiguration, provider, modelId),
+			)
+		: DEFAULT_CONTEXT_WINDOW
 }
 
 /**

@@ -41,6 +41,7 @@ export function useMessageHandlers({ nonInteractive }: UseMessageHandlersOptions
 		setCurrentMode,
 		setTokenUsage,
 		setRouterModels,
+		setApiConfiguration,
 		setTaskHistory,
 		currentTodos,
 		setTodos,
@@ -315,6 +316,10 @@ export function useMessageHandlers({ nonInteractive }: UseMessageHandlersOptions
 					setCurrentMode(newMode)
 				}
 
+				if (state.apiConfiguration) {
+					setApiConfiguration(state.apiConfiguration)
+				}
+
 				// Extract and update task history from state
 				const newTaskHistory = state.taskHistory
 
@@ -384,7 +389,24 @@ export function useMessageHandlers({ nonInteractive }: UseMessageHandlersOptions
 				setAvailableModes((msg.modes as ModeResult[]) || [])
 			} else if (msg.type === "routerModels") {
 				if (msg.routerModels) {
-					setRouterModels(msg.routerModels)
+					const current = useCLIStore.getState().routerModels ?? {}
+					setRouterModels({ ...current, ...msg.routerModels })
+				}
+			} else if (msg.type === "openAiModels") {
+				const discoveredProvider = msg.values?.provider ?? "openai"
+				if (msg.openAiModelInfo) {
+					const current = useCLIStore.getState().routerModels ?? {}
+					setRouterModels({ ...current, [discoveredProvider]: msg.openAiModelInfo })
+				}
+			} else if (msg.type === "ollamaModels") {
+				if (msg.ollamaModels) {
+					const current = useCLIStore.getState().routerModels ?? {}
+					setRouterModels({ ...current, ollama: msg.ollamaModels })
+				}
+			} else if (msg.type === "lmStudioModels") {
+				if (msg.lmStudioModels) {
+					const current = useCLIStore.getState().routerModels ?? {}
+					setRouterModels({ ...current, lmstudio: msg.lmStudioModels })
 				}
 			}
 		},
@@ -397,6 +419,7 @@ export function useMessageHandlers({ nonInteractive }: UseMessageHandlersOptions
 			setCurrentMode,
 			setTokenUsage,
 			setRouterModels,
+			setApiConfiguration,
 			setTaskHistory,
 		],
 	)

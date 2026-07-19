@@ -41,6 +41,9 @@ export const parseLMStudioModel = (rawModel: LLMInstanceInfo | LLMInfo): ModelIn
 	const modelInfo: ModelInfo = Object.assign({}, lMStudioDefaultModelInfo, {
 		description: `${rawModel.displayName} - ${rawModel.path}`,
 		contextWindow: contextLength,
+		metadataSource: "provider",
+		metadataUpdatedAt: Date.now(),
+		capabilityConfidence: "provider-reported",
 		supportsPromptCache: true,
 		supportsImages: rawModel.vision,
 		maxTokens: contextLength,

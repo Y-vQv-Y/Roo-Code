@@ -454,6 +454,7 @@ ${commandBlocks}
 		ts: lastMsgTs + 1, // Unique timestamp after last message
 		isSummary: true,
 		condenseId, // Unique ID for this summary, used to track which messages it replaces
+		contextEpoch: condenseId,
 	}
 
 	// NON-DESTRUCTIVE CONDENSE:

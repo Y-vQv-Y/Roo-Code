@@ -6,6 +6,7 @@ import { ApiStream } from "../transform/stream"
 import { BaseProvider } from "./base-provider"
 import type { ApiHandlerOptions } from "../../shared/api"
 import { getOllamaModels } from "./fetchers/ollama"
+import { getModelsFromCache } from "./fetchers/modelCache"
 import { TagMatcher } from "../../utils/tag-matcher"
 import type { SingleCompletionHandler, ApiHandlerCreateMessageMetadata } from "../index"
 
@@ -206,7 +207,8 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 		metadata?: ApiHandlerCreateMessageMetadata,
 	): ApiStream {
 		const client = this.ensureClient()
-		const { id: modelId } = await this.fetchModel()
+		const model = await this.fetchModel()
+		const modelId = model.id
 		const useR1Format = modelId.toLowerCase().includes("deepseek-r1")
 
 		const ollamaMessages: Message[] = [
@@ -231,7 +233,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 
 			// Only include num_ctx if explicitly set via ollamaNumCtx
 			if (this.options.ollamaNumCtx !== undefined) {
-				chatOptions.num_ctx = this.options.ollamaNumCtx
+				chatOptions.num_ctx = model.info.contextWindow
 			}
 
 			// Create the actual API request promise
@@ -338,16 +340,27 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 
 	override getModel(): { id: string; info: ModelInfo } {
 		const modelId = this.options.ollamaModelId || ""
+		const cachedModels = getModelsFromCache({
+			provider: "ollama",
+			baseUrl: this.options.ollamaBaseUrl,
+			apiKey: this.options.ollamaApiKey,
+		})
+		const modelInfo = this.models[modelId] || cachedModels?.[modelId] || openAiModelInfoSaneDefaults
+		const requestedContextWindow = this.options.ollamaNumCtx
 		return {
 			id: modelId,
-			info: this.models[modelId] || openAiModelInfoSaneDefaults,
+			info:
+				requestedContextWindow && requestedContextWindow < modelInfo.contextWindow
+					? { ...modelInfo, contextWindow: requestedContextWindow }
+					: modelInfo,
 		}
 	}
 
 	async completePrompt(prompt: string): Promise<string> {
 		try {
 			const client = this.ensureClient()
-			const { id: modelId } = await this.fetchModel()
+			const model = await this.fetchModel()
+			const modelId = model.id
 			const useR1Format = modelId.toLowerCase().includes("deepseek-r1")
 
 			// Build options object conditionally
@@ -357,7 +370,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 
 			// Only include num_ctx if explicitly set via ollamaNumCtx
 			if (this.options.ollamaNumCtx !== undefined) {
-				chatOptions.num_ctx = this.options.ollamaNumCtx
+				chatOptions.num_ctx = model.info.contextWindow
 			}
 
 			const response = await client.chat({

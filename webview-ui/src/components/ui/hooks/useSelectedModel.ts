@@ -7,11 +7,15 @@ import {
 	anthropicModels,
 	bedrockModels,
 	deepSeekModels,
-	moonshotModels,
+	deepSeekModelInfoSaneDefaults,
+	normalizeDeepSeekModelId,
+	moonshotDefaultModelId,
+	getMoonshotModelInfo,
 	minimaxModels,
 	geminiModels,
 	mistralModels,
 	openAiModelInfoSaneDefaults,
+	openAiCompatibleModelInfoSaneDefaults,
 	openAiNativeModels,
 	vertexModels,
 	xaiModels,
@@ -21,6 +25,7 @@ import {
 	sambaNovaModels,
 	internationalZAiModels,
 	mainlandZAiModels,
+	zaiApiLineConfigs,
 	fireworksModels,
 	basetenModels,
 	qwenCodeModels,
@@ -100,7 +105,6 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					ollamaModels: (ollamaModels.data || undefined) as ModelRecord | undefined,
 				})
 			: { id: getProviderDefaultModelId(activeProvider ?? "openrouter"), info: undefined }
-
 	return {
 		provider,
 		id,
@@ -232,13 +236,16 @@ function getSelectedModel({
 			return { id, info }
 		}
 		case "deepseek": {
-			const id = apiConfiguration.apiModelId ?? defaultModelId
-			const info = deepSeekModels[id as keyof typeof deepSeekModels]
+			const id = normalizeDeepSeekModelId(apiConfiguration.apiModelId)
+			const info =
+				apiConfiguration.modelInfoOverrides?.[`deepseek/${id}`] ??
+				deepSeekModels[id as keyof typeof deepSeekModels] ??
+				deepSeekModelInfoSaneDefaults
 			return { id, info }
 		}
 		case "moonshot": {
-			const id = apiConfiguration.apiModelId ?? defaultModelId
-			const info = moonshotModels[id as keyof typeof moonshotModels]
+			const id = apiConfiguration.apiModelId ?? moonshotDefaultModelId
+			const info = apiConfiguration.modelInfoOverrides?.[`moonshot/${id}`] ?? getMoonshotModelInfo(id)
 			return { id, info }
 		}
 		case "minimax": {
@@ -247,7 +254,7 @@ function getSelectedModel({
 			return { id, info }
 		}
 		case "zai": {
-			const isChina = apiConfiguration.zaiApiLine === "china_coding"
+			const isChina = zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
 			const models = isChina ? mainlandZAiModels : internationalZAiModels
 			const defaultModelId = getProviderDefaultModelId(provider, { isChina })
 			const id = apiConfiguration.apiModelId ?? defaultModelId
@@ -267,23 +274,19 @@ function getSelectedModel({
 		case "openai": {
 			const id = apiConfiguration.openAiModelId ?? ""
 			const customInfo = apiConfiguration?.openAiCustomModelInfo
-			const info = customInfo ?? openAiModelInfoSaneDefaults
+			const info = customInfo ?? apiConfiguration.modelInfoOverrides?.[`openai/${id}`] ?? openAiCompatibleModelInfoSaneDefaults
 			return { id, info }
 		}
 		case "ollama": {
 			const id = apiConfiguration.ollamaModelId ?? ""
 			const info = ollamaModels && ollamaModels[apiConfiguration.ollamaModelId!]
 
-			const adjustedInfo =
-				info?.contextWindow &&
-				apiConfiguration?.ollamaNumCtx &&
-				apiConfiguration.ollamaNumCtx < info.contextWindow
-					? { ...info, contextWindow: apiConfiguration.ollamaNumCtx }
-					: info
-
 			return {
 				id,
-				info: adjustedInfo || undefined,
+				// Keep the provider-reported maximum visible so users can raise a
+				// previously lowered num_ctx value. Effective budgeting still uses
+				// the per-model override, and NativeOllamaHandler sends num_ctx.
+				info: info || undefined,
 			}
 		}
 		case "lmstudio": {

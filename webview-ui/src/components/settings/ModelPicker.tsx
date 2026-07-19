@@ -119,8 +119,9 @@ export const ModelPicker = ({
 			.filter(([modelId, modelInfo]) => {
 				// Always include the currently selected model
 				if (modelId === selectedModelId) return true
-				// Filter out deprecated models that aren't currently selected
-				return !modelInfo.deprecated
+				// Retain deprecated/disabled selections for existing configurations,
+				// but never offer them as new choices.
+				return !modelInfo.deprecated && !["deprecated", "disabled"].includes(modelInfo.status ?? "")
 			})
 			.reduce(
 				(acc, [modelId, modelInfo]) => {
@@ -138,6 +139,10 @@ export const ModelPicker = ({
 	const onSelect = useCallback(
 		(modelId: string) => {
 			if (!modelId) {
+				return
+			}
+			const selectedInfo = models?.[modelId]
+			if (selectedInfo?.deprecated || ["deprecated", "disabled"].includes(selectedInfo.status ?? "")) {
 				return
 			}
 
@@ -158,7 +163,7 @@ export const ModelPicker = ({
 			// Delay to ensure the popover is closed before setting the search value.
 			selectTimeoutRef.current = setTimeout(() => setSearchValue(""), 100)
 		},
-		[modelIdKey, setApiConfigurationField, valueTransform, onModelChange],
+		[modelIdKey, models, setApiConfigurationField, valueTransform, onModelChange],
 	)
 
 	const onOpenChange = useCallback((open: boolean) => {
@@ -281,8 +286,16 @@ export const ModelPicker = ({
 				</Popover>
 			</div>
 			{errorMessage && <ApiErrorMessage errorMessage={errorMessage} />}
-			{selectedModelInfo?.deprecated && (
+			{(selectedModelInfo?.deprecated || selectedModelInfo?.status === "deprecated") && (
 				<ApiErrorMessage errorMessage={t("settings:validation.modelDeprecated")} />
+			)}
+			{selectedModelInfo?.status === "disabled" && (
+				<ApiErrorMessage errorMessage={t("settings:validation.modelDisabled")} />
+			)}
+			{selectedModelInfo?.status === "outage" && (
+				<p className="text-xs text-vscode-editorWarning-foreground mt-1">
+					{t("settings:validation.modelOutage")}
+				</p>
 			)}
 
 			{simplifySettings ? (

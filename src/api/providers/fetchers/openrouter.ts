@@ -210,6 +210,9 @@ export const parseOpenRouterModel = ({
 	const modelInfo: ModelInfo = {
 		maxTokens: maxTokens || Math.ceil(model.context_length * 0.2),
 		contextWindow: model.context_length,
+		metadataSource: "provider",
+		metadataUpdatedAt: Date.now(),
+		capabilityConfidence: "provider-reported",
 		supportsImages: inputModality?.includes("image") ?? false,
 		supportsPromptCache,
 		inputPrice: parseApiPrice(model.pricing?.prompt),

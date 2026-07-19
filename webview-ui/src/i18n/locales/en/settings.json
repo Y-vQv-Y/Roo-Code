@@ -592,7 +592,8 @@
 			"low": "Low",
 			"medium": "Medium",
 			"high": "High",
-			"xhigh": "Extra High"
+			"xhigh": "Extra High",
+			"max": "Maximum"
 		},
 		"verbosity": {
 			"label": "Output Verbosity",
@@ -925,6 +926,12 @@
 		"maxTokens": "Max Tokens",
 		"maxThinkingTokens": "Max Thinking Tokens"
 	},
+	"contextWindow": {
+		"label": "Context window",
+		"auto": "Auto ({{value}})",
+		"description": "Sets the context budget used for token accounting and automatic compression. The separate auto-condense threshold controls when compression starts; a 10% safety buffer is always reserved.",
+		"unknownCapability": "The provider did not report this model's context limit; verify it before selecting a larger budget."
+	},
 	"validation": {
 		"apiKey": "You must provide a valid API key.",
 		"awsRegion": "You must choose a region to use with Amazon Bedrock.",
@@ -938,6 +945,8 @@
 		},
 		"modelAvailability": "The model ID ({{modelId}}) you provided is not available. Please choose a different model.",
 		"modelDeprecated": "This model is no longer available. Please select a different model.",
+		"modelDisabled": "This model is disabled by the provider. Select another model to continue.",
+		"modelOutage": "The provider currently reports an outage for this model.",
 		"providerNotAllowed": "Provider '{{provider}}' is not allowed by your organization",
 		"modelNotAllowed": "Model '{{model}}' is not allowed for provider '{{provider}}' by your organization",
 		"profileInvalid": "This profile contains a provider or model that is not allowed by your organization",

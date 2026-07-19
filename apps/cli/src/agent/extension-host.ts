@@ -70,7 +70,9 @@ export interface ExtensionHostOptions {
 	user: User | null
 	provider: SupportedProvider
 	apiKey?: string
+	baseUrl?: string
 	model: string
+	contextWindow?: number
 	workspacePath: string
 	extensionPath: string
 	nonInteractive?: boolean
@@ -227,7 +229,22 @@ export class ExtensionHost extends EventEmitter implements ExtensionHostInterfac
 			experiments: {
 				customTools: true,
 			},
-			...getProviderSettings(this.options.provider, this.options.apiKey, this.options.model),
+			...getProviderSettings(
+				this.options.provider,
+				this.options.apiKey,
+				this.options.model,
+				this.options.baseUrl,
+			),
+		}
+		if (this.options.contextWindow) {
+			const modelId = this.options.model
+			baseSettings.modelContextWindow = this.options.contextWindow
+			baseSettings.modelContextWindowOverrides = {
+				[`${this.options.provider}/${modelId}`]: this.options.contextWindow,
+			}
+			if (this.options.provider === "ollama") {
+				baseSettings.ollamaNumCtx = this.options.contextWindow
+			}
 		}
 
 		this.initialSettings = this.options.nonInteractive

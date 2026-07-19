@@ -116,7 +116,7 @@ build() {
     pnpm bundle
 
     step "3/6" "Building CLI..."
-    pnpm --filter @roo-code/cli build
+    pnpm --filter @adtec-code/cli build
 
     info "Build complete"
 }
@@ -146,7 +146,7 @@ create_tarball() {
     node -e "
       const pkg = require('$CLI_DIR/package.json');
       const newPkg = {
-        name: '@roo-code/cli',
+        name: '@adtec-code/cli',
         version: '$VERSION',
         type: 'module',
         dependencies: {
@@ -167,6 +167,11 @@ create_tarball() {
     # Copy extension bundle
     info "Copying extension bundle..."
     cp -r "$REPO_ROOT/src/dist/"* "$RELEASE_DIR/extension/"
+
+    # Bundled skills are runtime resources and are not emitted by the JS bundle.
+    info "Copying bundled skills..."
+    mkdir -p "$RELEASE_DIR/extension/builtin-skills"
+    cp -r "$REPO_ROOT/src/builtin-skills/"* "$RELEASE_DIR/extension/builtin-skills/"
 
     # Add package.json to extension directory for CommonJS
     echo '{"type": "commonjs"}' > "$RELEASE_DIR/extension/package.json"

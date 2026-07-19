@@ -62,7 +62,7 @@ export const Moonshot = ({ apiConfiguration, setApiConfigurationField }: Moonsho
 						href={
 							apiConfiguration.moonshotBaseUrl === "https://api.moonshot.cn/v1"
 								? "https://platform.moonshot.cn/console/api-keys"
-								: "https://platform.moonshot.ai/console/api-keys"
+								: "https://platform.kimi.ai/console/api-keys"
 						}
 						appearance="secondary">
 						{t("settings:providers.getMoonshotApiKey")}

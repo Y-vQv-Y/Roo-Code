@@ -19,6 +19,7 @@ import {
 	vscodeLlmModels,
 	xaiModels,
 	internationalZAiModels,
+	mainlandZAiModels,
 	minimaxModels,
 } from "./providers/index.js"
 
@@ -184,6 +185,9 @@ const baseProviderSettingsSchema = z.object({
 	reasoningEffort: reasoningEffortSettingSchema.optional(),
 	modelMaxTokens: z.number().optional(),
 	modelMaxThinkingTokens: z.number().optional(),
+	modelContextWindow: z.number().int().positive().optional(),
+	modelContextWindowOverrides: z.record(z.string(), z.number().int().positive()).optional(),
+	modelInfoOverrides: z.record(z.string(), modelInfoSchema).optional(),
 
 	// Model verbosity.
 	verbosity: verbosityLevelsSchema.optional(),
@@ -487,6 +491,26 @@ export const getModelId = (settings: ProviderSettings): string | undefined => {
 }
 
 /**
+ * Resolve the context budget for the active model. Per-model overrides take
+ * precedence; legacy single-value settings remain supported when no override
+ * map exists.
+ */
+export const getModelContextWindow = (
+	settings: Pick<ProviderSettings, "modelContextWindow" | "modelContextWindowOverrides"> & {
+		apiProvider?: string
+	},
+	provider = settings.apiProvider,
+	modelId?: string,
+): number | undefined => {
+	if (settings.modelContextWindowOverrides) {
+		const key = provider && modelId ? `${provider}/${modelId}` : undefined
+		return key ? settings.modelContextWindowOverrides[key] : undefined
+	}
+
+	return settings.modelContextWindow
+}
+
+/**
  * TypicalProvider
  */
 
@@ -501,7 +525,9 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	bedrock: "apiModelId",
 	vertex: "apiModelId",
 	"openai-codex": "apiModelId",
-	"openai-native": "openAiModelId",
+	// The native OpenAI provider stores its model in the shared apiModelId field.
+	// openAiModelId belongs to the OpenAI-compatible provider.
+	"openai-native": "apiModelId",
 	ollama: "ollamaModelId",
 	lmstudio: "lmStudioModelId",
 	gemini: "apiModelId",
@@ -637,3 +663,37 @@ export const MODELS_BY_PROVIDER: Record<
 	lmstudio: { id: "lmstudio", label: "LM Studio", models: [] },
 	ollama: { id: "ollama", label: "Ollama", models: [] },
 }
+
+const STATIC_MODEL_RECORDS: Partial<Record<ProviderName, Record<string, z.infer<typeof modelInfoSchema>>>> = {
+	anthropic: anthropicModels,
+	baseten: basetenModels,
+	bedrock: bedrockModels,
+	deepseek: deepSeekModels,
+	fireworks: fireworksModels,
+	gemini: geminiModels,
+	mistral: mistralModels,
+	moonshot: moonshotModels,
+	minimax: minimaxModels,
+	"openai-codex": openAiCodexModels,
+	"openai-native": openAiNativeModels,
+	"qwen-code": qwenCodeModels,
+	sambanova: sambaNovaModels,
+	vertex: vertexModels,
+	"vscode-lm": vscodeLlmModels,
+	xai: xaiModels,
+	zai: internationalZAiModels,
+}
+
+export const getStaticProviderModels = (
+	provider: ProviderName,
+	options: { isChina?: boolean } = {},
+): Record<string, z.infer<typeof modelInfoSchema>> | undefined => {
+	if (provider === "zai" && options.isChina) return mainlandZAiModels
+	return STATIC_MODEL_RECORDS[provider]
+}
+
+export const getStaticProviderModelInfo = (
+	provider: ProviderName,
+	modelId: string,
+	options: { isChina?: boolean } = {},
+) => getStaticProviderModels(provider, options)?.[modelId]

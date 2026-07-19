@@ -23,7 +23,7 @@ export type ReasoningEffortWithMinimal = z.infer<typeof reasoningEffortWithMinim
  * Extended Reasoning Effort (includes "none" and "minimal")
  * Note: "disable" is a UI/control value, not a value sent as effort
  */
-export const reasoningEffortsExtended = ["none", "minimal", "low", "medium", "high", "xhigh"] as const
+export const reasoningEffortsExtended = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const
 
 export const reasoningEffortExtendedSchema = z.enum(reasoningEffortsExtended)
 
@@ -32,8 +32,41 @@ export type ReasoningEffortExtended = z.infer<typeof reasoningEffortExtendedSche
 /**
  * Reasoning Effort user setting (includes "disable")
  */
-export const reasoningEffortSettingValues = ["disable", "none", "minimal", "low", "medium", "high", "xhigh"] as const
+export const reasoningEffortSettingValues = [
+	"disable",
+	"none",
+	"minimal",
+	"low",
+	"medium",
+	"high",
+	"xhigh",
+	"max",
+] as const
 export const reasoningEffortSettingSchema = z.enum(reasoningEffortSettingValues)
+
+/** Supported user-selectable context budgets. Values are token counts. */
+export const CONTEXT_WINDOW_PRESETS = [
+	32_000,
+	64_000,
+	128_000,
+	200_000,
+	256_000,
+	400_000,
+	512_000,
+	1_000_000,
+] as const
+
+export const contextWindowConfigSchema = z.object({
+	isConfigurable: z.boolean().optional(),
+	min: z.number().int().positive().optional(),
+	max: z.number().int().positive().optional(),
+	default: z.number().int().positive().optional(),
+})
+
+export const modelMetadataSourceSchema = z.enum(["catalog", "provider", "user", "fallback"])
+export const modelCapabilityConfidenceSchema = z.enum(["verified", "provider-reported", "fallback", "unknown"])
+
+export const modelStatusSchema = z.enum(["active", "alpha", "beta", "deprecated", "outage", "disabled"])
 
 /**
  * Verbosity
@@ -73,6 +106,11 @@ export const modelInfoSchema = z.object({
 	maxTokens: z.number().nullish(),
 	maxThinkingTokens: z.number().nullish(),
 	contextWindow: z.number(),
+	contextWindowConfig: contextWindowConfigSchema.optional(),
+	metadataSource: modelMetadataSourceSchema.optional(),
+	metadataUpdatedAt: z.number().int().positive().optional(),
+	capabilityConfidence: modelCapabilityConfidenceSchema.optional(),
+	status: modelStatusSchema.optional(),
 	supportsImages: z.boolean().optional(),
 	supportsPromptCache: z.boolean(),
 	// Optional default prompt cache retention policy for providers that support it.
@@ -89,7 +127,7 @@ export const modelInfoSchema = z.object({
 	defaultTemperature: z.number().optional(),
 	requiredReasoningBudget: z.boolean().optional(),
 	supportsReasoningEffort: z
-		.union([z.boolean(), z.array(z.enum(["disable", "none", "minimal", "low", "medium", "high", "xhigh"]))])
+		.union([z.boolean(), z.array(reasoningEffortSettingSchema)])
 		.optional(),
 	requiredReasoningEffort: z.boolean().optional(),
 	preserveReasoning: z.boolean().optional(),
@@ -147,6 +185,22 @@ export const modelInfoSchema = z.object({
 })
 
 export type ModelInfo = z.infer<typeof modelInfoSchema>
+
+export const getEffectiveContextWindow = (
+	model: Pick<ModelInfo, "contextWindow" | "contextWindowConfig">,
+	configured?: number,
+): number => {
+	const configuredMax = model.contextWindowConfig?.max
+	const max = Math.max(1, Math.min(model.contextWindow, configuredMax ?? model.contextWindow))
+	const min = Math.min(max, model.contextWindowConfig?.min ?? 1)
+	const requested = configured && Number.isFinite(configured) && configured > 0
+		? Math.floor(configured)
+		: model.contextWindowConfig?.default && model.contextWindowConfig.default > 0
+			? model.contextWindowConfig.default
+			: max
+
+	return Math.min(max, Math.max(min, requested))
+}
 
 export type ModelRecord = Record<string, ModelInfo>
 

@@ -6,10 +6,12 @@ import { createElement } from "react"
 import pWaitFor from "p-wait-for"
 
 import { setLogger } from "@roo-code/vscode-shim"
+import { getProviderDefaultModelId } from "@roo-code/types"
 
 import {
 	FlagOptions,
 	isSupportedProvider,
+	providerRequiresApiKey,
 	supportedProviders,
 	DEFAULT_FLAGS,
 	REASONING_EFFORTS,
@@ -20,7 +22,7 @@ import { JsonEventEmitter } from "@/agent/json-event-emitter.js"
 
 import { loadSettings } from "@/lib/storage/index.js"
 import { readWorkspaceTaskSessions, resolveWorkspaceResumeSessionId } from "@/lib/task-history/index.js"
-import { getEnvVarName, getApiKeyFromEnv } from "@/lib/utils/provider.js"
+import { getEnvVarName, getApiKeyFromEnv, validateProviderBaseUrl } from "@/lib/utils/provider.js"
 import { validateTerminalShellPath } from "@/lib/utils/shell.js"
 import { getDefaultExtensionPath } from "@/lib/utils/extension.js"
 import { isValidSessionId } from "@/lib/utils/session-id.js"
@@ -111,16 +113,26 @@ export async function run(promptArg: string | undefined, flagOptions: FlagOption
 	// Options
 
 	const settings = await loadSettings()
+	const requestedProvider = flagOptions.provider ?? settings.provider ?? "openrouter"
+	if (!isSupportedProvider(requestedProvider)) {
+		console.error(
+			`[CLI] Error: Invalid provider: ${requestedProvider}; must be one of: ${supportedProviders.join(", ")}`,
+		)
+		process.exit(1)
+	}
 
 	const isTuiSupported = process.stdin.isTTY && process.stdout.isTTY
 	const isTuiEnabled = !flagOptions.print && isTuiSupported
 
 	// Determine effective values: CLI flags > settings file > DEFAULT_FLAGS.
 	const effectiveMode = flagOptions.mode || settings.mode || DEFAULT_FLAGS.mode
-	const effectiveModel = flagOptions.model || settings.model || DEFAULT_FLAGS.model
 	const effectiveReasoningEffort =
 		flagOptions.reasoningEffort || settings.reasoningEffort || DEFAULT_FLAGS.reasoningEffort
-	const effectiveProvider = flagOptions.provider ?? settings.provider ?? "openrouter"
+	const effectiveProvider = requestedProvider
+	const effectiveModel =
+		flagOptions.model || (settings.provider === effectiveProvider ? settings.model : undefined) || getProviderDefaultModelId(effectiveProvider)
+	const effectiveBaseUrl = flagOptions.baseUrl || settings.baseUrl
+	const effectiveContextWindow = flagOptions.contextWindow ?? settings.contextWindow
 	const effectiveWorkspacePath = flagOptions.workspace ? path.resolve(flagOptions.workspace) : process.cwd()
 	const legacyRequireApprovalFromSettings =
 		settings.requireApproval ??
@@ -135,6 +147,25 @@ export async function run(promptArg: string | undefined, flagOptions: FlagOption
 		console.error(
 			`[CLI] Error: Invalid consecutive mistake limit: ${rawConsecutiveMistakeLimit}; must be a non-negative integer`,
 		)
+		process.exit(1)
+	}
+
+	if (
+		effectiveContextWindow !== undefined &&
+		(!Number.isInteger(effectiveContextWindow) || effectiveContextWindow <= 0)
+	) {
+		console.error("[CLI] Error: --context-window must be a positive integer token count")
+		process.exit(1)
+	}
+
+	if (effectiveBaseUrl && !URL.canParse(effectiveBaseUrl)) {
+		console.error(`[CLI] Error: Invalid provider base URL: ${effectiveBaseUrl}`)
+		process.exit(1)
+	}
+
+	const baseUrlError = validateProviderBaseUrl(effectiveProvider, effectiveBaseUrl)
+	if (baseUrlError) {
+		console.error(`[CLI] Error: ${baseUrlError}`)
 		process.exit(1)
 	}
 
@@ -157,7 +188,9 @@ export async function run(promptArg: string | undefined, flagOptions: FlagOption
 		consecutiveMistakeLimit: effectiveConsecutiveMistakeLimit,
 		user: null,
 		provider: effectiveProvider,
+		baseUrl: effectiveBaseUrl,
 		model: effectiveModel,
+		contextWindow: effectiveContextWindow,
 		workspacePath: effectiveWorkspacePath,
 		extensionPath: path.resolve(flagOptions.extension || getDefaultExtensionPath(__dirname)),
 		nonInteractive: !effectiveRequireApproval,
@@ -172,17 +205,15 @@ export async function run(promptArg: string | undefined, flagOptions: FlagOption
 	// TODO: Validate the API key for the chosen provider.
 	// TODO: Validate the model for the chosen provider.
 
-	if (!isSupportedProvider(extensionHostOptions.provider)) {
-		console.error(
-			`[CLI] Error: Invalid provider: ${extensionHostOptions.provider}; must be one of: ${supportedProviders.join(", ")}`,
-		)
+	if (!extensionHostOptions.model) {
+		console.error(`[CLI] Error: --model is required for provider ${extensionHostOptions.provider}`)
 		process.exit(1)
 	}
 
 	extensionHostOptions.apiKey =
 		extensionHostOptions.apiKey || flagOptions.apiKey || getApiKeyFromEnv(extensionHostOptions.provider)
 
-	if (!extensionHostOptions.apiKey) {
+	if (providerRequiresApiKey(extensionHostOptions.provider) && !extensionHostOptions.apiKey) {
 		console.error(`[CLI] Error: No API key provided. Use --api-key or set the appropriate environment variable.`)
 		console.error(`[CLI] For ${extensionHostOptions.provider}, set ${getEnvVarName(extensionHostOptions.provider)}`)
 

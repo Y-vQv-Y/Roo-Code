@@ -1,5 +1,5 @@
 {
-	"name": "@roo-code/cli",
+	"name": "@adtec-code/cli",
 	"version": "0.1.17",
 	"description": "ADTEC Code CLI - Run the ADTEC Code agent from the command line",
 	"private": true,

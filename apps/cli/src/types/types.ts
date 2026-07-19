@@ -3,16 +3,38 @@ import type { OutputFormat } from "./json-events.js"
 
 export const supportedProviders = [
 	"anthropic",
-	"openai-native",
+	"baseten",
+	"deepseek",
+	"fireworks",
 	"gemini",
+	"litellm",
+	"lmstudio",
+	"minimax",
+	"mistral",
+	"moonshot",
+	"ollama",
+	"openai",
+	"openai-native",
 	"openrouter",
+	"poe",
+	"requesty",
+	"sambanova",
+	"unbound",
 	"vercel-ai-gateway",
+	"xai",
+	"zai",
 ] as const satisfies ProviderName[]
 
 export type SupportedProvider = (typeof supportedProviders)[number]
 
 export function isSupportedProvider(provider: string): provider is SupportedProvider {
 	return supportedProviders.includes(provider as SupportedProvider)
+}
+
+export const providersWithoutApiKey = ["lmstudio", "ollama"] as const satisfies SupportedProvider[]
+
+export function providerRequiresApiKey(provider: SupportedProvider): boolean {
+	return !providersWithoutApiKey.includes(provider as (typeof providersWithoutApiKey)[number])
 }
 
 export type ReasoningEffortFlagOptions = ReasoningEffortExtended | "unspecified" | "disabled"
@@ -31,8 +53,10 @@ export type FlagOptions = {
 	requireApproval: boolean
 	exitOnError: boolean
 	apiKey?: string
+	baseUrl?: string
 	provider?: SupportedProvider
 	model?: string
+	contextWindow?: number
 	mode?: string
 	terminalShell?: string
 	reasoningEffort?: ReasoningEffortFlagOptions
@@ -60,6 +84,10 @@ export interface CliSettings {
 	provider?: SupportedProvider
 	/** Default model to use */
 	model?: string
+	/** Optional provider endpoint override */
+	baseUrl?: string
+	/** Context budget override in tokens; the provider model limit remains authoritative. */
+	contextWindow?: number
 	/** Default reasoning effort level */
 	reasoningEffort?: ReasoningEffortFlagOptions
 	/** Default consecutive error/repetition limit before guidance prompts */

@@ -1,38 +1,69 @@
 import type { ModelInfo } from "../model.js"
 
-// https://platform.deepseek.com/docs/api
-// preserveReasoning enables interleaved thinking mode for tool calls:
-// DeepSeek requires reasoning_content to be passed back during tool call
-// continuation within the same turn. See: https://api-docs.deepseek.com/guides/thinking_mode
+// https://api-docs.deepseek.com/quick_start/pricing
+// https://api-docs.deepseek.com/guides/anthropic_api
 export type DeepSeekModelId = keyof typeof deepSeekModels
 
-export const deepSeekDefaultModelId: DeepSeekModelId = "deepseek-chat"
+export const deepSeekDefaultModelId: DeepSeekModelId = "deepseek-v4-pro"
 
+/**
+ * DeepSeek keeps the OpenAI-compatible base URL stable while replacing the
+ * deprecated V3 model aliases with the V4 model IDs.
+ */
 export const deepSeekModels = {
-	"deepseek-chat": {
-		maxTokens: 8192, // 8K max output
-		contextWindow: 128_000,
+	"deepseek-v4-pro": {
+		maxTokens: 384_000,
+		contextWindow: 1_048_576,
 		supportsImages: false,
 		supportsPromptCache: true,
-		inputPrice: 0.28, // $0.28 per million tokens (cache miss) - Updated Dec 9, 2025
-		outputPrice: 0.42, // $0.42 per million tokens - Updated Dec 9, 2025
-		cacheWritesPrice: 0.28, // $0.28 per million tokens (cache miss) - Updated Dec 9, 2025
-		cacheReadsPrice: 0.028, // $0.028 per million tokens (cache hit) - Updated Dec 9, 2025
-		description: `DeepSeek-V3.2 (Non-thinking Mode) achieves a significant breakthrough in inference speed over previous models. It tops the leaderboard among open-source models and rivals the most advanced closed-source models globally. Supports JSON output, tool calls, chat prefix completion (beta), and FIM completion (beta).`,
-	},
-	"deepseek-reasoner": {
-		maxTokens: 8192, // 8K max output
-		contextWindow: 128_000,
-		supportsImages: false,
-		supportsPromptCache: true,
+		supportsReasoningBinary: true,
 		preserveReasoning: true,
-		inputPrice: 0.28, // $0.28 per million tokens (cache miss) - Updated Dec 9, 2025
-		outputPrice: 0.42, // $0.42 per million tokens - Updated Dec 9, 2025
-		cacheWritesPrice: 0.28, // $0.28 per million tokens (cache miss) - Updated Dec 9, 2025
-		cacheReadsPrice: 0.028, // $0.028 per million tokens (cache hit) - Updated Dec 9, 2025
-		description: `DeepSeek-V3.2 (Thinking Mode) achieves performance comparable to OpenAI-o1 across math, code, and reasoning tasks. Supports Chain of Thought reasoning with up to 8K output tokens. Supports JSON output, tool calls, and chat prefix completion (beta).`,
+		inputPrice: 0.435,
+		outputPrice: 0.87,
+		cacheWritesPrice: 0.435,
+		cacheReadsPrice: 0.003625,
+		description:
+			"DeepSeek-V4-Pro: flagship 1M-context model with both thinking (default) and non-thinking modes. Supports JSON output and tool calls through the OpenAI-compatible and Anthropic APIs.",
+	},
+	"deepseek-v4-flash": {
+		maxTokens: 384_000,
+		contextWindow: 1_048_576,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningBinary: true,
+		preserveReasoning: true,
+		inputPrice: 0.14,
+		outputPrice: 0.28,
+		cacheWritesPrice: 0.14,
+		cacheReadsPrice: 0.0028,
+		description:
+			"DeepSeek-V4-Flash: faster 1M-context model with both thinking (default) and non-thinking modes. Supports JSON output and tool calls through the OpenAI-compatible and Anthropic APIs.",
 	},
 } as const satisfies Record<string, ModelInfo>
+
+/** Conservative metadata for newly discovered DeepSeek model IDs. */
+export const deepSeekModelInfoSaneDefaults: ModelInfo = {
+	maxTokens: 16_384,
+	contextWindow: 128_000,
+	supportsImages: false,
+	supportsPromptCache: true,
+	supportsReasoningBinary: true,
+	preserveReasoning: true,
+	metadataSource: "fallback",
+	capabilityConfidence: "unknown",
+}
+
+/** Legacy IDs are accepted in saved settings but routed to their V4 aliases. */
+export const deepSeekLegacyModelAliases: Record<string, DeepSeekModelId> = {
+	"deepseek-chat": "deepseek-v4-flash",
+	"deepseek-reasoner": "deepseek-v4-flash",
+}
+
+export const normalizeDeepSeekModelId = (modelId?: string): string => {
+	// Preserve IDs returned by the provider's /models endpoint. Only legacy
+	// aliases are rewritten; unknown IDs must remain callable for new models.
+	return (modelId && deepSeekLegacyModelAliases[modelId]) || modelId || deepSeekDefaultModelId
+}
 
 // https://api-docs.deepseek.com/quick_start/parameter_settings
 export const DEEP_SEEK_DEFAULT_TEMPERATURE = 0.3

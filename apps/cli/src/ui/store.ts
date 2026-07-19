@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-import type { TokenUsage, ProviderSettings, TodoItem } from "@roo-code/types"
+import type { ModelInfo, TokenUsage, ProviderSettings, TodoItem } from "@roo-code/types"
 
 import type { TUIMessage, PendingAsk, TaskHistoryItem } from "./types.js"
 import type { FileResult, SlashCommandResult, ModeResult } from "./components/autocomplete/index.js"
@@ -41,7 +41,7 @@ let streamingDebounceTimer: ReturnType<typeof setTimeout> | null = null
  * RouterModels type for context window lookup.
  * Simplified version - we only need contextWindow from ModelInfo.
  */
-export type RouterModels = Record<string, Record<string, { contextWindow?: number }>>
+export type RouterModels = Record<string, Record<string, ModelInfo>>
 
 /**
  * CLI application state.

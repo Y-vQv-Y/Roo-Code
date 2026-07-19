@@ -51,6 +51,8 @@ import {
 	MIN_CHECKPOINT_TIMEOUT_SECONDS,
 	MAX_MCP_TOOLS_THRESHOLD,
 	countEnabledMcpTools,
+	getEffectiveContextWindow,
+	getModelContextWindow,
 } from "@roo-code/types"
 
 // api
@@ -133,6 +135,15 @@ const MAX_EXPONENTIAL_BACKOFF_SECONDS = 600 // 10 minutes
 const DEFAULT_USAGE_COLLECTION_TIMEOUT_MS = 5000 // 5 seconds
 const FORCED_CONTEXT_REDUCTION_PERCENT = 75 // Keep 75% of context (remove 25%) on context window errors
 const MAX_CONTEXT_WINDOW_RETRIES = 3 // Maximum retries for context window errors
+
+type RequestModelSnapshot = {
+	id: string
+	info: ModelInfo
+	provider?: string
+	protocol: "anthropic" | "openai"
+	contextWindow: number
+	maxTokens?: number
+}
 
 export interface TaskOptions extends CreateTaskOptions {
 	provider: ClineProvider
@@ -279,6 +290,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// API
 	apiConfiguration: ProviderSettings
 	api: ApiHandler
+	private lastRequestContext?: { api: ApiHandler; model: RequestModelSnapshot }
 	private static lastGlobalApiRequestTime?: number
 	private autoApprovalHandler: AutoApprovalHandler
 
@@ -848,10 +860,20 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		return readApiMessages({ taskId: this.taskId, globalStoragePath: this.globalStoragePath })
 	}
 
+	private getCurrentContextEpoch(): string | undefined {
+		for (let index = this.apiConversationHistory.length - 1; index >= 0; index--) {
+			const epoch = this.apiConversationHistory[index].contextEpoch
+			if (epoch) return epoch
+		}
+		return undefined
+	}
+
 	private async addToApiConversationHistory(message: Anthropic.MessageParam, reasoning?: string) {
+		const contextEpoch = this.getCurrentContextEpoch()
 		// Capture the encrypted_content / thought signatures from the provider (e.g., OpenAI Responses API, Google GenAI) if present.
 		// We only persist data reported by the current response body.
-		const handler = this.api as ApiHandler & {
+		const requestContext = this.lastRequestContext
+		const handler = (requestContext?.api ?? this.api) as ApiHandler & {
 			getResponseId?: () => string | undefined
 			getEncryptedContent?: () => { encrypted_content: string; id?: string } | undefined
 			getThoughtSignature?: () => string | undefined
@@ -869,9 +891,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			// Only Anthropic's API expects/validates the special `thinking` content block signature.
 			// Other providers (notably Gemini 3) use different signature semantics (e.g. `thoughtSignature`)
 			// and require round-tripping the signature in their own format.
-			const modelId = getModelId(this.apiConfiguration)
-			const apiProvider = this.apiConfiguration.apiProvider
-			const apiProtocol = getApiProtocol(
+			const modelId = requestContext?.model.id ?? getModelId(this.apiConfiguration)
+			const apiProvider = requestContext?.model.provider ?? this.apiConfiguration.apiProvider
+			const apiProtocol = requestContext?.model.protocol ?? getApiProtocol(
 				apiProvider && !isRetiredProvider(apiProvider) ? apiProvider : undefined,
 				modelId,
 			)
@@ -881,6 +903,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			const messageWithTs: any = {
 				...message,
 				...(responseId ? { id: responseId } : {}),
+				modelProvider: apiProvider,
+				modelId,
+				modelProtocol: apiProtocol,
+				...(contextEpoch ? { contextEpoch } : {}),
 				ts: Date.now(),
 			}
 
@@ -1002,7 +1028,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 
 			const validatedMessage = validateAndFixToolResultIds(messageToAdd, historyForValidation)
-			const messageWithTs = { ...validatedMessage, ts: Date.now() }
+			const messageWithTs = {
+				...validatedMessage,
+				...(contextEpoch ? { contextEpoch } : {}),
+				ts: Date.now(),
+			}
 			this.apiConversationHistory.push(messageWithTs)
 		}
 
@@ -1532,9 +1562,32 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	 * @param newApiConfiguration - The new API configuration to use
 	 */
 	public updateApiConfiguration(newApiConfiguration: ProviderSettings): void {
+		const previousModel = this.api.getModel()
+		const previousProvider = this.apiConfiguration.apiProvider
+		const previousProtocol = getApiProtocol(
+			previousProvider && !isRetiredProvider(previousProvider) ? previousProvider : undefined,
+			previousModel.id,
+		)
+		const nextApi = buildApiHandler(newApiConfiguration)
+		const nextModel = nextApi.getModel()
+		const nextProtocol = getApiProtocol(
+			newApiConfiguration.apiProvider && !isRetiredProvider(newApiConfiguration.apiProvider)
+				? newApiConfiguration.apiProvider
+				: undefined,
+			nextModel.id,
+		)
+
+		if (
+			previousProvider !== newApiConfiguration.apiProvider ||
+			previousModel.id !== nextModel.id ||
+			previousProtocol !== nextProtocol
+		) {
+			this.skipPrevResponseIdOnce = true
+		}
+
 		// Update the configuration and rebuild the API handler
 		this.apiConfiguration = newApiConfiguration
-		this.api = buildApiHandler(this.apiConfiguration)
+		this.api = nextApi
 	}
 
 	public async submitUserMessage(
@@ -3727,7 +3780,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			settings: this.apiConfiguration,
 		})
 
-		const contextWindow = modelInfo.contextWindow
+		const contextWindow = getEffectiveContextWindow(
+			modelInfo,
+			getModelContextWindow(this.apiConfiguration, this.apiConfiguration.apiProvider, this.api.getModel().id),
+		)
 
 		// Get the current profile ID using the helper method
 		const currentProfileId = this.getCurrentProfileId(state)
@@ -3880,7 +3936,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		const state = await this.providerRef.deref()?.getState()
 
 		const {
-			apiConfiguration,
 			autoApprovalEnabled,
 			requestDelaySeconds,
 			mode,
@@ -3888,6 +3943,29 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			autoCondenseContextPercent = 100,
 			profileThresholds = {},
 		} = state ?? {}
+		const requestApi = this.api
+		const requestConfiguration = this.apiConfiguration
+		const requestModel = requestApi.getModel()
+		const requestModelSnapshot: RequestModelSnapshot = {
+			id: requestModel.id,
+			info: requestModel.info,
+			provider: requestConfiguration.apiProvider,
+			protocol: getApiProtocol(
+				requestConfiguration.apiProvider && !isRetiredProvider(requestConfiguration.apiProvider)
+					? requestConfiguration.apiProvider
+					: undefined,
+				requestModel.id,
+			),
+			contextWindow: getEffectiveContextWindow(
+				requestModel.info,
+				getModelContextWindow(requestConfiguration, requestConfiguration.apiProvider, requestModel.id),
+			),
+			maxTokens: getModelMaxOutputTokens({
+				modelId: requestModel.id,
+				model: requestModel.info,
+				settings: requestConfiguration,
+			}),
+		}
 
 		// Get condensing configuration for automatic triggers.
 		const customCondensingPrompt = state?.customSupportPrompts?.CONDENSE
@@ -3909,15 +3987,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		const { contextTokens } = this.getTokenUsage()
 
 		if (contextTokens) {
-			const modelInfo = this.api.getModel().info
-
-			const maxTokens = getModelMaxOutputTokens({
-				modelId: this.api.getModel().id,
-				model: modelInfo,
-				settings: this.apiConfiguration,
-			})
-
-			const contextWindow = modelInfo.contextWindow
+			const { info: modelInfo, maxTokens, contextWindow } = requestModelSnapshot
 
 			// Get the current profile ID using the helper method
 			const currentProfileId = this.getCurrentProfileId(state)
@@ -3929,8 +3999,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			let lastMessageTokens = 0
 			if (lastMessageContent) {
 				lastMessageTokens = Array.isArray(lastMessageContent)
-					? await this.api.countTokens(lastMessageContent)
-					: await this.api.countTokens([{ type: "text", text: lastMessageContent as string }])
+					? await requestApi.countTokens(lastMessageContent)
+					: await requestApi.countTokens([{ type: "text", text: lastMessageContent as string }])
 			}
 
 			const contextManagementWillRun = willManageContext({
@@ -3965,7 +4035,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						mode,
 						customModes: state?.customModes,
 						experiments: state?.experiments,
-						apiConfiguration,
+						apiConfiguration: requestConfiguration,
 						disabledTools: state?.disabledTools,
 						modelInfo,
 						includeAllToolsWithRestrictions: false,
@@ -4006,7 +4076,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					totalTokens: contextTokens,
 					maxTokens,
 					contextWindow,
-					apiHandler: this.api,
+					apiHandler: requestApi,
 					autoCondenseContext,
 					autoCondenseContextPercent,
 					systemPrompt,
@@ -4085,8 +4155,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// For API only: merge consecutive user messages (excludes summary messages per
 		// mergeConsecutiveApiMessages implementation) without mutating stored history.
 		const mergedForApi = mergeConsecutiveApiMessages(messagesSinceLastSummary, { roles: ["user"] })
-		const messagesWithoutImages = maybeRemoveImageBlocks(mergedForApi, this.api)
-		const cleanConversationHistory = this.buildCleanConversationHistory(messagesWithoutImages as ApiMessage[])
+		const messagesWithoutImages = maybeRemoveImageBlocks(mergedForApi, requestApi)
+		const cleanConversationHistory = this.buildCleanConversationHistory(
+			messagesWithoutImages as ApiMessage[],
+			requestModelSnapshot,
+		)
 
 		// Check auto-approval limits
 		const approvalResult = await this.autoApprovalHandler.checkAutoApprovalLimits(
@@ -4101,7 +4174,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		// Whether we include tools is determined by whether we have any tools to send.
-		const modelInfo = this.api.getModel().info
+		const modelInfo = requestModelSnapshot.info
 
 		// Build complete tools array: native tools + dynamic MCP tools
 		// When includeAllToolsWithRestrictions is true, returns all tools but provides
@@ -4115,7 +4188,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// but uses allowedFunctionNames to restrict which tools can be called.
 		// Other providers (Anthropic, OpenAI, etc.) don't support this feature yet,
 		// so they continue to receive only the filtered tools for the current mode.
-		const supportsAllowedFunctionNames = apiConfiguration?.apiProvider === "gemini"
+		const supportsAllowedFunctionNames = requestConfiguration.apiProvider === "gemini"
 
 		{
 			const provider = this.providerRef.deref()
@@ -4129,7 +4202,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				mode,
 				customModes: state?.customModes,
 				experiments: state?.experiments,
-				apiConfiguration,
+				apiConfiguration: requestConfiguration,
 				disabledTools: state?.disabledTools,
 				modelInfo,
 				includeAllToolsWithRestrictions: supportsAllowedFunctionNames,
@@ -4164,7 +4237,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		this.skipPrevResponseIdOnce = false
 
 		// The provider accepts reasoning items alongside standard messages; cast to the expected parameter type.
-		const stream = this.api.createMessage(
+		this.lastRequestContext = { api: requestApi, model: requestModelSnapshot }
+		const stream = requestApi.createMessage(
 			systemPrompt,
 			cleanConversationHistory as unknown as Anthropic.Messages.MessageParam[],
 			metadata,
@@ -4204,7 +4278,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			// If it's a context window error and we haven't exceeded max retries for this error type
 			if (isContextWindowExceededError && retryAttempt < MAX_CONTEXT_WINDOW_RETRIES) {
 				console.warn(
-					`[Task#${this.taskId}] Context window exceeded for model ${this.api.getModel().id}. ` +
+					`[Task#${this.taskId}] Context window exceeded for model ${requestModelSnapshot.id}. ` +
 						`Retry attempt ${retryAttempt + 1}/${MAX_CONTEXT_WINDOW_RETRIES}. ` +
 						`Attempting automatic truncation...`,
 				)
@@ -4346,6 +4420,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 	private buildCleanConversationHistory(
 		messages: ApiMessage[],
+		modelSnapshot?: Pick<RequestModelSnapshot, "provider" | "id" | "protocol" | "info">,
 	): Array<
 		Anthropic.Messages.MessageParam | { type: "reasoning"; encrypted_content: string; id?: string; summary?: any[] }
 	> {
@@ -4357,11 +4432,29 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		const cleanConversationHistory: (Anthropic.Messages.MessageParam | ReasoningItemForRequest)[] = []
+		const matchesRequestModel = (msg: ApiMessage) =>
+			!!modelSnapshot &&
+			!!msg.modelProtocol &&
+			msg.modelProtocol === modelSnapshot.protocol &&
+			msg.modelProvider === modelSnapshot.provider &&
+			msg.modelId === modelSnapshot.id
+		let metadataBoundary = -1
+		if (modelSnapshot) {
+			for (let index = 0; index < messages.length; index++) {
+				const message = messages[index]
+				if (message.role === "assistant" && message.modelProtocol && !matchesRequestModel(message)) {
+					metadataBoundary = index
+				}
+			}
+		}
+		const canReuseProviderMetadata = (msg: ApiMessage, index: number) =>
+			index > metadataBoundary && matchesRequestModel(msg)
 
-		for (const msg of messages) {
+		for (const [messageIndex, msg] of messages.entries()) {
+			const canReuseMetadata = canReuseProviderMetadata(msg, messageIndex)
 			// Standalone reasoning: send encrypted, skip plain text
 			if (msg.type === "reasoning") {
-				if (msg.encrypted_content) {
+				if (msg.encrypted_content && canReuseMetadata) {
 					cleanConversationHistory.push({
 						type: "reasoning",
 						summary: msg.summary,
@@ -4388,7 +4481,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 				// Check if this message has reasoning_details (OpenRouter format for Gemini 3, etc.)
 				const msgWithDetails = msg
-				if (msgWithDetails.reasoning_details && Array.isArray(msgWithDetails.reasoning_details)) {
+				if (canReuseMetadata && msgWithDetails.reasoning_details && Array.isArray(msgWithDetails.reasoning_details)) {
 					// Build the assistant message with reasoning_details
 					let assistantContent: Anthropic.Messages.MessageParam["content"]
 
@@ -4416,7 +4509,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				const hasPlainTextReasoning =
 					first && (first as any).type === "reasoning" && typeof (first as any).text === "string"
 
-				if (hasEncryptedReasoning) {
+				if (hasEncryptedReasoning && canReuseMetadata) {
 					const reasoningBlock = first as any
 
 					// Send as separate reasoning item (OpenAI Native)
@@ -4448,7 +4541,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					// Check if the model's preserveReasoning flag is set
 					// If true, include the reasoning block in API requests
 					// If false/undefined, strip it out (stored for history only, not sent back to API)
-					const shouldPreserveForApi = this.api.getModel().info.preserveReasoning === true
+					const shouldPreserveForApi =
+						canReuseMetadata &&
+						(modelSnapshot?.info.preserveReasoning ?? this.api.getModel().info.preserveReasoning) === true
 					let assistantContent: Anthropic.Messages.MessageParam["content"]
 
 					if (shouldPreserveForApi) {
@@ -4476,9 +4571,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 			// Default path for regular messages (no embedded reasoning)
 			if (msg.role) {
+				const content =
+					msg.role === "assistant" && !canReuseMetadata && Array.isArray(msg.content)
+						? msg.content.filter(
+								(block: any) => !["reasoning", "thinking", "thoughtSignature"].includes(block?.type),
+							)
+						: msg.content
 				cleanConversationHistory.push({
 					role: msg.role,
-					content: msg.content as Anthropic.Messages.ContentBlockParam[] | string,
+					content: content as Anthropic.Messages.ContentBlockParam[] | string,
 				})
 			}
 		}

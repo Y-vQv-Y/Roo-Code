@@ -53,7 +53,7 @@ import { fileExistsAtPath } from "../../utils/fs"
 import { playTts, setTtsEnabled, setTtsSpeed, stopTts } from "../../utils/tts"
 import { searchCommits } from "../../utils/git"
 import { exportSettings, importSettingsWithFeedback } from "../config/importExport"
-import { getOpenAiModels } from "../../api/providers/openai"
+import { getOpenAiModelCatalog } from "../../api/providers/openai"
 import { getVsCodeLmModels } from "../../api/providers/vscode-lm"
 import { openMention } from "../mentions"
 import { resolveImageMentions } from "../mentions/resolveImageMentions"
@@ -910,7 +910,10 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 
 			// Base candidates (only those handled by this aggregate fetcher)
 			const candidates: { key: RouterName; options: GetModelsOptions }[] = [
-				{ key: "openrouter", options: { provider: "openrouter" } },
+				{
+					key: "openrouter",
+					options: { provider: "openrouter", baseUrl: apiConfiguration.openRouterBaseUrl },
+				},
 				{
 					key: "requesty",
 					options: {
@@ -1022,12 +1025,10 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 
 				const ollamaModels = await getModels(ollamaOptions)
 
-				if (Object.keys(ollamaModels).length > 0) {
-					provider.postMessageToWebview({ type: "ollamaModels", ollamaModels: ollamaModels })
-				}
+				provider.postMessageToWebview({ type: "ollamaModels", ollamaModels })
 			} catch (error) {
-				// Silently fail - user hasn't configured Ollama yet
 				console.debug("Ollama models fetch failed:", error)
+				provider.postMessageToWebview({ type: "ollamaModels", ollamaModels: {} })
 			}
 			break
 		}
@@ -1044,27 +1045,28 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 
 				const lmStudioModels = await getModels(lmStudioOptions)
 
-				if (Object.keys(lmStudioModels).length > 0) {
-					provider.postMessageToWebview({
-						type: "lmStudioModels",
-						lmStudioModels: lmStudioModels,
-					})
-				}
+				provider.postMessageToWebview({ type: "lmStudioModels", lmStudioModels })
 			} catch (error) {
-				// Silently fail - user hasn't configured LM Studio yet.
 				console.debug("LM Studio models fetch failed:", error)
+				provider.postMessageToWebview({ type: "lmStudioModels", lmStudioModels: {} })
 			}
 			break
 		}
 		case "requestOpenAiModels":
 			if (message?.values?.baseUrl && message?.values?.apiKey) {
-				const openAiModels = await getOpenAiModels(
+				const requestedProvider = message.values.provider ?? "openai"
+				const openAiModelCatalog = await getOpenAiModelCatalog(
 					message?.values?.baseUrl,
 					message?.values?.apiKey,
 					message?.values?.openAiHeaders,
 				)
 
-				provider.postMessageToWebview({ type: "openAiModels", openAiModels })
+				provider.postMessageToWebview({
+					type: "openAiModels",
+					openAiModels: openAiModelCatalog.ids,
+					openAiModelInfo: openAiModelCatalog.models,
+					values: { provider: requestedProvider },
+				})
 			}
 
 			break

@@ -1,4 +1,4 @@
-// pnpm --filter @roo-code/cli test src/agent/__tests__/extension-host.test.ts
+// pnpm --filter @adtec-code/cli test src/agent/__tests__/extension-host.test.ts
 
 import { EventEmitter } from "events"
 import fs from "fs"

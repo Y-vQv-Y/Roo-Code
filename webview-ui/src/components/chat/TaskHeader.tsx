@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronUp, ChevronDown, HardDriveDownload, HardDriveUpload, FoldVertical, ArrowLeft } from "lucide-react"
 import prettyBytes from "pretty-bytes"
 
-import type { ClineMessage } from "@roo-code/types"
+import { getEffectiveContextWindow, getModelContextWindow, type ClineMessage } from "@roo-code/types"
 
 import { getModelMaxOutputTokens } from "@roo/api"
 
@@ -62,7 +62,12 @@ const TaskHeader = ({
 
 	const textContainerRef = useRef<HTMLDivElement>(null)
 	const textRef = useRef<HTMLDivElement>(null)
-	const contextWindow = model?.contextWindow || 1
+	const contextWindow = model
+		? getEffectiveContextWindow(
+				model,
+				getModelContextWindow(apiConfiguration, apiConfiguration.apiProvider, modelId),
+			)
+		: 1
 
 	// Calculate maxTokens (reserved for output) once for reuse in percentage and tooltip
 	const maxTokens = useMemo(

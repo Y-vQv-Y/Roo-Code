@@ -528,6 +528,7 @@
 			"minimal": "最小 (最快)",
 			"high": "高",
 			"xhigh": "超高",
+			"max": "最高",
 			"medium": "中",
 			"low": "低"
 		},
@@ -862,6 +863,12 @@
 		"maxTokens": "最大Token数",
 		"maxThinkingTokens": "最大思考Token数"
 	},
+	"contextWindow": {
+		"label": "上下文窗口",
+		"auto": "自动（{{value}}）",
+		"description": "设置用于 Token 统计和自动压缩的实际上下文预算。自动压缩阈值单独控制何时开始压缩，并始终预留 10% 安全缓冲。",
+		"unknownCapability": "供应商未返回此模型的上下文上限；选择更大预算前请先确认供应商限制。"
+	},
 	"validation": {
 		"apiKey": "您必须提供有效的 API 密钥。",
 		"awsRegion": "您必须选择一个区域来使用 Amazon Bedrock。",
@@ -875,6 +882,8 @@
 		},
 		"modelAvailability": "模型ID {{modelId}} 不可用，请重新选择",
 		"modelDeprecated": "此模型不再可用，请选择其他模型。",
+		"modelDisabled": "此模型已被供应商禁用，请选择其他模型。",
+		"modelOutage": "供应商当前报告此模型服务异常。",
 		"providerNotAllowed": "提供商 '{{provider}}' 不允许用于您的组织",
 		"modelNotAllowed": "模型 '{{model}}' 不允许用于提供商 '{{provider}}'，您的组织不允许",
 		"profileInvalid": "此配置文件包含您的组织不允许的提供商或模型",
