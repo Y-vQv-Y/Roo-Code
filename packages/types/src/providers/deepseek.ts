@@ -4,6 +4,7 @@ import type { ModelInfo } from "../model.js"
 // https://api-docs.deepseek.com/guides/anthropic_api
 export type DeepSeekModelId = keyof typeof deepSeekModels
 
+export const deepSeekDefaultBaseUrl = "https://api.deepseek.com"
 export const deepSeekDefaultModelId: DeepSeekModelId = "deepseek-v4-pro"
 
 /**

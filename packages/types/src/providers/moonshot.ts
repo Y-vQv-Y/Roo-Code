@@ -3,6 +3,8 @@ import type { ModelInfo } from "../model.js"
 // https://platform.moonshot.ai/docs/models
 export type MoonshotModelId = keyof typeof moonshotModels
 
+export const moonshotDefaultBaseUrl = "https://api.moonshot.cn/v1"
+export const moonshotInternationalBaseUrl = "https://api.moonshot.ai/v1"
 export const moonshotDefaultModelId: MoonshotModelId = "kimi-k3"
 
 export const moonshotModels = {
@@ -23,6 +25,9 @@ export const moonshotModels = {
 		supportsPromptCache: true,
 		supportsTemperature: false,
 		preserveReasoning: true,
+		inputPrice: 0.95,
+		outputPrice: 4,
+		cacheReadsPrice: 0.19,
 		description:
 			"Kimi K2.7 Code: coding-focused model with text, image, and video input, 256K context, and always-on preserved thinking.",
 	},
@@ -33,6 +38,9 @@ export const moonshotModels = {
 		supportsPromptCache: true,
 		supportsTemperature: false,
 		preserveReasoning: true,
+		inputPrice: 1.9,
+		outputPrice: 8,
+		cacheReadsPrice: 0.38,
 		description:
 			"Kimi K2.7 Code High-Speed: the K2.7 Code model with the same capabilities and parameter constraints, optimized for higher output speed.",
 	},
@@ -44,6 +52,9 @@ export const moonshotModels = {
 		supportsTemperature: false,
 		supportsReasoningBinary: true,
 		preserveReasoning: true,
+		inputPrice: 0.95,
+		outputPrice: 4,
+		cacheReadsPrice: 0.16,
 		description:
 			"Kimi K2.6: multimodal 256K-context model supporting text and image input, thinking and non-thinking modes, dialogue, and agent tasks.",
 	},
@@ -106,6 +117,9 @@ export const moonshotModels = {
 		supportsTemperature: false,
 		supportsReasoningBinary: true,
 		preserveReasoning: true,
+		inputPrice: 0.6,
+		outputPrice: 3,
+		cacheReadsPrice: 0.1,
 		description:
 			"Kimi K2.5: multimodal 256K-context model supporting text and image input, thinking and non-thinking modes, dialogue, and agent tasks.",
 	},

@@ -5,6 +5,8 @@ import type { ModelInfo } from "../model.js"
 // https://platform.minimax.io/docs/guides/pricing-paygo
 // https://platform.minimax.io/docs/guides/pricing-tokenplan
 export type MinimaxModelId = keyof typeof minimaxModels
+export const minimaxDefaultBaseUrl = "https://api.minimaxi.com/v1"
+export const minimaxInternationalBaseUrl = "https://api.minimax.io/v1"
 export const minimaxDefaultModelId: MinimaxModelId = "MiniMax-M2.7"
 
 export const minimaxModels = {
@@ -129,6 +131,19 @@ export const minimaxModels = {
 			"MiniMax M2.1 highspeed: same performance as M2.1 but with faster response (approximately 100 tps vs 60 tps). See pricing at https://platform.minimax.io/docs/guides/pricing-paygo. Requires TokenPlan High-Speed subscription for use with TokenPlan keys. Note: When using TokenPlan, usage is billed per request, not per token.",
 	},
 } as const satisfies Record<string, ModelInfo>
+
+export const minimaxModelInfoSaneDefaults: ModelInfo = {
+	maxTokens: 16_384,
+	contextWindow: 128_000,
+	supportsImages: false,
+	supportsPromptCache: true,
+	preserveReasoning: true,
+	metadataSource: "fallback",
+	capabilityConfidence: "unknown",
+}
+
+export const getMinimaxModelInfo = (modelId: string): ModelInfo =>
+	minimaxModels[modelId as keyof typeof minimaxModels] ?? minimaxModelInfoSaneDefaults
 
 export const minimaxDefaultModelInfo: ModelInfo = minimaxModels[minimaxDefaultModelId]
 

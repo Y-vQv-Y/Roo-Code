@@ -3,9 +3,39 @@ import type { ModelInfo } from "../model.js"
 // https://ai.google.dev/gemini-api/docs/models/gemini
 export type GeminiModelId = keyof typeof geminiModels
 
-export const geminiDefaultModelId: GeminiModelId = "gemini-3.1-pro-preview"
+export const geminiDefaultModelId: GeminiModelId = "gemini-3.5-flash"
 
 export const geminiModels = {
+	"gemini-3.5-flash": {
+		maxTokens: 65_536,
+		contextWindow: 1_048_576,
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["minimal", "low", "medium", "high"],
+		reasoningEffort: "medium",
+		supportsTemperature: true,
+		defaultTemperature: 1,
+		inputPrice: 1.5,
+		outputPrice: 9,
+		cacheReadsPrice: 0.15,
+		description:
+			"Gemini 3.5 Flash: Google's most intelligent model, built for speed with frontier intelligence and strong search and grounding capabilities.",
+	},
+	"gemini-3.1-flash-lite": {
+		maxTokens: 65_536,
+		contextWindow: 1_048_576,
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["minimal", "low", "medium", "high"],
+		reasoningEffort: "medium",
+		supportsTemperature: true,
+		defaultTemperature: 1,
+		inputPrice: 0.25,
+		outputPrice: 1.5,
+		cacheReadsPrice: 0.025,
+		description:
+			"Gemini 3.1 Flash-Lite: Google's most cost-effective stable model for high-volume agent tasks, translation, and simple data processing.",
+	},
 	"gemini-3.1-pro-preview": {
 		maxTokens: 65_536,
 		contextWindow: 1_048_576,

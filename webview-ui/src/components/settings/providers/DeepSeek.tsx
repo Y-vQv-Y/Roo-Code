@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import type { ProviderSettings } from "@roo-code/types"
+import { deepSeekDefaultBaseUrl, type ProviderSettings } from "@roo-code/types"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { VSCodeButtonLink } from "@src/components/common/VSCodeButtonLink"
@@ -30,6 +30,14 @@ export const DeepSeek = ({ apiConfiguration, setApiConfigurationField }: DeepSee
 
 	return (
 		<>
+			<VSCodeTextField
+				value={apiConfiguration?.deepSeekBaseUrl || deepSeekDefaultBaseUrl}
+				type="url"
+				onInput={handleInputChange("deepSeekBaseUrl")}
+				placeholder={t("settings:placeholders.baseUrl")}
+				className="w-full">
+				<label className="block font-medium mb-1">{t("settings:providers.openAiBaseUrl")}</label>
+			</VSCodeTextField>
 			<VSCodeTextField
 				value={apiConfiguration?.deepSeekApiKey || ""}
 				type="password"

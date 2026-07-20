@@ -1,5 +1,6 @@
 import {
 	moonshotDefaultModelId,
+	moonshotDefaultBaseUrl,
 	getMoonshotModelInfo,
 	type ModelInfo,
 } from "@roo-code/types"
@@ -22,7 +23,7 @@ export class MoonshotHandler extends OpenAICompatibleHandler {
 
 		const config: OpenAICompatibleConfig = {
 			providerName: "moonshot",
-			baseURL: options.moonshotBaseUrl || "https://api.moonshot.ai/v1",
+			baseURL: options.moonshotBaseUrl || moonshotDefaultBaseUrl,
 			apiKey: options.moonshotApiKey ?? "not-provided",
 			modelId,
 			modelInfo,

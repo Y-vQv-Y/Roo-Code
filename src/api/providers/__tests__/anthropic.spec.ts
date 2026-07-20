@@ -239,6 +239,37 @@ describe("AnthropicHandler", () => {
 	})
 
 	describe("getModel", () => {
+		it("uses Claude Sonnet 5 as the current default model", () => {
+			const defaultHandler = new AnthropicHandler({ apiKey: "test-api-key" })
+			const model = defaultHandler.getModel()
+
+			expect(model.id).toBe("claude-sonnet-5")
+			expect(model.info).toMatchObject({
+				contextWindow: 1_000_000,
+				maxTokens: 128_000,
+				inputPrice: 2,
+				outputPrice: 10,
+				cacheWritesPrice: 2.5,
+				cacheReadsPrice: 0.2,
+			})
+		})
+
+		it("exposes the verified Claude Fable 5 model metadata", () => {
+			const fableHandler = new AnthropicHandler({
+				apiKey: "test-api-key",
+				apiModelId: "claude-fable-5",
+			})
+
+			expect(fableHandler.getModel().info).toMatchObject({
+				contextWindow: 1_000_000,
+				maxTokens: 128_000,
+				inputPrice: 10,
+				outputPrice: 50,
+				cacheWritesPrice: 12.5,
+				cacheReadsPrice: 1,
+			})
+		})
+
 		it("should return default model if no model ID is provided", () => {
 			const handlerWithoutModel = new AnthropicHandler({
 				...mockOptions,

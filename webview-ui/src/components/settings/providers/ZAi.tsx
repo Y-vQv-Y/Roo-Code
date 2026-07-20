@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { VSCodeTextField, VSCodeDropdown, VSCodeOption } from "@vscode/webview-ui-toolkit/react"
 
-import { type ProviderSettings, zaiApiLineConfigs, zaiApiLineSchema } from "@roo-code/types"
+import { type ProviderSettings, zaiApiLineConfigs, zaiApiLineSchema, zaiDefaultApiLine } from "@roo-code/types"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { VSCodeButtonLink } from "@src/components/common/VSCodeButtonLink"
@@ -30,10 +30,18 @@ export const ZAi = ({ apiConfiguration, setApiConfigurationField }: ZAiProps) =>
 
 	return (
 		<>
+			<VSCodeTextField
+				value={apiConfiguration.zaiBaseUrl || ""}
+				type="url"
+				onInput={handleInputChange("zaiBaseUrl")}
+				placeholder={zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].baseUrl}
+				className="w-full">
+				<label className="block font-medium mb-1">{t("settings:providers.openAiBaseUrl")}</label>
+			</VSCodeTextField>
 			<div>
 				<label className="block font-medium mb-1">{t("settings:providers.zaiEntrypoint")}</label>
 				<VSCodeDropdown
-					value={apiConfiguration.zaiApiLine || zaiApiLineSchema.enum.international_coding}
+					value={apiConfiguration.zaiApiLine || zaiDefaultApiLine}
 					onChange={handleInputChange("zaiApiLine")}
 					className={cn("w-full")}>
 					{zaiApiLineSchema.options.map((zaiApiLine) => {
@@ -64,7 +72,7 @@ export const ZAi = ({ apiConfiguration, setApiConfigurationField }: ZAiProps) =>
 				{!apiConfiguration?.zaiApiKey && (
 					<VSCodeButtonLink
 						href={
-							zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
+							zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].isChina
 								? "https://open.bigmodel.cn/console/overview"
 								: "https://z.ai/manage-apikey/apikey-list"
 						}

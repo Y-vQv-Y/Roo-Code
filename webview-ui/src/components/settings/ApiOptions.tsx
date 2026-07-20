@@ -21,7 +21,9 @@ import {
 	qwenCodeDefaultModelId,
 	geminiDefaultModelId,
 	deepSeekDefaultModelId,
+	deepSeekDefaultBaseUrl,
 	moonshotDefaultModelId,
+	moonshotDefaultBaseUrl,
 	mistralDefaultModelId,
 	xaiDefaultModelId,
 	basetenDefaultModelId,
@@ -31,13 +33,19 @@ import {
 	internationalZAiDefaultModelId,
 	mainlandZAiDefaultModelId,
 	zaiApiLineConfigs,
+	zaiDefaultApiLine,
 	fireworksDefaultModelId,
 	vercelAiGatewayDefaultModelId,
 	minimaxDefaultModelId,
+	minimaxDefaultBaseUrl,
+	minimaxModelInfoSaneDefaults,
+	getMinimaxModelInfo,
 	unboundDefaultModelId,
 	deepSeekModelInfoSaneDefaults,
 	moonshotModelInfoSaneDefaults,
 	getMoonshotModelInfo,
+	zaiModelInfoSaneDefaults,
+	getZaiModelInfo,
 } from "@roo-code/types"
 
 import {
@@ -46,6 +54,9 @@ import {
 	getStaticModelsForProvider,
 	shouldUseGenericModelPicker,
 	handleModelChangeSideEffects,
+	DISCOVERABLE_STATIC_PROVIDERS,
+	type DiscoverableStaticProvider,
+	getCachedDiscoveredModels,
 } from "./utils/providerModelConfig"
 
 import { vscode } from "@src/utils/vscode"
@@ -170,17 +181,17 @@ const ApiOptions = ({
 	)
 
 	const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false)
-	const [discoveredModels, setDiscoveredModels] = useState<
-		Partial<Record<"deepseek" | "moonshot", ModelRecord>>
-	>({})
+	const [discoveredModels, setDiscoveredModels] = useState<Partial<Record<DiscoverableStaticProvider, ModelRecord>>>(
+		() => getCachedDiscoveredModels(apiConfiguration.modelInfoOverrides),
+	)
 
 	useEffect(() => {
 		const handleModelsMessage = (event: MessageEvent<ExtensionMessage>) => {
 			const message = event.data
 			if (message.type !== "openAiModels") return
 
-			const provider = message.values?.provider as "deepseek" | "moonshot" | undefined
-			if (provider !== "deepseek" && provider !== "moonshot") return
+			const provider = message.values?.provider as DiscoverableStaticProvider | undefined
+			if (!provider || !DISCOVERABLE_STATIC_PROVIDERS.includes(provider)) return
 
 			const modelIds = message.openAiModels ?? []
 			if (modelIds.length === 0) {
@@ -192,12 +203,30 @@ const ApiOptions = ({
 			const staticModelInfo = getStaticModelsForProvider(provider)
 
 			const fallbackModelInfo =
-				provider === "deepseek" ? deepSeekModelInfoSaneDefaults : moonshotModelInfoSaneDefaults
+				provider === "deepseek"
+					? deepSeekModelInfoSaneDefaults
+					: provider === "moonshot"
+						? moonshotModelInfoSaneDefaults
+						: provider === "minimax"
+							? minimaxModelInfoSaneDefaults
+							: zaiModelInfoSaneDefaults
+			const resolveStaticModelInfo = (id: string) => {
+				switch (provider) {
+					case "moonshot":
+						return getMoonshotModelInfo(id)
+					case "minimax":
+						return getMinimaxModelInfo(id)
+					case "zai":
+						return getZaiModelInfo(
+							id,
+							zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].isChina,
+						)
+					default:
+						return staticModelInfo[id] ?? fallbackModelInfo
+				}
+			}
 			const resolveModelInfo = (id: string) => {
-				const baseInfo =
-					provider === "moonshot"
-						? getMoonshotModelInfo(id)
-						: (staticModelInfo[id] ?? fallbackModelInfo)
+				const baseInfo = resolveStaticModelInfo(id)
 				const reportedInfo = message.openAiModelInfo?.[id]
 
 				return reportedInfo?.capabilityConfidence === "provider-reported"
@@ -315,31 +344,40 @@ const ApiOptions = ({
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
 			} else if (selectedProvider === "deepseek") {
-				setDiscoveredModels((previous) => {
-					const next = { ...previous }
-					delete next.deepseek
-					return next
-				})
 				vscode.postMessage({
 					type: "requestOpenAiModels",
 					values: {
 						provider: "deepseek",
-						baseUrl: apiConfiguration?.deepSeekBaseUrl || "https://api.deepseek.com",
+						baseUrl: apiConfiguration?.deepSeekBaseUrl || deepSeekDefaultBaseUrl,
 						apiKey: apiConfiguration?.deepSeekApiKey,
 					},
 				})
 			} else if (selectedProvider === "moonshot") {
-				setDiscoveredModels((previous) => {
-					const next = { ...previous }
-					delete next.moonshot
-					return next
-				})
 				vscode.postMessage({
 					type: "requestOpenAiModels",
 					values: {
 						provider: "moonshot",
-						baseUrl: apiConfiguration?.moonshotBaseUrl || "https://api.moonshot.ai/v1",
+						baseUrl: apiConfiguration?.moonshotBaseUrl || moonshotDefaultBaseUrl,
 						apiKey: apiConfiguration?.moonshotApiKey,
+					},
+				})
+			} else if (selectedProvider === "minimax") {
+				vscode.postMessage({
+					type: "requestOpenAiModels",
+					values: {
+						provider: "minimax",
+						baseUrl: apiConfiguration?.minimaxBaseUrl || minimaxDefaultBaseUrl,
+						apiKey: apiConfiguration?.minimaxApiKey,
+					},
+				})
+			} else if (selectedProvider === "zai") {
+				const apiLine = apiConfiguration.zaiApiLine ?? zaiDefaultApiLine
+				vscode.postMessage({
+					type: "requestOpenAiModels",
+					values: {
+						provider: "zai",
+						baseUrl: apiConfiguration.zaiBaseUrl || zaiApiLineConfigs[apiLine].baseUrl,
+						apiKey: apiConfiguration.zaiApiKey,
 					},
 				})
 			} else if (selectedProvider === "litellm" || selectedProvider === "poe") {
@@ -358,6 +396,11 @@ const ApiOptions = ({
 			apiConfiguration?.deepSeekApiKey,
 			apiConfiguration?.moonshotBaseUrl,
 			apiConfiguration?.moonshotApiKey,
+			apiConfiguration?.minimaxBaseUrl,
+			apiConfiguration?.minimaxApiKey,
+			apiConfiguration?.zaiApiLine,
+			apiConfiguration?.zaiBaseUrl,
+			apiConfiguration?.zaiApiKey,
 			apiConfiguration?.litellmBaseUrl,
 			apiConfiguration?.litellmApiKey,
 			apiConfiguration?.poeApiKey,
@@ -462,7 +505,7 @@ const ApiOptions = ({
 				zai: {
 					field: "apiModelId",
 					default:
-						zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
+						zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].isChina
 							? mainlandZAiDefaultModelId
 							: internationalZAiDefaultModelId,
 				},
@@ -820,7 +863,7 @@ const ApiOptions = ({
 								setApiConfigurationField={setApiConfigurationField}
 								defaultModelId={getDefaultModelIdForProvider(activeSelectedProvider, apiConfiguration)}
 								models={
-									discoveredModels[activeSelectedProvider as "deepseek" | "moonshot"] ??
+									discoveredModels[activeSelectedProvider as DiscoverableStaticProvider] ??
 									getStaticModelsForProvider(activeSelectedProvider, t("settings:labels.useCustomArn"))
 								}
 								modelIdKey="apiModelId"

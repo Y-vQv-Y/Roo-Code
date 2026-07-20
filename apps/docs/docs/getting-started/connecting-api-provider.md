@@ -38,6 +38,6 @@ You can choose other models, but that introduces complexity. Different models va
 1. Open the ADTEC Code panel by clicking the ADTEC Code icon (<KangarooIcon />) in the VS Code Activity Bar
 2. In the welcome screen, choose your LLM provider.
 3. Paste the API key you copied from your provider into the right field and continue.
-4. Select your model (it should be called `claude-sonnet-4-5` or `anthropic/claude-sonnet-4-5`) and complete the process.
+4. Select your model (for example, `claude-sonnet-5` or `anthropic/claude-sonnet-5`) and complete the process.
 
 Now you can start coding!

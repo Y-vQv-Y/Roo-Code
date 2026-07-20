@@ -11,7 +11,6 @@ import {
 	normalizeDeepSeekModelId,
 	moonshotDefaultModelId,
 	getMoonshotModelInfo,
-	minimaxModels,
 	geminiModels,
 	mistralModels,
 	openAiModelInfoSaneDefaults,
@@ -23,9 +22,10 @@ import {
 	vscodeLlmDefaultModelId,
 	openAiCodexModels,
 	sambaNovaModels,
-	internationalZAiModels,
-	mainlandZAiModels,
 	zaiApiLineConfigs,
+	zaiDefaultApiLine,
+	getMinimaxModelInfo,
+	getZaiModelInfo,
 	fireworksModels,
 	basetenModels,
 	qwenCodeModels,
@@ -250,15 +250,14 @@ function getSelectedModel({
 		}
 		case "minimax": {
 			const id = apiConfiguration.apiModelId ?? defaultModelId
-			const info = minimaxModels[id as keyof typeof minimaxModels]
+			const info = apiConfiguration.modelInfoOverrides?.[`minimax/${id}`] ?? getMinimaxModelInfo(id)
 			return { id, info }
 		}
 		case "zai": {
-			const isChina = zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
-			const models = isChina ? mainlandZAiModels : internationalZAiModels
+			const isChina = zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].isChina
 			const defaultModelId = getProviderDefaultModelId(provider, { isChina })
 			const id = apiConfiguration.apiModelId ?? defaultModelId
-			const info = models[id as keyof typeof models]
+			const info = apiConfiguration.modelInfoOverrides?.[`zai/${id}`] ?? getZaiModelInfo(id, isChina)
 			return { id, info }
 		}
 		case "openai-native": {

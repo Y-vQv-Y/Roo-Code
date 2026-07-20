@@ -1,4 +1,4 @@
-import { getApiProtocol } from "../provider-settings.js"
+import { getApiProtocol, providerSettingsSchema } from "../provider-settings.js"
 
 describe("getApiProtocol", () => {
 	describe("Anthropic-style providers", () => {
@@ -77,5 +77,20 @@ describe("getApiProtocol", () => {
 			expect(getApiProtocol("vertex", "claude-3-opus")).toBe("anthropic")
 			expect(getApiProtocol("vertex", "ClAuDe-InStAnT")).toBe("anthropic")
 		})
+	})
+})
+
+describe("providerSettingsSchema custom base URLs", () => {
+	it.each([
+		["moonshot", "moonshotBaseUrl"],
+		["minimax", "minimaxBaseUrl"],
+		["zai", "zaiBaseUrl"],
+	] as const)("accepts a custom %s base URL", (apiProvider, field) => {
+		const result = providerSettingsSchema.safeParse({
+			apiProvider,
+			[field]: "https://relay.example.com/v1",
+		})
+
+		expect(result.success).toBe(true)
 	})
 })

@@ -259,7 +259,7 @@ describe("DeepSeekHandler", () => {
 			expect(model.info).toBeDefined()
 			expect(model.info).toBe(deepSeekModelInfoSaneDefaults)
 			expect(model.info.contextWindow).toBe(128_000)
-			expect(model.info.metadataSource).toBe("fallback")
+			expect((model.info as ModelInfo).metadataSource).toBe("fallback")
 		})
 
 		it("should return default model if no model ID is provided", () => {

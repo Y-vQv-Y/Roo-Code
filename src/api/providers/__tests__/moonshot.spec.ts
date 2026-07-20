@@ -24,8 +24,9 @@ vi.mock("@ai-sdk/openai-compatible", () => ({
 }))
 
 import type { Anthropic } from "@anthropic-ai/sdk"
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
 
-import { moonshotDefaultModelId } from "@roo-code/types"
+import { moonshotDefaultBaseUrl, moonshotDefaultModelId } from "@roo-code/types"
 
 import type { ApiHandlerOptions } from "../../../shared/api"
 
@@ -60,24 +61,41 @@ describe("MoonshotHandler", () => {
 		})
 
 		it("should use default base URL if not provided", () => {
-			const handlerWithoutBaseUrl = new MoonshotHandler({
+			new MoonshotHandler({
 				...mockOptions,
 				moonshotBaseUrl: undefined,
 			})
-			expect(handlerWithoutBaseUrl).toBeInstanceOf(MoonshotHandler)
+			expect(createOpenAICompatible).toHaveBeenCalledWith(
+				expect.objectContaining({ baseURL: moonshotDefaultBaseUrl }),
+			)
 		})
 
-		it("should use chinese base URL if provided", () => {
-			const customBaseUrl = "https://api.moonshot.cn/v1"
-			const handlerWithCustomUrl = new MoonshotHandler({
+		it("should use a custom compatible base URL", () => {
+			const customBaseUrl = "https://relay.example.com/v1"
+			new MoonshotHandler({
 				...mockOptions,
 				moonshotBaseUrl: customBaseUrl,
 			})
-			expect(handlerWithCustomUrl).toBeInstanceOf(MoonshotHandler)
+			expect(createOpenAICompatible).toHaveBeenCalledWith(
+				expect.objectContaining({ baseURL: customBaseUrl }),
+			)
 		})
 	})
 
 	describe("getModel", () => {
+		it("uses the verified Kimi K2.7 Code pricing metadata", () => {
+			const kimiHandler = new MoonshotHandler({
+				...mockOptions,
+				apiModelId: "kimi-k2.7-code",
+			})
+
+			expect(kimiHandler.getModel().info).toMatchObject({
+				inputPrice: 0.95,
+				outputPrice: 4,
+				cacheReadsPrice: 0.19,
+			})
+		})
+
 		it("should return model info for valid model ID", () => {
 			const model = handler.getModel()
 			expect(model.id).toBe(mockOptions.apiModelId)

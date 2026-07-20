@@ -11,6 +11,7 @@ import {
 	internationalZAiModels,
 	mainlandZAiModels,
 	ZAI_DEFAULT_TEMPERATURE,
+	zaiModelInfoSaneDefaults,
 } from "@roo-code/types"
 
 import { ZAiHandler } from "../zai"
@@ -274,17 +275,55 @@ describe("ZAiHandler", () => {
 	})
 
 	describe("Default behavior", () => {
-		it("should default to international when no zaiApiLine is specified", () => {
+		it("should default to the China coding endpoint when no zaiApiLine is specified", () => {
 			const handlerDefault = new ZAiHandler({ zaiApiKey: "test-zai-api-key" })
 			expect(OpenAI).toHaveBeenCalledWith(
 				expect.objectContaining({
-					baseURL: "https://api.z.ai/api/coding/paas/v4",
+					baseURL: "https://open.bigmodel.cn/api/coding/paas/v4",
 				}),
 			)
 
 			const model = handlerDefault.getModel()
-			expect(model.id).toBe(internationalZAiDefaultModelId)
-			expect(model.info).toEqual(internationalZAiModels[internationalZAiDefaultModelId])
+			expect(model.id).toBe(mainlandZAiDefaultModelId)
+			expect(model.info).toEqual(mainlandZAiModels[mainlandZAiDefaultModelId])
+		})
+
+		it("should prefer a custom relay base URL", () => {
+			new ZAiHandler({
+				zaiApiKey: "test-zai-api-key",
+				zaiBaseUrl: "https://relay.example.com/v1",
+			})
+
+			expect(OpenAI).toHaveBeenCalledWith(
+				expect.objectContaining({ baseURL: "https://relay.example.com/v1" }),
+			)
+		})
+
+		it("should expose verified GLM-5.2 international metadata", () => {
+			const internationalHandler = new ZAiHandler({
+				zaiApiKey: "test-zai-api-key",
+				zaiApiLine: "international_coding",
+				apiModelId: "glm-5.2",
+			})
+
+			expect(internationalHandler.getModel().info).toMatchObject({
+				contextWindow: 1_000_000,
+				maxTokens: 128_000,
+				inputPrice: 1.4,
+				outputPrice: 4.4,
+				cacheReadsPrice: 0.26,
+			})
+		})
+
+		it("should preserve custom model IDs with fallback metadata", () => {
+			const customHandler = new ZAiHandler({
+				zaiApiKey: "test-zai-api-key",
+				apiModelId: "relay/glm-latest",
+			})
+
+			const model = customHandler.getModel()
+			expect(model.id).toBe("relay/glm-latest")
+			expect(model.info).toBe(zaiModelInfoSaneDefaults)
 		})
 
 		it("should use 'not-provided' as default API key when none is specified", () => {

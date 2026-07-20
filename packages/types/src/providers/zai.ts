@@ -9,8 +9,53 @@ import { ZaiApiLine } from "../provider-settings.js"
 // https://bigmodel.cn/pricing
 
 export type InternationalZAiModelId = keyof typeof internationalZAiModels
-export const internationalZAiDefaultModelId: InternationalZAiModelId = "glm-4.6"
+export const internationalZAiDefaultModelId: InternationalZAiModelId = "glm-5.2"
 export const internationalZAiModels = {
+	"glm-5.2": {
+		maxTokens: 128_000,
+		contextWindow: 1_000_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		inputPrice: 1.4,
+		outputPrice: 4.4,
+		cacheWritesPrice: 0,
+		cacheReadsPrice: 0.26,
+		description:
+			"GLM-5.2 is Z.AI's flagship model for long-horizon tasks, with a native 1M-token context window and 128K maximum output.",
+	},
+	"glm-5.1": {
+		maxTokens: 128_000,
+		contextWindow: 200_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		inputPrice: 1.4,
+		outputPrice: 4.4,
+		cacheWritesPrice: 0,
+		cacheReadsPrice: 0.26,
+		description:
+			"GLM-5.1 is Z.AI's flagship foundation model for long-horizon autonomous work, with 200K context and 128K maximum output.",
+	},
+	"glm-5-turbo": {
+		maxTokens: 128_000,
+		contextWindow: 200_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		inputPrice: 1.2,
+		outputPrice: 4,
+		cacheWritesPrice: 0,
+		cacheReadsPrice: 0.24,
+		description:
+			"GLM-5-Turbo is optimized for persistent agent tasks and tool use, with 200K context and 128K maximum output.",
+	},
 	"glm-4.5": {
 		maxTokens: 16_384,
 		contextWindow: 131_072,
@@ -121,19 +166,19 @@ export const internationalZAiModels = {
 			"GLM-4.7 is Zhipu's latest model with built-in thinking capabilities enabled by default. It provides enhanced reasoning for complex tasks while maintaining fast response times.",
 	},
 	"glm-5": {
-		maxTokens: 16_384,
-		contextWindow: 202_752,
+		maxTokens: 128_000,
+		contextWindow: 200_000,
 		supportsImages: false,
 		supportsPromptCache: true,
 		supportsReasoningEffort: ["disable", "medium"],
 		reasoningEffort: "medium",
 		preserveReasoning: true,
-		inputPrice: 0.6,
-		outputPrice: 2.2,
+		inputPrice: 1,
+		outputPrice: 3.2,
 		cacheWritesPrice: 0,
-		cacheReadsPrice: 0.11,
+		cacheReadsPrice: 0.2,
 		description:
-			"GLM-5 is Zhipu's next-generation model with a 202k context window and built-in thinking capabilities. It delivers state-of-the-art reasoning, coding, and agentic performance.",
+			"GLM-5 is Z.AI's foundation model for agentic engineering, with 200K context, 128K maximum output, and built-in thinking capabilities.",
 	},
 	"glm-4.7-flash": {
 		maxTokens: 16_384,
@@ -197,8 +242,41 @@ export const internationalZAiModels = {
 } as const satisfies Record<string, ModelInfo>
 
 export type MainlandZAiModelId = keyof typeof mainlandZAiModels
-export const mainlandZAiDefaultModelId: MainlandZAiModelId = "glm-4.6"
+export const mainlandZAiDefaultModelId: MainlandZAiModelId = "glm-5.2"
 export const mainlandZAiModels = {
+	"glm-5.2": {
+		maxTokens: 128_000,
+		contextWindow: 1_000_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		description:
+			"GLM-5.2 is Z.AI's flagship model for long-horizon tasks, with a native 1M-token context window and 128K maximum output. Pricing depends on the mainland account plan.",
+	},
+	"glm-5.1": {
+		maxTokens: 128_000,
+		contextWindow: 200_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		description:
+			"GLM-5.1 is a flagship foundation model for long-horizon autonomous work, with 200K context and 128K maximum output. Pricing depends on the mainland account plan.",
+	},
+	"glm-5-turbo": {
+		maxTokens: 128_000,
+		contextWindow: 200_000,
+		supportsImages: false,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "medium"],
+		reasoningEffort: "medium",
+		preserveReasoning: true,
+		description:
+			"GLM-5-Turbo is optimized for persistent agent tasks and tool use, with 200K context and 128K maximum output. Pricing depends on the mainland account plan.",
+	},
 	"glm-4.5": {
 		maxTokens: 16_384,
 		contextWindow: 131_072,
@@ -297,19 +375,15 @@ export const mainlandZAiModels = {
 			"GLM-4.7 is Zhipu's latest model with built-in thinking capabilities enabled by default. It provides enhanced reasoning for complex tasks while maintaining fast response times.",
 	},
 	"glm-5": {
-		maxTokens: 16_384,
-		contextWindow: 202_752,
+		maxTokens: 128_000,
+		contextWindow: 200_000,
 		supportsImages: false,
 		supportsPromptCache: true,
 		supportsReasoningEffort: ["disable", "medium"],
 		reasoningEffort: "medium",
 		preserveReasoning: true,
-		inputPrice: 0.29,
-		outputPrice: 1.14,
-		cacheWritesPrice: 0,
-		cacheReadsPrice: 0.057,
 		description:
-			"GLM-5 is Zhipu's next-generation model with a 202k context window and built-in thinking capabilities. It delivers state-of-the-art reasoning, coding, and agentic performance.",
+			"GLM-5 is Z.AI's foundation model for agentic engineering, with 200K context, 128K maximum output, and built-in thinking capabilities. Pricing depends on the mainland account plan.",
 	},
 	"glm-4.7-flash": {
 		maxTokens: 16_384,
@@ -374,6 +448,21 @@ export const mainlandZAiModels = {
 } as const satisfies Record<string, ModelInfo>
 
 export const ZAI_DEFAULT_TEMPERATURE = 0.6
+export const zaiDefaultApiLine: ZaiApiLine = "china_coding"
+
+export const zaiModelInfoSaneDefaults: ModelInfo = {
+	maxTokens: 16_384,
+	contextWindow: 128_000,
+	supportsImages: false,
+	supportsPromptCache: true,
+	metadataSource: "fallback",
+	capabilityConfidence: "unknown",
+}
+
+export const getZaiModelInfo = (modelId: string, isChina: boolean): ModelInfo => {
+	const models = (isChina ? mainlandZAiModels : internationalZAiModels) as Record<string, ModelInfo>
+	return models[modelId] ?? zaiModelInfoSaneDefaults
+}
 
 export const zaiApiLineConfigs = {
 	international_coding: {

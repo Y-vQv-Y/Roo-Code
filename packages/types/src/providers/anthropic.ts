@@ -4,9 +4,45 @@ import type { ModelInfo } from "../model.js"
 // https://platform.claude.com/docs/en/about-claude/pricing
 
 export type AnthropicModelId = keyof typeof anthropicModels
-export const anthropicDefaultModelId: AnthropicModelId = "claude-sonnet-4-5"
+export const anthropicDefaultModelId: AnthropicModelId = "claude-sonnet-5"
 
 export const anthropicModels = {
+	"claude-fable-5": {
+		maxTokens: 128_000,
+		contextWindow: 1_000_000,
+		supportsImages: true,
+		supportsPromptCache: true,
+		inputPrice: 10,
+		outputPrice: 50,
+		cacheWritesPrice: 12.5,
+		cacheReadsPrice: 1,
+		description:
+			"Claude Fable 5: Anthropic's most capable widely available model for long-running agents, with always-on adaptive thinking and a native 1M-token context window.",
+	},
+	"claude-opus-4-8": {
+		maxTokens: 128_000,
+		contextWindow: 1_000_000,
+		supportsImages: true,
+		supportsPromptCache: true,
+		inputPrice: 5,
+		outputPrice: 25,
+		cacheWritesPrice: 6.25,
+		cacheReadsPrice: 0.5,
+		description:
+			"Claude Opus 4.8: Anthropic's model for complex agentic coding and enterprise work, with adaptive thinking and a native 1M-token context window.",
+	},
+	"claude-sonnet-5": {
+		maxTokens: 128_000,
+		contextWindow: 1_000_000,
+		supportsImages: true,
+		supportsPromptCache: true,
+		inputPrice: 2,
+		outputPrice: 10,
+		cacheWritesPrice: 2.5,
+		cacheReadsPrice: 0.2,
+		description:
+			"Claude Sonnet 5: Anthropic's best combination of speed and intelligence, with adaptive thinking and a native 1M-token context window. Introductory $2/$10 pricing applies through August 31, 2026.",
+	},
 	"claude-sonnet-4-6": {
 		maxTokens: 64_000, // Overridden to 8k if `enableReasoningEffort` is false.
 		contextWindow: 200_000, // Default 200K, extendable to 1M with beta flag 'context-1m-2025-08-07'

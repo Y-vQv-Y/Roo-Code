@@ -148,6 +148,35 @@ describe("GeminiHandler", () => {
 	})
 
 	describe("getModel", () => {
+		it("uses Gemini 3.5 Flash as the current stable default", () => {
+			const defaultHandler = new GeminiHandler({ geminiApiKey: "test-key" })
+			const model = defaultHandler.getModel()
+
+			expect(model.id).toBe("gemini-3.5-flash")
+			expect(model.info).toMatchObject({
+				contextWindow: 1_048_576,
+				maxTokens: 65_536,
+				inputPrice: 1.5,
+				outputPrice: 9,
+				cacheReadsPrice: 0.15,
+			})
+		})
+
+		it("exposes Gemini 3.1 Flash-Lite pricing metadata", () => {
+			const liteHandler = new GeminiHandler({
+				geminiApiKey: "test-key",
+				apiModelId: "gemini-3.1-flash-lite",
+			})
+
+			expect(liteHandler.getModel().info).toMatchObject({
+				contextWindow: 1_048_576,
+				maxTokens: 65_536,
+				inputPrice: 0.25,
+				outputPrice: 1.5,
+				cacheReadsPrice: 0.025,
+			})
+		})
+
 		it("should return correct model info", () => {
 			const modelInfo = handler.getModel()
 			expect(modelInfo.id).toBe(GEMINI_MODEL_NAME)

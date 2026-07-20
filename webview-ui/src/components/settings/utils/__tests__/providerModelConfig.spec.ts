@@ -1,3 +1,5 @@
+import { mainlandZAiDefaultModelId } from "@roo-code/types"
+
 import {
 	PROVIDER_SERVICE_CONFIG,
 	PROVIDER_DEFAULT_MODEL_IDS,
@@ -7,9 +9,36 @@ import {
 	isStaticModelProvider,
 	PROVIDERS_WITH_CUSTOM_MODEL_UI,
 	shouldUseGenericModelPicker,
+	getCachedDiscoveredModels,
 } from "../providerModelConfig"
 
 describe("providerModelConfig", () => {
+	describe("getCachedDiscoveredModels", () => {
+		it("rebuilds last-known provider catalogs from persisted metadata", () => {
+			const cached = getCachedDiscoveredModels({
+				"deepseek/deepseek-custom": {
+					maxTokens: 8192,
+					contextWindow: 128_000,
+					supportsPromptCache: true,
+				},
+				"zai/glm-custom": {
+					maxTokens: 16_384,
+					contextWindow: 200_000,
+					supportsPromptCache: true,
+				},
+				"openai/relay-model": {
+					maxTokens: 4096,
+					contextWindow: 32_000,
+					supportsPromptCache: false,
+				},
+			})
+
+			expect(Object.keys(cached.deepseek ?? {})).toEqual(["deepseek-custom"])
+			expect(Object.keys(cached.zai ?? {})).toEqual(["glm-custom"])
+			expect(cached).not.toHaveProperty("openai")
+		})
+	})
+
 	describe("PROVIDER_SERVICE_CONFIG", () => {
 		it("contains service config for anthropic", () => {
 			expect(PROVIDER_SERVICE_CONFIG.anthropic).toEqual({
@@ -83,11 +112,9 @@ describe("providerModelConfig", () => {
 			expect(defaultId).toBe("")
 		})
 
-		it("returns international default for Z.ai without apiConfiguration", () => {
+		it("returns mainland default for Z.ai without apiConfiguration", () => {
 			const defaultId = getDefaultModelIdForProvider("zai")
-			expect(defaultId).toBeDefined()
-			expect(typeof defaultId).toBe("string")
-			expect(defaultId.length).toBeGreaterThan(0)
+			expect(defaultId).toBe(mainlandZAiDefaultModelId)
 		})
 
 		it("returns mainland default for Z.ai with china_coding entrypoint", () => {

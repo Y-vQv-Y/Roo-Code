@@ -69,7 +69,9 @@ vi.mock("@src/components/ui", () => ({
 
 // Mock other components
 vi.mock("../../ModelPicker", () => ({
-	ModelPicker: () => <div data-testid="model-picker">Model Picker</div>,
+	ModelPicker: ({ models }: any) => (
+		<div data-testid="model-picker">{models ? Object.keys(models).join(",") : "Model Picker"}</div>
+	),
 }))
 
 vi.mock("../../R1FormatSetting", () => ({
@@ -140,6 +142,28 @@ describe("OpenAICompatible Component - includeMaxTokens checkbox", () => {
 	})
 
 	describe("Initial State", () => {
+		it("restores cached relay models when the endpoint is unavailable", () => {
+			const apiConfiguration: Partial<ProviderSettings> = {
+				modelInfoOverrides: {
+					"openai/relay-model": {
+						maxTokens: 8192,
+						contextWindow: 128_000,
+						supportsPromptCache: false,
+					},
+				},
+			}
+
+			render(
+				<OpenAICompatible
+					apiConfiguration={apiConfiguration as ProviderSettings}
+					setApiConfigurationField={mockSetApiConfigurationField}
+					organizationAllowList={mockOrganizationAllowList}
+				/>,
+			)
+
+			expect(screen.getByTestId("model-picker")).toHaveTextContent("relay-model")
+		})
+
 		it("should show checkbox as checked when includeMaxTokens is true", () => {
 			const apiConfiguration: Partial<ProviderSettings> = {
 				includeMaxTokens: true,

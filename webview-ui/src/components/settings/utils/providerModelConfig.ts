@@ -1,4 +1,4 @@
-import type { ProviderName, ModelInfo, ProviderSettings } from "@roo-code/types"
+import type { ProviderName, ModelInfo, ModelRecord, ProviderSettings } from "@roo-code/types"
 import {
 	anthropicDefaultModelId,
 	bedrockDefaultModelId,
@@ -14,6 +14,7 @@ import {
 	internationalZAiDefaultModelId,
 	mainlandZAiDefaultModelId,
 	zaiApiLineConfigs,
+	zaiDefaultApiLine,
 	fireworksDefaultModelId,
 	minimaxDefaultModelId,
 	basetenDefaultModelId,
@@ -24,6 +25,27 @@ import { MODELS_BY_PROVIDER } from "../constants"
 export interface ProviderServiceConfig {
 	serviceName: string
 	serviceUrl: string
+}
+
+export const DISCOVERABLE_STATIC_PROVIDERS = ["deepseek", "moonshot", "minimax", "zai"] as const
+export type DiscoverableStaticProvider = (typeof DISCOVERABLE_STATIC_PROVIDERS)[number]
+
+export const getCachedDiscoveredModels = (
+	modelInfoOverrides: ProviderSettings["modelInfoOverrides"],
+): Partial<Record<DiscoverableStaticProvider, ModelRecord>> => {
+	const cachedModels: Partial<Record<DiscoverableStaticProvider, ModelRecord>> = {}
+
+	for (const provider of DISCOVERABLE_STATIC_PROVIDERS) {
+		const prefix = `${provider}/`
+		const models = Object.fromEntries(
+			Object.entries(modelInfoOverrides ?? {})
+				.filter(([key]) => key.startsWith(prefix))
+				.map(([key, info]) => [key.slice(prefix.length), info]),
+		)
+		if (Object.keys(models).length > 0) cachedModels[provider] = models
+	}
+
+	return cachedModels
 }
 
 export const PROVIDER_SERVICE_CONFIG: Partial<Record<ProviderName, ProviderServiceConfig>> = {
@@ -62,7 +84,7 @@ export const PROVIDER_DEFAULT_MODEL_IDS: Partial<Record<ProviderName, string>> =
 	vertex: vertexDefaultModelId,
 	xai: xaiDefaultModelId,
 	sambanova: sambaNovaDefaultModelId,
-	zai: internationalZAiDefaultModelId,
+	zai: mainlandZAiDefaultModelId,
 	fireworks: fireworksDefaultModelId,
 	minimax: minimaxDefaultModelId,
 	baseten: basetenDefaultModelId,
@@ -75,7 +97,7 @@ export const getProviderServiceConfig = (provider: ProviderName): ProviderServic
 export const getDefaultModelIdForProvider = (provider: ProviderName, apiConfiguration?: ProviderSettings): string => {
 	// Handle Z.ai's China/International entrypoint distinction
 	if (provider === "zai" && apiConfiguration) {
-		return zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? "international_coding"].isChina
+		return zaiApiLineConfigs[apiConfiguration.zaiApiLine ?? zaiDefaultApiLine].isChina
 			? mainlandZAiDefaultModelId
 			: internationalZAiDefaultModelId
 	}

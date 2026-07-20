@@ -10,7 +10,12 @@ vitest.mock("vscode", () => ({
 
 import { Anthropic } from "@anthropic-ai/sdk"
 
-import { type MinimaxModelId, minimaxDefaultModelId, minimaxModels } from "@roo-code/types"
+import {
+	type MinimaxModelId,
+	minimaxDefaultModelId,
+	minimaxModelInfoSaneDefaults,
+	minimaxModels,
+} from "@roo-code/types"
 
 import { MiniMaxHandler } from "../minimax"
 
@@ -35,7 +40,7 @@ describe("MiniMaxHandler", () => {
 		mockCreate = anthropicInstance.messages.create
 	})
 
-	describe("International MiniMax (default)", () => {
+	describe("International MiniMax", () => {
 		beforeEach(() => {
 			handler = new MiniMaxHandler({
 				minimaxApiKey: "test-minimax-api-key",
@@ -178,11 +183,11 @@ describe("MiniMaxHandler", () => {
 	})
 
 	describe("Default behavior", () => {
-		it("should default to international base URL when none is specified", () => {
+		it("should default to the China base URL when none is specified", () => {
 			const handlerDefault = new MiniMaxHandler({ minimaxApiKey: "test-minimax-api-key" })
 			expect(Anthropic).toHaveBeenCalledWith(
 				expect.objectContaining({
-					baseURL: "https://api.minimax.io/anthropic",
+					baseURL: "https://api.minimaxi.com/anthropic",
 				}),
 			)
 
@@ -195,6 +200,28 @@ describe("MiniMaxHandler", () => {
 			const handlerDefault = new MiniMaxHandler({ minimaxApiKey: "test-minimax-api-key" })
 			const model = handlerDefault.getModel()
 			expect(model.id).toBe("MiniMax-M2.7")
+		})
+
+		it("should preserve custom model IDs with fallback metadata", () => {
+			const customHandler = new MiniMaxHandler({
+				minimaxApiKey: "test-minimax-api-key",
+				apiModelId: "relay/minimax-latest",
+			})
+
+			const model = customHandler.getModel()
+			expect(model.id).toBe("relay/minimax-latest")
+			expect(model.info).toBe(minimaxModelInfoSaneDefaults)
+		})
+
+		it("should convert a custom /v1 relay URL to the Anthropic-compatible endpoint", () => {
+			new MiniMaxHandler({
+				minimaxApiKey: "test-minimax-api-key",
+				minimaxBaseUrl: "https://relay.example.com/v1",
+			})
+
+			expect(Anthropic).toHaveBeenCalledWith(
+				expect.objectContaining({ baseURL: "https://relay.example.com/anthropic" }),
+			)
 		})
 	})
 

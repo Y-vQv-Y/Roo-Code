@@ -45,7 +45,12 @@ export const OpenAICompatible = ({
 
 	const [azureApiVersionSelected, setAzureApiVersionSelected] = useState(!!apiConfiguration?.azureApiVersion)
 
-	const [openAiModels, setOpenAiModels] = useState<Record<string, ModelInfo> | null>(null)
+	const [openAiModels, setOpenAiModels] = useState<Record<string, ModelInfo> | null>(() => {
+		const cachedModels = Object.entries(apiConfiguration.modelInfoOverrides ?? {})
+			.filter(([key]) => key.startsWith("openai/"))
+			.map(([key, info]) => [key.slice("openai/".length), info] as const)
+		return cachedModels.length > 0 ? Object.fromEntries(cachedModels) : null
+	})
 
 	const [customHeaders, setCustomHeaders] = useState<[string, string][]>(() => {
 		const headers = apiConfiguration?.openAiHeaders || {}
@@ -120,6 +125,9 @@ export const OpenAICompatible = ({
 				}
 
 				const updatedModels = message.openAiModels ?? []
+				if (updatedModels.length === 0) {
+					break
+				}
 				setOpenAiModels(
 					Object.fromEntries(
 						updatedModels.map((item) => [

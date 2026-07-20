@@ -8,7 +8,9 @@ import {
 	mainlandZAiDefaultModelId,
 	type ModelInfo,
 	ZAI_DEFAULT_TEMPERATURE,
+	getZaiModelInfo,
 	zaiApiLineConfigs,
+	zaiDefaultApiLine,
 } from "@roo-code/types"
 
 import { type ApiHandlerOptions, getModelMaxOutputTokens, shouldUseReasoningEffort } from "../../shared/api"
@@ -24,19 +26,29 @@ type ZAiChatCompletionParams = OpenAI.Chat.ChatCompletionCreateParamsStreaming &
 
 export class ZAiHandler extends BaseOpenAiCompatibleProvider<string> {
 	constructor(options: ApiHandlerOptions) {
-		const isChina = zaiApiLineConfigs[options.zaiApiLine ?? "international_coding"].isChina
+		const apiLine = options.zaiApiLine ?? zaiDefaultApiLine
+		const isChina = zaiApiLineConfigs[apiLine].isChina
 		const models = (isChina ? mainlandZAiModels : internationalZAiModels) as unknown as Record<string, ModelInfo>
 		const defaultModelId = (isChina ? mainlandZAiDefaultModelId : internationalZAiDefaultModelId) as string
 
 		super({
 			...options,
 			providerName: "Z.ai",
-			baseURL: zaiApiLineConfigs[options.zaiApiLine ?? "international_coding"].baseUrl,
+			baseURL: options.zaiBaseUrl?.trim() || zaiApiLineConfigs[apiLine].baseUrl,
 			apiKey: options.zaiApiKey ?? "not-provided",
 			defaultProviderModelId: defaultModelId,
 			providerModels: models,
 			defaultTemperature: ZAI_DEFAULT_TEMPERATURE,
 		})
+	}
+
+	override getModel() {
+		const apiLine = this.options.zaiApiLine ?? zaiDefaultApiLine
+		const isChina = zaiApiLineConfigs[apiLine].isChina
+		const id = this.options.apiModelId ?? (isChina ? mainlandZAiDefaultModelId : internationalZAiDefaultModelId)
+		const info = this.options.modelInfoOverrides?.[`zai/${id}`] ?? getZaiModelInfo(id, isChina)
+
+		return { id, info }
 	}
 
 	/**

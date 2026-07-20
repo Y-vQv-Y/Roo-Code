@@ -316,16 +316,12 @@ const poeSchema = apiModelIdProviderModelSchema.extend({
 })
 
 const moonshotSchema = apiModelIdProviderModelSchema.extend({
-	moonshotBaseUrl: z
-		.union([z.literal("https://api.moonshot.ai/v1"), z.literal("https://api.moonshot.cn/v1")])
-		.optional(),
+	moonshotBaseUrl: z.string().optional(),
 	moonshotApiKey: z.string().optional(),
 })
 
 const minimaxSchema = apiModelIdProviderModelSchema.extend({
-	minimaxBaseUrl: z
-		.union([z.literal("https://api.minimax.io/v1"), z.literal("https://api.minimaxi.com/v1")])
-		.optional(),
+	minimaxBaseUrl: z.string().optional(),
 	minimaxApiKey: z.string().optional(),
 })
 
@@ -366,6 +362,7 @@ export type ZaiApiLine = z.infer<typeof zaiApiLineSchema>
 const zaiSchema = apiModelIdProviderModelSchema.extend({
 	zaiApiKey: z.string().optional(),
 	zaiApiLine: zaiApiLineSchema.optional(),
+	zaiBaseUrl: z.string().optional(),
 })
 
 const fireworksSchema = apiModelIdProviderModelSchema.extend({

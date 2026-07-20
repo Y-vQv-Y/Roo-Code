@@ -316,6 +316,29 @@ describe("OpenAiNativeHandler", () => {
 	})
 
 	describe("GPT-5 models", () => {
+		it("exposes the verified GPT-5.6 pricing and long-context metadata", () => {
+			const handler = new OpenAINativeHandler({
+				apiKey: "test-key",
+				apiModelId: "gpt-5.6-sol",
+			})
+
+			const model = handler.getModel()
+
+			expect(model.info).toMatchObject({
+				contextWindow: 1_050_000,
+				maxTokens: 128_000,
+				inputPrice: 5,
+				outputPrice: 30,
+				cacheReadsPrice: 0.5,
+				cacheWritesPrice: 6.25,
+			})
+			expect(model.info.longContextPricing).toMatchObject({
+				thresholdTokens: 272_000,
+				inputPriceMultiplier: 2,
+				outputPriceMultiplier: 1.5,
+			})
+		})
+
 		it("should handle GPT-5 model with Responses API", async () => {
 			// Mock fetch for Responses API
 			const mockFetch = vitest.fn().mockResolvedValue({

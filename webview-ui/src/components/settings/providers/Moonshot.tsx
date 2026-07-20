@@ -1,13 +1,12 @@
 import { useCallback } from "react"
-import { VSCodeTextField, VSCodeDropdown, VSCodeOption } from "@vscode/webview-ui-toolkit/react"
+import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import type { ProviderSettings } from "@roo-code/types"
+import { moonshotDefaultBaseUrl, moonshotInternationalBaseUrl, type ProviderSettings } from "@roo-code/types"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { VSCodeButtonLink } from "@src/components/common/VSCodeButtonLink"
 
 import { inputEventTransform } from "../transforms"
-import { cn } from "@/lib/utils"
 
 type MoonshotProps = {
 	apiConfiguration: ProviderSettings
@@ -31,20 +30,14 @@ export const Moonshot = ({ apiConfiguration, setApiConfigurationField }: Moonsho
 
 	return (
 		<>
-			<div>
+			<VSCodeTextField
+				value={apiConfiguration.moonshotBaseUrl || moonshotDefaultBaseUrl}
+				type="url"
+				onInput={handleInputChange("moonshotBaseUrl")}
+				placeholder={t("settings:placeholders.baseUrl")}
+				className="w-full">
 				<label className="block font-medium mb-1">{t("settings:providers.moonshotBaseUrl")}</label>
-				<VSCodeDropdown
-					value={apiConfiguration.moonshotBaseUrl}
-					onChange={handleInputChange("moonshotBaseUrl")}
-					className={cn("w-full")}>
-					<VSCodeOption value="https://api.moonshot.ai/v1" className="p-2">
-						api.moonshot.ai
-					</VSCodeOption>
-					<VSCodeOption value="https://api.moonshot.cn/v1" className="p-2">
-						api.moonshot.cn
-					</VSCodeOption>
-				</VSCodeDropdown>
-			</div>
+			</VSCodeTextField>
 			<div>
 				<VSCodeTextField
 					value={apiConfiguration?.moonshotApiKey || ""}
@@ -60,9 +53,9 @@ export const Moonshot = ({ apiConfiguration, setApiConfigurationField }: Moonsho
 				{!apiConfiguration?.moonshotApiKey && (
 					<VSCodeButtonLink
 						href={
-							apiConfiguration.moonshotBaseUrl === "https://api.moonshot.cn/v1"
-								? "https://platform.moonshot.cn/console/api-keys"
-								: "https://platform.kimi.ai/console/api-keys"
+							(apiConfiguration.moonshotBaseUrl || moonshotDefaultBaseUrl) === moonshotInternationalBaseUrl
+								? "https://platform.kimi.ai/console/api-keys"
+								: "https://platform.moonshot.cn/console/api-keys"
 						}
 						appearance="secondary">
 						{t("settings:providers.getMoonshotApiKey")}

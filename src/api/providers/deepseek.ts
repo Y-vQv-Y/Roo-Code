@@ -3,6 +3,7 @@ import OpenAI from "openai"
 
 import {
 	deepSeekModels,
+	deepSeekDefaultBaseUrl,
 	deepSeekModelInfoSaneDefaults,
 	normalizeDeepSeekModelId,
 	DEEP_SEEK_DEFAULT_TEMPERATURE,
@@ -29,7 +30,7 @@ export class DeepSeekHandler extends OpenAiHandler {
 			...options,
 			openAiApiKey: options.deepSeekApiKey ?? "not-provided",
 			openAiModelId: normalizeDeepSeekModelId(options.apiModelId),
-			openAiBaseUrl: options.deepSeekBaseUrl || "https://api.deepseek.com",
+			openAiBaseUrl: options.deepSeekBaseUrl || deepSeekDefaultBaseUrl,
 			openAiStreamingEnabled: true,
 			includeMaxTokens: true,
 		})
