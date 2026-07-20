@@ -317,7 +317,7 @@ describe("OpenAiNativeHandler", () => {
 
 	describe("GPT-5 models", () => {
 		it("exposes the verified GPT-5.6 pricing and long-context metadata", () => {
-			const handler = new OpenAINativeHandler({
+			const handler = new OpenAiNativeHandler({
 				apiKey: "test-key",
 				apiModelId: "gpt-5.6-sol",
 			})
