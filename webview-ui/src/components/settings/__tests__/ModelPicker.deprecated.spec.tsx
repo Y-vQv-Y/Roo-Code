@@ -43,6 +43,12 @@ vi.mock("@/components/ui/hooks/useSelectedModel", () => ({
 				supportsPromptCache: true,
 				deprecated: true,
 			},
+			"disabled-model": {
+				maxTokens: 1500,
+				contextWindow: 6000,
+				supportsPromptCache: true,
+				status: "disabled",
+			},
 		}
 		return {
 			id: modelId,
@@ -79,6 +85,12 @@ describe("ModelPicker - Deprecated Models", () => {
 			supportsPromptCache: true,
 			deprecated: true,
 		},
+		"disabled-model": {
+			maxTokens: 1500,
+			contextWindow: 6000,
+			supportsPromptCache: true,
+			status: "disabled",
+		},
 	}
 
 	beforeEach(() => {
@@ -113,6 +125,34 @@ describe("ModelPicker - Deprecated Models", () => {
 
 		// Check that deprecated model is NOT shown
 		expect(screen.queryByTestId("model-option-deprecated-model")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("model-option-disabled-model")).not.toBeInTheDocument()
+	})
+
+	it("should not select a disabled model retained from the current configuration", async () => {
+		const user = userEvent.setup()
+
+		render(
+			<QueryClientProvider client={queryClient}>
+				<ModelPicker
+					defaultModelId="model-1"
+					models={regularModels}
+					modelIdKey="openRouterModelId"
+					serviceName="Test Service"
+					serviceUrl="https://test.com"
+					apiConfiguration={{
+						apiProvider: "openrouter",
+						openRouterModelId: "disabled-model",
+					}}
+					setApiConfigurationField={mockSetApiConfigurationField}
+					organizationAllowList={{ allowAll: true, providers: {} }}
+				/>
+			</QueryClientProvider>,
+		)
+
+		await user.click(screen.getByTestId("model-picker-button"))
+		await user.click(screen.getByTestId("model-option-disabled-model"))
+
+		expect(mockSetApiConfigurationField).not.toHaveBeenCalled()
 	})
 
 	it("should show error when a deprecated model is currently selected", () => {

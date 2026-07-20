@@ -142,7 +142,7 @@ export const ModelPicker = ({
 				return
 			}
 			const selectedInfo = models?.[modelId]
-			if (selectedInfo?.deprecated || ["deprecated", "disabled"].includes(selectedInfo.status ?? "")) {
+			if (selectedInfo?.deprecated || ["deprecated", "disabled"].includes(selectedInfo?.status ?? "")) {
 				return
 			}
 

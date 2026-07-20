@@ -495,7 +495,7 @@ const ApiOptions = ({
 		const provider = PROVIDERS.find(({ value }) => value === selectedProvider)
 		const name = provider?.label
 
-		if (!name) {
+		if (!name || isRetiredProvider(selectedProvider)) {
 			return undefined
 		}
 

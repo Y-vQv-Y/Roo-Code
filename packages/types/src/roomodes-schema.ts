@@ -50,7 +50,7 @@ export function generateRoomodesJsonSchema(): Record<string, unknown> {
 		target: "jsonSchema7",
 	}) as Record<string, unknown>
 
-	jsonSchema["$id"] = "https://github.com/Y-vQv-Y"
+	jsonSchema["$id"] = "https://www.adtec.com.cn/"
 	jsonSchema["title"] = "ADTEC Code Custom Modes"
 	jsonSchema["description"] = "Schema for .adtecmodes configuration files used by ADTEC Code to define custom modes."
 
