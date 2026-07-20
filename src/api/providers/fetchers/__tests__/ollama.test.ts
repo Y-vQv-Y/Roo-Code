@@ -184,7 +184,10 @@ describe("Ollama Fetcher", () => {
 			expect(result[modelName]).toBeDefined()
 
 			const expectedParsedDetails = parseOllamaModel(mockApiShowResponse as any)
-			expect(result[modelName]).toEqual(expectedParsedDetails)
+			expect(result[modelName]).toEqual({
+				...expectedParsedDetails,
+				metadataUpdatedAt: expect.any(Number),
+			})
 		})
 
 		it("should filter out models without tools capability", async () => {

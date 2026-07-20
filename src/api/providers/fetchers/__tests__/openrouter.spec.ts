@@ -140,9 +140,6 @@ describe("OpenRouter API", () => {
 					supportsReasoningEffort: true,
 					// Tool support is handled via metadata/tools at request time.
 					supportedParameters: ["max_tokens", "temperature", "reasoning"],
-					metadataSource: "provider",
-					metadataUpdatedAt: expect.any(Number),
-					capabilityConfidence: "provider-reported",
 				},
 			} as Record<string, any>
 
@@ -191,6 +188,9 @@ describe("OpenRouter API", () => {
 					description: undefined,
 					supportsReasoningEffort: true,
 					supportedParameters: ["max_tokens", "temperature", "reasoning"],
+					metadataSource: "provider",
+					metadataUpdatedAt: expect.any(Number),
+					capabilityConfidence: "provider-reported",
 				},
 			})
 

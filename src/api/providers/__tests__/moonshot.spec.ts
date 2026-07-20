@@ -84,7 +84,7 @@ describe("MoonshotHandler", () => {
 			expect(model.info).toBeDefined()
 			expect(model.info.maxTokens).toBe(16384)
 			expect(model.info.contextWindow).toBe(128000)
-			expect(model.info.supportsImages).toBe(false)
+			expect(model.info.supportsImages).toBe(true)
 			expect(model.info.supportsPromptCache).toBe(true)
 		})
 
