@@ -848,7 +848,8 @@ describe("ChatView - Message Queueing Tests", () => {
 
 		// Wait for state to be updated
 		await waitFor(() => {
-			expect(getByTestId("chat-textarea")).toBeInTheDocument()
+			const input = getByTestId("chat-textarea").querySelector("input")
+			expect(input).toHaveAttribute("data-sending-disabled", "true")
 		})
 
 		// Clear message calls before simulating user input

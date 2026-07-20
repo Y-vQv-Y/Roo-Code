@@ -48,24 +48,26 @@ describe("About", () => {
 		expect(screen.getByText(/Version: 1\.0\.0/)).toBeInTheDocument()
 	})
 
-	it("renders the bug report section with label and link text", () => {
+	it("renders the ADTEC repository link", () => {
 		render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
-		expect(screen.getByText("settings:about.bugReport.label")).toBeInTheDocument()
-		expect(screen.getByText("settings:about.bugReport.link")).toBeInTheDocument()
+
+		expect(screen.getByText("ADTEC")).toBeInTheDocument()
+		expect(screen.getByText("ADTEC Code repository")).toHaveAttribute("href", "https://github.com/Y-vQv-Y")
 	})
 
-	it("renders the security issue section with label and link text", () => {
+	it("does not render retired Roo support links", () => {
 		render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
-		expect(screen.getByText("settings:about.securityIssue.label")).toBeInTheDocument()
-		expect(screen.getByText("settings:about.securityIssue.link")).toBeInTheDocument()
+
+		expect(screen.queryByText("settings:about.bugReport.label")).not.toBeInTheDocument()
+		expect(screen.queryByText("settings:about.securityIssue.label")).not.toBeInTheDocument()
 	})
 
 	it("does not render feature request copy", () => {

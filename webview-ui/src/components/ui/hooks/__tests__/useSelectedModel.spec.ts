@@ -10,7 +10,7 @@ import {
 	ModelInfo,
 	BEDROCK_1M_CONTEXT_MODEL_IDS,
 	litellmDefaultModelInfo,
-	openAiModelInfoSaneDefaults,
+	openAiCompatibleModelInfoSaneDefaults,
 	minimaxDefaultModelId,
 	minimaxModels,
 	openRouterDefaultModelId,
@@ -664,7 +664,7 @@ describe("useSelectedModel", () => {
 			} as any)
 		})
 
-		it("should use openAiModelInfoSaneDefaults when no custom model info is provided", () => {
+		it("should use openAiCompatibleModelInfoSaneDefaults when no custom model info is provided", () => {
 			const apiConfiguration: ProviderSettings = {
 				apiProvider: "openai",
 				openAiModelId: "gpt-4o",
@@ -675,7 +675,7 @@ describe("useSelectedModel", () => {
 
 			expect(result.current.provider).toBe("openai")
 			expect(result.current.id).toBe("gpt-4o")
-			expect(result.current.info).toEqual(openAiModelInfoSaneDefaults)
+			expect(result.current.info).toEqual(openAiCompatibleModelInfoSaneDefaults)
 		})
 
 		it("should return custom model info when provided", () => {

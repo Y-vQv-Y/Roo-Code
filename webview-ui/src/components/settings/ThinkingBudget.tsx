@@ -78,12 +78,13 @@ export const ThinkingBudget = ({ apiConfiguration, setApiConfigurationField, mod
 
 	// Build available reasoning efforts list from capability
 	const supports = modelInfo?.supportsReasoningEffort
-	const baseAvailableOptions: ReadonlyArray<ReasoningEffortExtended> =
+	type ReasoningEffortOption = ReasoningEffortExtended | "disable"
+	const baseAvailableOptions: ReadonlyArray<ReasoningEffortOption> =
 		supports === true
-			? (reasoningEfforts as readonly ReasoningEffortExtended[])
+			? (reasoningEfforts as readonly ReasoningEffortOption[])
 			: Array.isArray(supports)
-				? (supports.filter((effort) => effort !== "disable") as ReadonlyArray<ReasoningEffortExtended>)
-				: (reasoningEfforts as readonly ReasoningEffortExtended[])
+				? supports
+				: (reasoningEfforts as readonly ReasoningEffortOption[])
 
 	// "disable" turns off reasoning entirely; "none" is a valid reasoning level.
 	// Both display as "None" in the UI but behave differently.
@@ -91,12 +92,11 @@ export const ThinkingBudget = ({ apiConfiguration, setApiConfigurationField, mod
 	// 1. requiredReasoningEffort is not true, AND
 	// 2. supportsReasoningEffort is boolean true (not an explicit array)
 	// When the model provides an explicit array, respect those exact values.
-	type ReasoningEffortOption = ReasoningEffortExtended | "disable"
 	const shouldAutoAddDisable =
-		!modelInfo?.requiredReasoningEffort && supports === true && !baseAvailableOptions.includes("disable" as any)
+		!modelInfo?.requiredReasoningEffort && supports === true && !baseAvailableOptions.includes("disable")
 	const availableOptions: ReadonlyArray<ReasoningEffortOption> = shouldAutoAddDisable
-		? (["disable", ...baseAvailableOptions] as ReasoningEffortOption[])
-		: (baseAvailableOptions as ReadonlyArray<ReasoningEffortOption>)
+		? ["disable", ...baseAvailableOptions]
+		: baseAvailableOptions
 
 	// Default reasoning effort - use model's default if available
 	// GPT-5 models have "medium" as their default in the model configuration
