@@ -4,6 +4,11 @@ import { TranslationProvider } from "@/i18n/__mocks__/TranslationContext"
 
 import { About } from "../About"
 
+vi.mock("@vscode/webview-ui-toolkit/react", () => ({
+	VSCodeLink: ({ children, href }: any) => <a href={href}>{children}</a>,
+	VSCodeCheckbox: () => null,
+}))
+
 vi.mock("@/utils/vscode", () => ({
 	vscode: { postMessage: vi.fn() },
 }))
@@ -49,14 +54,17 @@ describe("About", () => {
 	})
 
 	it("renders the ADTEC repository link", () => {
-		const { container } = render(
+		render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
 
 		expect(screen.getByText("ADTEC")).toBeInTheDocument()
-		expect(container.querySelector('vscode-link[href="https://github.com/Y-vQv-Y"]')).toBeInTheDocument()
+		expect(screen.getByRole("link", { name: "ADTEC Code repository" })).toHaveAttribute(
+			"href",
+			"https://github.com/Y-vQv-Y",
+		)
 	})
 
 	it("does not render retired Roo support links", () => {
