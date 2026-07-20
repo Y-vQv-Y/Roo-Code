@@ -49,14 +49,14 @@ describe("About", () => {
 	})
 
 	it("renders the ADTEC repository link", () => {
-		render(
+		const { container } = render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
 
 		expect(screen.getByText("ADTEC")).toBeInTheDocument()
-		expect(screen.getByText("ADTEC Code repository")).toHaveAttribute("href", "https://github.com/Y-vQv-Y")
+		expect(container.querySelector('vscode-link[href="https://github.com/Y-vQv-Y"]')).toBeInTheDocument()
 	})
 
 	it("does not render retired Roo support links", () => {
