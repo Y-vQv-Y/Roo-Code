@@ -855,7 +855,7 @@ describe("VertexHandler", () => {
 			expect(result.temperature).toBe(1.0)
 		})
 
-		it("does not honor custom maxTokens for non-thinking models", () => {
+		it("honors custom maxTokens for non-thinking models", () => {
 			const handler = new AnthropicVertexHandler({
 				apiKey: "test-api-key",
 				apiModelId: "claude-3-7-sonnet@20250219",
@@ -864,7 +864,7 @@ describe("VertexHandler", () => {
 			})
 
 			const result = handler.getModel()
-			expect(result.maxTokens).toBe(8192)
+			expect(result.maxTokens).toBe(32_768)
 			expect(result.reasoningBudget).toBeUndefined()
 			expect(result.temperature).toBe(0)
 		})

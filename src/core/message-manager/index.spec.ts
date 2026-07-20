@@ -92,7 +92,7 @@ describe("MessageManager", () => {
 			]
 
 			await expect(manager.rewindToTimestamp(999)).rejects.toThrow(
-				"Message with timestamp 999 not found in clineMessages",
+				"Message with timestamp 999 not found in task messages",
 			)
 		})
 

@@ -65,6 +65,9 @@ describe("LMStudio Fetcher", () => {
 				outputPrice: 0,
 				cacheWritesPrice: 0,
 				cacheReadsPrice: 0,
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			}
 
 			const result = parseLMStudioModel(rawModel)
@@ -121,7 +124,9 @@ describe("LMStudio Fetcher", () => {
 			expect(mockListLoaded).toHaveBeenCalled() // we now call it to get context data
 
 			const expectedParsedModel = parseLMStudioModel(mockLLMInfo)
-			expect(result).toEqual({ [mockLLMInfo.path]: expectedParsedModel })
+			expect(result).toEqual({
+				[mockLLMInfo.path]: { ...expectedParsedModel, metadataUpdatedAt: expect.any(Number) },
+			})
 		})
 
 		it("should fall back to listLoaded when listDownloadedModels fails", async () => {
@@ -140,7 +145,9 @@ describe("LMStudio Fetcher", () => {
 			expect(mockListLoaded).toHaveBeenCalledTimes(1)
 
 			const expectedParsedModel = parseLMStudioModel(mockRawModel)
-			expect(result).toEqual({ [mockRawModel.modelKey]: expectedParsedModel })
+			expect(result).toEqual({
+				[mockRawModel.modelKey]: { ...expectedParsedModel, metadataUpdatedAt: expect.any(Number) },
+			})
 		})
 
 		it("should deduplicate models when both downloaded and loaded", async () => {
@@ -184,7 +191,10 @@ describe("LMStudio Fetcher", () => {
 
 			// The loaded model's key should be used, with loaded model's data
 			const expectedParsedModel = parseLMStudioModel(mockLoadedModel)
-			expect(result[mockLoadedModel.modelKey]).toEqual(expectedParsedModel)
+			expect(result[mockLoadedModel.modelKey]).toEqual({
+				...expectedParsedModel,
+				metadataUpdatedAt: expect.any(Number),
+			})
 
 			// The downloaded model should have been removed
 			expect(result[mockDownloadedModel.path]).toBeUndefined()

@@ -111,7 +111,7 @@ describe("OpenAiHandler", () => {
 				baseURL: expect.any(String),
 				apiKey: expect.any(String),
 				defaultHeaders: {
-					"HTTP-Referer": "https://www.adtec.com.cn/",
+					"HTTP-Referer": "https://github.com/Y-vQv-Y",
 					"X-Title": "ADTEC Code",
 					"User-Agent": `ADTEC-Code/${Package.version}`,
 				},
@@ -1001,7 +1001,7 @@ describe("OpenAiHandler", () => {
 					reasoning_effort: "medium",
 					temperature: undefined,
 					// O3 models do not support deprecated max_tokens but do support max_completion_tokens
-					max_completion_tokens: 65536, // Using default maxTokens from o3Options
+					max_completion_tokens: 25600, // Clamped to 20% of the 128K context window
 				}),
 				{},
 			)

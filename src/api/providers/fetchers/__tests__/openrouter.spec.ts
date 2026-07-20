@@ -29,6 +29,9 @@ describe("OpenRouter API", () => {
 				supportsReasoningBudget: false,
 				supportsReasoningEffort: false,
 				supportedParameters: ["max_tokens", "temperature", "reasoning", "include_reasoning"],
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			})
 
 			expect(models["anthropic/claude-3.7-sonnet:thinking"]).toEqual({
@@ -45,6 +48,9 @@ describe("OpenRouter API", () => {
 				requiredReasoningBudget: true,
 				supportsReasoningEffort: true,
 				supportedParameters: ["max_tokens", "temperature", "reasoning", "include_reasoning"],
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			})
 
 			expect(models["google/gemini-2.5-flash-preview-05-20"].maxTokens).toEqual(65535)
@@ -134,6 +140,9 @@ describe("OpenRouter API", () => {
 					supportsReasoningEffort: true,
 					// Tool support is handled via metadata/tools at request time.
 					supportedParameters: ["max_tokens", "temperature", "reasoning"],
+					metadataSource: "provider",
+					metadataUpdatedAt: expect.any(Number),
+					capabilityConfidence: "provider-reported",
 				},
 			} as Record<string, any>
 
@@ -165,6 +174,9 @@ describe("OpenRouter API", () => {
 					description: undefined,
 					supportsReasoningEffort: true,
 					supportedParameters: ["max_tokens", "temperature", "reasoning"],
+					metadataSource: "provider",
+					metadataUpdatedAt: expect.any(Number),
+					capabilityConfidence: "provider-reported",
 				},
 				"google-ai-studio": {
 					maxTokens: 65536,
@@ -259,6 +271,9 @@ describe("OpenRouter API", () => {
 				supportsReasoningBudget: true,
 				supportsReasoningEffort: true,
 				supportedParameters: ["max_tokens", "temperature", "reasoning"],
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			})
 
 			getSpy.mockRestore()

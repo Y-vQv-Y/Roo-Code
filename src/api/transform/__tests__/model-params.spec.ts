@@ -3,10 +3,7 @@
 import { type ModelInfo, ANTHROPIC_DEFAULT_MAX_TOKENS } from "@roo-code/types"
 
 import { getModelParams } from "../model-params"
-import {
-	DEFAULT_HYBRID_REASONING_MODEL_MAX_TOKENS,
-	DEFAULT_HYBRID_REASONING_MODEL_THINKING_TOKENS,
-} from "../../../shared/api"
+import { DEFAULT_HYBRID_REASONING_MODEL_THINKING_TOKENS } from "../../../shared/api"
 
 describe("getModelParams", () => {
 	const baseModel: ModelInfo = {
@@ -446,7 +443,7 @@ describe("getModelParams", () => {
 			})
 		})
 
-		it("should use DEFAULT_HYBRID_REASONING_MODEL_MAX_TOKENS when no maxTokens is provided for reasoning budget models", () => {
+		it("should clamp the default reasoning output to the effective context window", () => {
 			const model: ModelInfo = {
 				...baseModel,
 				requiredReasoningBudget: true,
@@ -454,10 +451,11 @@ describe("getModelParams", () => {
 
 			expect(getModelParams({ ...anthropicParams, settings: {}, model })).toEqual({
 				format: anthropicParams.format,
-				maxTokens: DEFAULT_HYBRID_REASONING_MODEL_MAX_TOKENS,
+				maxTokens: baseModel.contextWindow,
 				temperature: 1.0,
 				reasoningEffort: undefined,
 				reasoningBudget: DEFAULT_HYBRID_REASONING_MODEL_THINKING_TOKENS,
+				verbosity: undefined,
 				reasoning: {
 					type: "enabled",
 					budget_tokens: DEFAULT_HYBRID_REASONING_MODEL_THINKING_TOKENS,
@@ -719,7 +717,7 @@ describe("getModelParams", () => {
 				model,
 			})
 
-			expect(result.maxTokens).toBe(16384) // Default value.
+			expect(result.maxTokens).toBe(baseModel.contextWindow)
 			expect(result.reasoningBudget).toBe(8192) // Default value.
 		})
 	})
@@ -828,7 +826,7 @@ describe("getModelParams", () => {
 				model,
 			})
 
-			expect(result.maxTokens).toBe(20000)
+			expect(result.maxTokens).toBe(baseModel.contextWindow)
 			expect(result.reasoningBudget).toBe(10000)
 			expect(result.temperature).toBe(1.0) // Overridden for reasoning budget models
 			expect(result.reasoningEffort).toBeUndefined() // Budget takes precedence

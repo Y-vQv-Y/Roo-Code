@@ -11,7 +11,7 @@ describe("DEFAULT_HEADERS", () => {
 	})
 
 	it("should have correct HTTP-Referer value", () => {
-		expect(DEFAULT_HEADERS["HTTP-Referer"]).toBe("https://www.adtec.com.cn/")
+		expect(DEFAULT_HEADERS["HTTP-Referer"]).toBe("https://github.com/Y-vQv-Y")
 	})
 
 	it("should have correct X-Title value", () => {

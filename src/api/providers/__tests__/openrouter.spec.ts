@@ -90,7 +90,7 @@ describe("OpenRouterHandler", () => {
 			baseURL: "https://openrouter.ai/api/v1",
 			apiKey: mockOptions.openRouterApiKey,
 			defaultHeaders: {
-				"HTTP-Referer": "https://www.adtec.com.cn/",
+				"HTTP-Referer": "https://github.com/Y-vQv-Y",
 				"X-Title": "ADTEC Code",
 				"User-Agent": `ADTEC-Code/${Package.version}`,
 			},
@@ -127,14 +127,12 @@ describe("OpenRouterHandler", () => {
 			})
 
 			const result = await handler.fetchModel()
-			// With the new clamping logic, 128000 tokens (64% of 200000 context window)
-			// gets clamped to 20% of context window: 200000 * 0.2 = 40000
-			expect(result.maxTokens).toBe(40000)
+			expect(result.maxTokens).toBe(32_768)
 			expect(result.reasoningBudget).toBeUndefined()
 			expect(result.temperature).toBe(0)
 		})
 
-		it("does not honor custom maxTokens for non-thinking models", async () => {
+		it("honors custom maxTokens for non-thinking models", async () => {
 			const handler = new OpenRouterHandler({
 				...mockOptions,
 				modelMaxTokens: 32_768,
@@ -142,7 +140,7 @@ describe("OpenRouterHandler", () => {
 			})
 
 			const result = await handler.fetchModel()
-			expect(result.maxTokens).toBe(8192)
+			expect(result.maxTokens).toBe(32_768)
 			expect(result.reasoningBudget).toBeUndefined()
 			expect(result.temperature).toBe(0)
 		})

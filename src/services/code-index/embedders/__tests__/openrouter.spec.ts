@@ -80,7 +80,7 @@ describe("OpenRouterEmbedder", () => {
 				baseURL: "https://openrouter.ai/api/v1",
 				apiKey: mockApiKey,
 				defaultHeaders: {
-					"HTTP-Referer": "https://www.adtec.com.cn/",
+					"HTTP-Referer": "https://github.com/Y-vQv-Y",
 					"X-Title": "ADTEC Code",
 				},
 			})

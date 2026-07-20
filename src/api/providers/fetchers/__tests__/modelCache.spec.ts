@@ -282,7 +282,7 @@ describe("empty cache protection", () => {
 			const result = await getModels({ provider: "openrouter" })
 
 			expect(result).toEqual(mockModels)
-			expect(mockSet).toHaveBeenCalledWith("openrouter", mockModels)
+			expect(mockSet).toHaveBeenCalledWith(expect.stringMatching(/^openrouter_[a-f0-9]{24}$/), mockModels)
 		})
 	})
 
@@ -338,7 +338,7 @@ describe("empty cache protection", () => {
 			// Should return new models
 			expect(result).toEqual(newModels)
 			// Should update cache with new data
-			expect(mockSet).toHaveBeenCalledWith("openrouter", newModels)
+			expect(mockSet).toHaveBeenCalledWith(expect.stringMatching(/^openrouter_[a-f0-9]{24}$/), newModels)
 		})
 
 		it("returns existing cache on API error", async () => {

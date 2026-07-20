@@ -58,7 +58,7 @@ describe("RequestyHandler", () => {
 			baseURL: "https://router.requesty.ai/v1",
 			apiKey: mockOptions.requestyApiKey,
 			defaultHeaders: {
-				"HTTP-Referer": "https://www.adtec.com.cn/",
+				"HTTP-Referer": "https://github.com/Y-vQv-Y",
 				"X-Title": "ADTEC Code",
 				"User-Agent": `ADTEC-Code/${Package.version}`,
 			},
@@ -73,7 +73,7 @@ describe("RequestyHandler", () => {
 			baseURL: "https://custom.requesty.ai/v1",
 			apiKey: mockOptions.requestyApiKey,
 			defaultHeaders: {
-				"HTTP-Referer": "https://www.adtec.com.cn/",
+				"HTTP-Referer": "https://github.com/Y-vQv-Y",
 				"X-Title": "ADTEC Code",
 				"User-Agent": `ADTEC-Code/${Package.version}`,
 			},

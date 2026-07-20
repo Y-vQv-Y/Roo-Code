@@ -27,6 +27,9 @@ describe("Ollama Fetcher", () => {
 				cacheWritesPrice: 0,
 				cacheReadsPrice: 0,
 				description: "Family: qwen3, Context: 40960, Size: 32.8B",
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			})
 		})
 
@@ -51,6 +54,9 @@ describe("Ollama Fetcher", () => {
 				cacheWritesPrice: 0,
 				cacheReadsPrice: 0,
 				description: "Family: qwen3, Context: 40960, Size: 32.8B",
+				metadataSource: "provider",
+				metadataUpdatedAt: expect.any(Number),
+				capabilityConfidence: "provider-reported",
 			})
 		})
 

@@ -233,7 +233,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 
 			// Only include num_ctx if explicitly set via ollamaNumCtx
 			if (this.options.ollamaNumCtx !== undefined) {
-				chatOptions.num_ctx = model.info.contextWindow
+				chatOptions.num_ctx = this.options.ollamaNumCtx
 			}
 
 			// Create the actual API request promise
@@ -370,7 +370,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 
 			// Only include num_ctx if explicitly set via ollamaNumCtx
 			if (this.options.ollamaNumCtx !== undefined) {
-				chatOptions.num_ctx = model.info.contextWindow
+				chatOptions.num_ctx = this.options.ollamaNumCtx
 			}
 
 			const response = await client.chat({

@@ -29,8 +29,7 @@ vi.mock("openai", () => {
 							}
 						}
 
-						// Check if this is a reasoning_content test by looking at model
-						const isReasonerModel = options.model?.includes("deepseek-reasoner")
+						const isReasonerModel = options.thinking?.type === "enabled"
 						const isToolCallTest = options.tools?.length > 0
 
 						// Return async iterator for streaming
@@ -122,7 +121,12 @@ vi.mock("openai", () => {
 import OpenAI from "openai"
 import type { Anthropic } from "@anthropic-ai/sdk"
 
-import { deepSeekDefaultModelId, DEEP_SEEK_DEFAULT_TEMPERATURE, type ModelInfo } from "@roo-code/types"
+import {
+	deepSeekDefaultModelId,
+	deepSeekModelInfoSaneDefaults,
+	DEEP_SEEK_DEFAULT_TEMPERATURE,
+	type ModelInfo,
+} from "@roo-code/types"
 
 import type { ApiHandlerOptions } from "../../../shared/api"
 
@@ -145,7 +149,7 @@ describe("DeepSeekHandler", () => {
 	describe("constructor", () => {
 		it("should initialize with provided options", () => {
 			expect(handler).toBeInstanceOf(DeepSeekHandler)
-			expect(handler.getModel().id).toBe(mockOptions.apiModelId)
+			expect(handler.getModel().id).toBe("deepseek-v4-flash")
 		})
 
 		it.skip("should throw error if API key is missing", () => {
@@ -204,10 +208,10 @@ describe("DeepSeekHandler", () => {
 	describe("getModel", () => {
 		it("should return model info for valid model ID", () => {
 			const model = handler.getModel()
-			expect(model.id).toBe(mockOptions.apiModelId)
+			expect(model.id).toBe("deepseek-v4-flash")
 			expect(model.info).toBeDefined()
-			expect(model.info.maxTokens).toBe(8192) // deepseek-chat has 8K max
-			expect(model.info.contextWindow).toBe(128_000)
+			expect(model.info.maxTokens).toBe(384_000)
+			expect(model.info.contextWindow).toBe(1_048_576)
 			expect(model.info.supportsImages).toBe(false)
 			expect(model.info.supportsPromptCache).toBe(true) // Should be true now
 		})
@@ -218,10 +222,10 @@ describe("DeepSeekHandler", () => {
 				apiModelId: "deepseek-reasoner",
 			})
 			const model = handlerWithReasoner.getModel()
-			expect(model.id).toBe("deepseek-reasoner")
+			expect(model.id).toBe("deepseek-v4-flash")
 			expect(model.info).toBeDefined()
-			expect(model.info.maxTokens).toBe(8192) // deepseek-reasoner has 8K max
-			expect(model.info.contextWindow).toBe(128_000)
+			expect(model.info.maxTokens).toBe(384_000)
+			expect(model.info.contextWindow).toBe(1_048_576)
 			expect(model.info.supportsImages).toBe(false)
 			expect(model.info.supportsPromptCache).toBe(true)
 		})
@@ -240,11 +244,9 @@ describe("DeepSeekHandler", () => {
 			expect((model.info as ModelInfo).preserveReasoning).toBe(true)
 		})
 
-		it("should NOT have preserveReasoning enabled for deepseek-chat", () => {
-			// deepseek-chat doesn't use thinking mode, so no need to preserve reasoning
+		it("should retain preserveReasoning metadata for the deepseek-chat alias", () => {
 			const model = handler.getModel()
-			// Cast to ModelInfo to access preserveReasoning which is an optional property
-			expect((model.info as ModelInfo).preserveReasoning).toBeUndefined()
+			expect((model.info as ModelInfo).preserveReasoning).toBe(true)
 		})
 
 		it("should return provided model ID with default model info if model does not exist", () => {
@@ -255,12 +257,9 @@ describe("DeepSeekHandler", () => {
 			const model = handlerWithInvalidModel.getModel()
 			expect(model.id).toBe("invalid-model") // Returns provided ID
 			expect(model.info).toBeDefined()
-			// With the current implementation, it's the same object reference when using default model info
-			expect(model.info).toBe(handler.getModel().info)
-			// Should have the same base properties
-			expect(model.info.contextWindow).toBe(handler.getModel().info.contextWindow)
-			// And should have supportsPromptCache set to true
-			expect(model.info.supportsPromptCache).toBe(true)
+			expect(model.info).toBe(deepSeekModelInfoSaneDefaults)
+			expect(model.info.contextWindow).toBe(128_000)
+			expect(model.info.metadataSource).toBe("fallback")
 		})
 
 		it("should return default model if no model ID is provided", () => {
@@ -459,7 +458,7 @@ describe("DeepSeekHandler", () => {
 			)
 		})
 
-		it("should NOT pass thinking parameter for deepseek-chat model", async () => {
+		it("should explicitly disable thinking for deepseek-chat model", async () => {
 			const chatHandler = new DeepSeekHandler({
 				...mockOptions,
 				apiModelId: "deepseek-chat",
@@ -470,9 +469,9 @@ describe("DeepSeekHandler", () => {
 				// Consume the stream
 			}
 
-			// Verify that the thinking parameter was NOT passed to the API
+			// Legacy chat settings route to V4 Flash while preserving non-thinking behavior.
 			const callArgs = mockCreate.mock.calls[0][0]
-			expect(callArgs.thinking).toBeUndefined()
+			expect(callArgs.thinking).toEqual({ type: "disabled" })
 		})
 
 		it("should handle tool calls with reasoning_content", async () => {
