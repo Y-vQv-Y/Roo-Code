@@ -68,6 +68,7 @@ describe("ModeSelector", () => {
 
 		unmount()
 		const customMode: ModeConfig = { ...mockModes[0]!, description: "自定义代码模式" }
+		mockModes = [customMode]
 		render(
 			<ModeSelector
 				title="Mode Selector"
