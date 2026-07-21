@@ -123,6 +123,13 @@
 		"description": "专门定制ADTEC Code行为的角色。",
 		"searchPlaceholder": "搜索模式...",
 		"noResults": "未找到结果",
+		"builtInModeNames": {
+			"architect": "🏗️ 架构师",
+			"code": "💻 编码",
+			"ask": "❓ 问答",
+			"debug": "🪲 调试",
+			"orchestrator": "🪃 编排"
+		},
 		"builtInModeDescriptions": {
 			"architect": "先分析需求并制定实施方案",
 			"code": "编写、修改和重构代码",

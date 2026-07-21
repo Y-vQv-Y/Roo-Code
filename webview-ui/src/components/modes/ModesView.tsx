@@ -27,7 +27,7 @@ import { TOOL_GROUPS } from "@roo/tools"
 import { vscode } from "@src/utils/vscode"
 import { buildDocLink } from "@src/utils/docLinks"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
-import { getLocalizedModeDescription } from "@src/i18n/modeDescriptions"
+import { getLocalizedModeName, getModeDescriptionForDisplay } from "@src/i18n/modeDescriptions"
 import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { Section } from "@src/components/settings/Section"
 import {
@@ -121,7 +121,14 @@ const ModesView = () => {
 	// Optimistic rename map so search reflects new names immediately
 	const [localRenames, setLocalRenames] = useState<Record<string, string>>({})
 	// Display list that overlays optimistic names
-	const displayModes = (modes || []).map((m) => (localRenames[m.slug] ? { ...m, name: localRenames[m.slug] } : m))
+	const displayModes = (modes || []).map((modeConfig) => {
+		const customMode = findCustomModeBySlug(modeConfig.slug, customModes)
+		const name =
+			localRenames[modeConfig.slug] ??
+			(customMode ? modeConfig.name : getLocalizedModeName(t, modeConfig.slug, modeConfig.name))
+
+		return { ...modeConfig, name }
+	})
 	const getDisplayDescription = (modeConfig: ModeConfig) => {
 		const customMode = findCustomModeBySlug(modeConfig.slug, customModes)
 		if (customMode) {
@@ -129,7 +136,7 @@ const ModesView = () => {
 		}
 
 		const prompt = customModePrompts?.[modeConfig.slug] as PromptComponent
-		return prompt?.description ?? getLocalizedModeDescription(t, modeConfig.slug, modeConfig.description)
+		return getModeDescriptionForDisplay(t, modeConfig.slug, modeConfig.description, prompt?.description)
 	}
 
 	// Direct update functions
@@ -741,10 +748,10 @@ const ModesView = () => {
 											aria-expanded={open}
 											className="justify-between grow"
 											data-testid="mode-select-trigger">
-											<div className="truncate">
-												{localRenames[visualMode] ??
-													getCurrentMode()?.name ??
-													t("prompts:modes.selectMode")}
+							<div className="truncate">
+								{localRenames[visualMode] ??
+									displayModes.find((modeConfig) => modeConfig.slug === visualMode)?.name ??
+									t("prompts:modes.selectMode")}
 											</div>
 											<ChevronDown className="opacity-50" />
 										</Button>
@@ -1020,12 +1027,9 @@ const ModesView = () => {
 								return customMode.description ?? ""
 							}
 
-							const prompt = customModePrompts?.[visualMode] as PromptComponent
-							return (
-								prompt?.description ??
-								getLocalizedModeDescription(t, visualMode, getDescription(visualMode))
-							)
-						})()}
+			const prompt = customModePrompts?.[visualMode] as PromptComponent
+			return getModeDescriptionForDisplay(t, visualMode, getDescription(visualMode), prompt?.description)
+		})()}
 						onChange={(e) => {
 							const value =
 								(e as unknown as CustomEvent)?.detail?.target?.value ??

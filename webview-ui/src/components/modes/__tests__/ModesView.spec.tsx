@@ -54,15 +54,32 @@ describe("PromptsView", () => {
 
 	it("renders localized built-in descriptions without external help links", () => {
 		modeTranslations["prompts:modes.modeHelpText"] = "模式是ADTEC Code的专属角色。"
+		modeTranslations["chat:modeSelector.builtInModeNames.code"] = "💻 编码"
 		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "编写、修改和重构代码"
 
-		renderPromptsView({ mode: "code" })
+		renderPromptsView({
+			mode: "code",
+			customModePrompts: { code: { description: "Write, modify, and refactor code" } },
+		})
 
 		const helpSummary = screen.getByTestId("mode-help-summary")
+		expect(helpSummary).toHaveTextContent("💻 编码")
 		expect(helpSummary).toHaveTextContent("模式是ADTEC Code的专属角色。")
 		expect(helpSummary).toHaveTextContent("编写、修改和重构代码")
 		expect(helpSummary.querySelectorAll("a")).toHaveLength(0)
 		expect(screen.getByTestId("code-description-textfield")).toHaveAttribute("value", "编写、修改和重构代码")
+	})
+
+	it("preserves a customized built-in mode description", () => {
+		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "编写、修改和重构代码"
+
+		renderPromptsView({
+			mode: "code",
+			customModePrompts: { code: { description: "团队专用代码模式" } },
+		})
+
+		expect(screen.getByTestId("mode-help-summary")).toHaveTextContent("团队专用代码模式")
+		expect(screen.getByTestId("code-description-textfield")).toHaveAttribute("value", "团队专用代码模式")
 	})
 
 	it("keeps custom mode descriptions instead of applying built-in translations", () => {

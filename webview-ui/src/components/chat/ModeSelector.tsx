@@ -10,7 +10,7 @@ import { vscode } from "@/utils/vscode"
 import { cn } from "@/lib/utils"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { useAppTranslation } from "@/i18n/TranslationContext"
-import { getLocalizedModeDescription } from "@/i18n/modeDescriptions"
+import { getLocalizedModeName, getModeDescriptionForDisplay } from "@/i18n/modeDescriptions"
 import { useRooPortal } from "@/components/ui/hooks/useRooPortal"
 import { Popover, PopoverContent, PopoverTrigger, StandardTooltip } from "@/components/ui"
 
@@ -65,13 +65,15 @@ export const ModeSelector = ({
 
 		return allModes.map((mode) => {
 			const isCustomMode = customModes?.some((customMode) => customMode.slug === mode.slug)
+			const customDescription = customModePrompts?.[mode.slug]?.description
 			const defaultDescription = isCustomMode
-				? mode.description
-				: getLocalizedModeDescription(t, mode.slug, mode.description)
+				? customDescription ?? mode.description
+				: getModeDescriptionForDisplay(t, mode.slug, mode.description, customDescription)
 
 			return {
 				...mode,
-				description: customModePrompts?.[mode.slug]?.description ?? defaultDescription,
+				name: isCustomMode ? mode.name : getLocalizedModeName(t, mode.slug, mode.name),
+				description: defaultDescription,
 			}
 		})
 	}, [customModes, customModePrompts, t])

@@ -41,6 +41,7 @@ describe("ModeSelector", () => {
 	})
 
 	test("uses localized built-in descriptions and preserves custom descriptions", () => {
+		modeTranslations["chat:modeSelector.builtInModeNames.code"] = "💻 编码"
 		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "编写、修改和重构代码"
 		mockModes = [
 			{
@@ -58,9 +59,11 @@ describe("ModeSelector", () => {
 				value={"code" as Mode}
 				onChange={vi.fn()}
 				modeShortcutText="Ctrl+M"
+				customModePrompts={{ code: { description: "Write, modify, and refactor code" } }}
 			/>,
 		)
 		fireEvent.click(screen.getByTestId("mode-selector-trigger"))
+		expect(screen.getByTestId("mode-selector-trigger")).toHaveTextContent("💻 编码")
 		expect(screen.getByText("编写、修改和重构代码")).toBeInTheDocument()
 
 		unmount()
@@ -79,6 +82,15 @@ describe("ModeSelector", () => {
 	})
 
 	test("shows custom description from customModePrompts", () => {
+		mockModes = [
+			{
+				slug: "code",
+				name: "Code",
+				description: "Write, modify, and refactor code",
+				roleDefinition: "Role definition",
+				groups: ["read", "edit"],
+			},
+		]
 		const customModePrompts = {
 			code: {
 				description: "Custom code mode description",
@@ -95,7 +107,8 @@ describe("ModeSelector", () => {
 			/>,
 		)
 
-		expect(screen.getByTestId("mode-selector-trigger")).toBeInTheDocument()
+		fireEvent.click(screen.getByTestId("mode-selector-trigger"))
+		expect(screen.getByText("Custom code mode description")).toBeInTheDocument()
 	})
 
 	test("falls back to default description when no custom prompt", () => {
