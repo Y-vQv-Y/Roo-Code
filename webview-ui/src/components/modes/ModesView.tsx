@@ -27,6 +27,7 @@ import { TOOL_GROUPS } from "@roo/tools"
 import { vscode } from "@src/utils/vscode"
 import { buildDocLink } from "@src/utils/docLinks"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
+import { getLocalizedModeDescription } from "@src/i18n/modeDescriptions"
 import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { Section } from "@src/components/settings/Section"
 import {
@@ -121,6 +122,15 @@ const ModesView = () => {
 	const [localRenames, setLocalRenames] = useState<Record<string, string>>({})
 	// Display list that overlays optimistic names
 	const displayModes = (modes || []).map((m) => (localRenames[m.slug] ? { ...m, name: localRenames[m.slug] } : m))
+	const getDisplayDescription = (modeConfig: ModeConfig) => {
+		const customMode = findCustomModeBySlug(modeConfig.slug, customModes)
+		if (customMode) {
+			return customMode.description ?? ""
+		}
+
+		const prompt = customModePrompts?.[modeConfig.slug] as PromptComponent
+		return prompt?.description ?? getLocalizedModeDescription(t, modeConfig.slug, modeConfig.description)
+	}
 
 	// Direct update functions
 	const updateAgentPrompt = useCallback(
@@ -667,17 +677,25 @@ const ModesView = () => {
 						</div>
 					</div>
 
-					<div className="text-sm text-vscode-descriptionForeground mb-3">
-						<Trans i18nKey="prompts:modes.createModeHelpText">
-							<VSCodeLink
-								href={buildDocLink("basic-usage/using-modes", "prompts_view_modes")}
-								style={{ display: "inline" }}
-								aria-label="Learn about using modes"></VSCodeLink>
-							<VSCodeLink
-								href={buildDocLink("features/custom-modes", "prompts_view_modes")}
-								style={{ display: "inline" }}
-								aria-label="Learn about customizing modes"></VSCodeLink>
-						</Trans>
+					<div
+						className="text-sm text-vscode-descriptionForeground mb-3"
+						data-testid="mode-help-summary">
+						<p className="mt-0 mb-2">
+							{t("prompts:modes.modeHelpText", {
+								defaultValue: "Modes are specialized ADTEC Code roles. Choose one based on the task:",
+							})}
+						</p>
+						<ul className="m-0 pl-5 space-y-1">
+							{displayModes.map((modeConfig) => {
+								const description = getDisplayDescription(modeConfig)
+								return (
+									<li key={modeConfig.slug}>
+										<span className="font-medium text-vscode-foreground">{modeConfig.name}</span>
+										{description && `: ${description}`}
+									</li>
+								)
+							})}
+						</ul>
 					</div>
 
 					<div className="flex items-center gap-1 mb-3">
@@ -998,8 +1016,15 @@ const ModesView = () => {
 					<VSCodeTextField
 						value={(() => {
 							const customMode = findModeBySlug(visualMode, customModes)
+							if (customMode) {
+								return customMode.description ?? ""
+							}
+
 							const prompt = customModePrompts?.[visualMode] as PromptComponent
-							return customMode?.description ?? prompt?.description ?? getDescription(visualMode)
+							return (
+								prompt?.description ??
+								getLocalizedModeDescription(t, visualMode, getDescription(visualMode))
+							)
 						})()}
 						onChange={(e) => {
 							const value =

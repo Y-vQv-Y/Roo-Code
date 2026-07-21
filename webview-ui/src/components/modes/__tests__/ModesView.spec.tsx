@@ -5,6 +5,14 @@ import ModesView from "../ModesView"
 import { ExtensionStateContext } from "@src/context/ExtensionStateContext"
 import { vscode } from "@src/utils/vscode"
 
+const modeTranslations = vi.hoisted(() => ({} as Record<string, string>))
+
+vitest.mock("@src/i18n/TranslationContext", () => ({
+	useAppTranslation: () => ({
+		t: (key: string, options?: { defaultValue?: string }) => modeTranslations[key] ?? options?.defaultValue ?? key,
+	}),
+}))
+
 // Mock vscode API
 vitest.mock("@src/utils/vscode", () => ({
 	vscode: {
@@ -41,6 +49,35 @@ Element.prototype.scrollIntoView = vitest.fn()
 describe("PromptsView", () => {
 	beforeEach(() => {
 		vitest.clearAllMocks()
+		Object.keys(modeTranslations).forEach((key) => delete modeTranslations[key])
+	})
+
+	it("renders localized built-in descriptions without external help links", () => {
+		modeTranslations["prompts:modes.modeHelpText"] = "模式是ADTEC Code的专属角色。"
+		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "编写、修改和重构代码"
+
+		renderPromptsView({ mode: "code" })
+
+		const helpSummary = screen.getByTestId("mode-help-summary")
+		expect(helpSummary).toHaveTextContent("模式是ADTEC Code的专属角色。")
+		expect(helpSummary).toHaveTextContent("编写、修改和重构代码")
+		expect(helpSummary.querySelectorAll("a")).toHaveLength(0)
+		expect(screen.getByTestId("code-description-textfield")).toHaveAttribute("value", "编写、修改和重构代码")
+	})
+
+	it("keeps custom mode descriptions instead of applying built-in translations", () => {
+		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "不应覆盖自定义描述"
+		const customMode = {
+			slug: "code",
+			name: "Custom Code",
+			roleDefinition: "Custom role",
+			description: "自定义代码模式",
+			groups: [],
+		}
+
+		renderPromptsView({ mode: "code", customModes: [customMode] })
+
+		expect(screen.getByTestId("mode-help-summary")).toHaveTextContent("自定义代码模式")
 	})
 
 	it("displays the current mode name in the select trigger", () => {

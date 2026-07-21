@@ -10,6 +10,7 @@ import { vscode } from "@/utils/vscode"
 import { cn } from "@/lib/utils"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { useAppTranslation } from "@/i18n/TranslationContext"
+import { getLocalizedModeDescription } from "@/i18n/modeDescriptions"
 import { useRooPortal } from "@/components/ui/hooks/useRooPortal"
 import { Popover, PopoverContent, PopoverTrigger, StandardTooltip } from "@/components/ui"
 
@@ -62,11 +63,18 @@ export const ModeSelector = ({
 	const modes = React.useMemo(() => {
 		const allModes = getAllModes(customModes)
 
-		return allModes.map((mode) => ({
-			...mode,
-			description: customModePrompts?.[mode.slug]?.description ?? mode.description,
-		}))
-	}, [customModes, customModePrompts])
+		return allModes.map((mode) => {
+			const isCustomMode = customModes?.some((customMode) => customMode.slug === mode.slug)
+			const defaultDescription = isCustomMode
+				? mode.description
+				: getLocalizedModeDescription(t, mode.slug, mode.description)
+
+			return {
+				...mode,
+				description: customModePrompts?.[mode.slug]?.description ?? defaultDescription,
+			}
+		})
+	}, [customModes, customModePrompts, t])
 
 	// Find the selected mode, falling back to default if current mode doesn't exist (e.g., after workspace switch)
 	const selectedMode = React.useMemo(() => {

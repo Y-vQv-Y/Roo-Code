@@ -7,11 +7,18 @@ import type { Mode } from "@roo/modes"
 import { ModeSelector } from "../ModeSelector"
 
 const mockSetHasOpenedModeSelector = vi.hoisted(() => vi.fn())
+const modeTranslations = vi.hoisted(() => ({} as Record<string, string>))
 
 vi.mock("@/context/ExtensionStateContext", () => ({
 	useExtensionState: () => ({
 		hasOpenedModeSelector: false,
 		setHasOpenedModeSelector: mockSetHasOpenedModeSelector,
+	}),
+}))
+
+vi.mock("@/i18n/TranslationContext", () => ({
+	useAppTranslation: () => ({
+		t: (key: string, options?: { defaultValue?: string }) => modeTranslations[key] ?? options?.defaultValue ?? key,
 	}),
 }))
 
@@ -28,6 +35,49 @@ vi.mock("@roo/modes", async () => {
 })
 
 describe("ModeSelector", () => {
+	beforeEach(() => {
+		mockModes = []
+		Object.keys(modeTranslations).forEach((key) => delete modeTranslations[key])
+	})
+
+	test("uses localized built-in descriptions and preserves custom descriptions", () => {
+		modeTranslations["chat:modeSelector.builtInModeDescriptions.code"] = "编写、修改和重构代码"
+		mockModes = [
+			{
+				slug: "code",
+				name: "Code",
+				description: "Write, modify, and refactor code",
+				roleDefinition: "Role definition",
+				groups: ["read", "edit"],
+			},
+		]
+
+		const { unmount } = render(
+			<ModeSelector
+				title="Mode Selector"
+				value={"code" as Mode}
+				onChange={vi.fn()}
+				modeShortcutText="Ctrl+M"
+			/>,
+		)
+		fireEvent.click(screen.getByTestId("mode-selector-trigger"))
+		expect(screen.getByText("编写、修改和重构代码")).toBeInTheDocument()
+
+		unmount()
+		const customMode: ModeConfig = { ...mockModes[0]!, description: "自定义代码模式" }
+		render(
+			<ModeSelector
+				title="Mode Selector"
+				value={"code" as Mode}
+				onChange={vi.fn()}
+				modeShortcutText="Ctrl+M"
+				customModes={[customMode]}
+			/>,
+		)
+		fireEvent.click(screen.getByTestId("mode-selector-trigger"))
+		expect(screen.getByText("自定义代码模式")).toBeInTheDocument()
+	})
+
 	test("shows custom description from customModePrompts", () => {
 		const customModePrompts = {
 			code: {

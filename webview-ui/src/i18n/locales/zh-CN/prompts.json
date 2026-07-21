@@ -10,6 +10,7 @@
 		"editGlobalModes": "修改全局模式",
 		"editProjectModes": "编辑项目模式 (.adtecmodes)",
 		"createModeHelpText": "模式是ADTEC Code的专属角色，用于定制其行为。<0>了解如何使用模式</0>或<1>自定义模式。</1>",
+		"modeHelpText": "模式是ADTEC Code的专属角色，用于定制其行为。请根据任务选择：",
 		"selectMode": "搜索模式"
 	},
 	"apiConfiguration": {
