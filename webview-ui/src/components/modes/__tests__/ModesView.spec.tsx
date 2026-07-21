@@ -67,7 +67,7 @@ describe("PromptsView", () => {
 		expect(helpSummary).toHaveTextContent("模式是ADTEC Code的专属角色。")
 		expect(helpSummary).toHaveTextContent("编写、修改和重构代码")
 		expect(helpSummary.querySelectorAll("a")).toHaveLength(0)
-		expect(screen.getByTestId("code-description-textfield")).toHaveAttribute("value", "编写、修改和重构代码")
+		expect(screen.getByTestId("code-description-textfield")).toHaveProperty("value", "编写、修改和重构代码")
 	})
 
 	it("preserves a customized built-in mode description", () => {
@@ -79,7 +79,7 @@ describe("PromptsView", () => {
 		})
 
 		expect(screen.getByTestId("mode-help-summary")).toHaveTextContent("团队专用代码模式")
-		expect(screen.getByTestId("code-description-textfield")).toHaveAttribute("value", "团队专用代码模式")
+		expect(screen.getByTestId("code-description-textfield")).toHaveProperty("value", "团队专用代码模式")
 	})
 
 	it("keeps custom mode descriptions instead of applying built-in translations", () => {
