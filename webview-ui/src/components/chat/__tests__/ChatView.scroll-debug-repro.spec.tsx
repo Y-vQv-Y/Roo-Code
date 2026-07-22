@@ -147,7 +147,7 @@ vi.mock("react-virtuoso", () => {
 			scrollToIndex: (options) => {
 				harness.scrollCalls += 1
 				harness.scrollToIndexArgs.push(options)
-				const reachedBottom = harness.scrollCalls >= harness.atBottomAfterCalls
+				const reachedBottom = options.index === "LAST" && harness.scrollCalls >= harness.atBottomAfterCalls
 				const timeoutId = window.setTimeout(() => {
 					atBottomRef.current?.(reachedBottom)
 				}, harness.signalDelayMs)
@@ -566,27 +566,31 @@ describe("ChatView scroll behavior regression coverage", () => {
 			timeout: 1_200,
 		})
 
-		const checkpointButton = getScrollToCheckpointButton()
+		const callsBeforeClick = harness.scrollCalls
 
 		await act(async () => {
-			;(checkpointButton as HTMLButtonElement).click()
+			getScrollToCheckpointButton().click()
 		})
+		expect(harness.scrollCalls).toBe(callsBeforeClick + 1)
 		expect(harness.scrollToIndexArgs.at(-1)).toMatchObject({ index: 4, align: "center", behavior: "smooth" })
 
 		await act(async () => {
-			;(checkpointButton as HTMLButtonElement).click()
+			getScrollToCheckpointButton().click()
 		})
+		expect(harness.scrollCalls).toBe(callsBeforeClick + 2)
 		expect(harness.scrollToIndexArgs.at(-1)).toMatchObject({ index: 2, align: "center", behavior: "smooth" })
 
 		await act(async () => {
-			;(checkpointButton as HTMLButtonElement).click()
+			getScrollToCheckpointButton().click()
 		})
+		expect(harness.scrollCalls).toBe(callsBeforeClick + 3)
 		expect(harness.scrollToIndexArgs.at(-1)).toMatchObject({ index: 0, align: "center", behavior: "smooth" })
 
 		// Once at the oldest checkpoint, additional clicks keep targeting it.
 		await act(async () => {
-			;(checkpointButton as HTMLButtonElement).click()
+			getScrollToCheckpointButton().click()
 		})
+		expect(harness.scrollCalls).toBe(callsBeforeClick + 4)
 		expect(harness.scrollToIndexArgs.at(-1)).toMatchObject({ index: 0, align: "center", behavior: "smooth" })
 	})
 })
