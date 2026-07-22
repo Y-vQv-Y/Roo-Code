@@ -132,6 +132,9 @@ describe("ADTEC Code package metadata", () => {
 		expect(workflow).toContain("platform: linux-x64")
 		expect(workflow).toContain("platform: linux-arm64")
 		expect(workflow).not.toContain("platform: darwin-")
+		expect(workflow).toMatch(
+			/- name: Setup Node\.js and pnpm\s+uses: \.\/\.github\/actions\/setup-node-pnpm\s+env:\s+GITHUB_TOKEN: \$\{\{ secrets\.GITHUB_TOKEN \}\}/,
+		)
 		expect(workflow).toContain("./apps/cli/scripts/package-windows.ps1")
 		expect(workflow).toContain("Windows CLI --help check failed")
 		expect(windowsPackager).toContain('set "ADTEC_CODE_RIPGREP_PATH=%~dp0rg.exe"')

@@ -101,6 +101,8 @@ jobs:
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify runner architecture
         shell: bash
