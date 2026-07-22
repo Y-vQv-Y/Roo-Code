@@ -71,7 +71,7 @@ detect_platform() {
     ARCH=$(uname -m)
 
     case "$OS" in
-        darwin) OS="darwin" ;;
+        darwin) OS="macos" ;;
         linux) OS="linux" ;;
         *) error "Unsupported OS: $OS" ;;
     esac

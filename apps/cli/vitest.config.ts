@@ -12,6 +12,6 @@ export default defineConfig({
 		environment: "node",
 		watch: false,
 		testTimeout: 120_000, // 2m for integration tests.
-		include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+		include: ["src/**/*.test.ts", "src/**/*.test.tsx", "scripts/**/*.test.mjs"],
 	},
 })

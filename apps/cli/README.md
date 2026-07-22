@@ -2,15 +2,31 @@
 
 The ADTEC Code CLI runs the same agent workflow from a terminal.
 
-## Local Installation
+## Installation
 
-Build artifacts are distributed internally. Install a supplied tarball with:
+Release archives use operating-system names that match what users see:
+
+- `adtec-code-cli-macos-arm64.tar.gz` for macOS Apple Silicon
+- `adtec-code-cli-macos-x64.tar.gz` for macOS Intel
+- `adtec-code-cli-windows-x64.zip` for Windows x64
+- `adtec-code-cli-linux-x64.tar.gz` for Linux x64
+- `adtec-code-cli-linux-arm64.tar.gz` for Linux ARM64
+
+Install a supplied macOS or Linux tarball with:
 
 ```sh
 ADTEC_CODE_LOCAL_TARBALL=/path/to/adtec-code-cli.tar.gz ./install.sh
 ```
 
-The default executable is `adtec-code` and the default data directory is `~/.adtec/cli`.
+Install a supplied Windows ZIP from PowerShell with:
+
+```powershell
+.\install.ps1 -LocalArchive C:\path\to\adtec-code-cli-windows-x64.zip
+```
+
+To download from a GitHub Release instead, set `ADTEC_CODE_RELEASE_REPOSITORY` to the internal `owner/repository` name before running the platform installer.
+
+The default executable is `adtec-code`. Unix installs under `~/.adtec/cli`; Windows installs under `%LOCALAPPDATA%\ADTEC Code\cli` and adds its command shim to the user PATH.
 
 ## Usage
 

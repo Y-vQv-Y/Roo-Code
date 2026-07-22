@@ -116,11 +116,28 @@ describe("ADTEC Code package metadata", () => {
 			new URL("../../.github/workflows/cli-release.yml", import.meta.url),
 			"utf-8",
 		)
+		const windowsPackager = readFileSync(
+			new URL("../../apps/cli/scripts/package-windows.ps1", import.meta.url),
+			"utf-8",
+		)
+		const windowsInstaller = readFileSync(new URL("../../apps/cli/install.ps1", import.meta.url), "utf-8")
 
 		expect(cliPackage.name).toBe("@adtec-code/cli")
 		expect(workflow).toContain("pnpm --filter @adtec-code/cli build")
 		expect(workflow).toContain('cp -r src/builtin-skills/* "$RELEASE_DIR/extension/builtin-skills/"')
 		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
+		expect(workflow).toContain("platform: macos-arm64")
+		expect(workflow).toContain("platform: macos-x64")
+		expect(workflow).toContain("platform: windows-x64")
+		expect(workflow).toContain("platform: linux-x64")
+		expect(workflow).toContain("platform: linux-arm64")
+		expect(workflow).not.toContain("platform: darwin-")
+		expect(workflow).toContain("./apps/cli/scripts/package-windows.ps1")
+		expect(workflow).toContain("Windows CLI --help check failed")
+		expect(windowsPackager).toContain('set "ADTEC_CODE_RIPGREP_PATH=%~dp0rg.exe"')
+		expect(windowsPackager).toContain("Compress-Archive")
+		expect(windowsInstaller).toContain("Installed CLI failed the --version check")
+		expect(windowsInstaller).toContain("SetEnvironmentVariable")
 	})
 
 	it("extracts release notes from the unbracketed ADTEC changelog heading", () => {

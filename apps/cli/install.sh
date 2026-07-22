@@ -16,6 +16,7 @@ INSTALL_DIR="${ADTEC_CODE_INSTALL_DIR:-$HOME/.adtec/cli}"
 BIN_DIR="${ADTEC_CODE_BIN_DIR:-$HOME/.local/bin}"
 REPO="${ADTEC_CODE_RELEASE_REPOSITORY:-}"
 MIN_NODE_VERSION=20
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
 # Color output (only if terminal supports it)
 if [ -t 1 ]; then
@@ -65,10 +66,10 @@ detect_platform() {
     ARCH=$(uname -m)
     
     case "$OS" in
-        darwin) OS="darwin" ;;
+        darwin) OS="macos" ;;
         linux) OS="linux" ;;
         mingw*|msys*|cygwin*) 
-            error "Windows is not supported by this installer. Please use WSL or install manually."
+            error "Use apps/cli/install.ps1 from PowerShell on Windows."
             ;;
         *) error "Unsupported OS: $OS" ;;
     esac
@@ -88,6 +89,7 @@ get_version() {
     # Skip version fetch if using local tarball
     if [ -n "$ADTEC_CODE_LOCAL_TARBALL" ]; then
         VERSION="${ADTEC_CODE_VERSION:-local}"
+        ASSET_NAME="$(basename "$ADTEC_CODE_LOCAL_TARBALL")"
         info "Using local tarball (version: $VERSION)"
         return
 	fi
@@ -95,22 +97,24 @@ get_version() {
 	if [ -z "$REPO" ]; then
 		error "No internal release repository is configured. Set ADTEC_CODE_RELEASE_REPOSITORY or install with ADTEC_CODE_LOCAL_TARBALL."
 	fi
+
+    ASSET_NAME="adtec-code-cli-${PLATFORM}.tar.gz"
     
     if [ -n "$ADTEC_CODE_VERSION" ]; then
         VERSION="$ADTEC_CODE_VERSION"
         info "Using specified version: $VERSION"
-        return
     fi
     
     info "Fetching latest version..."
     
     # Try to get the latest cli release
-    RELEASES_JSON=$(curl -fsSL "https://api.github.com/repos/$REPO/releases" 2>/dev/null) || {
+    RELEASES_JSON=$(curl -fsSL "https://api.github.com/repos/$REPO/releases?per_page=100" 2>/dev/null) || {
         error "Failed to fetch releases from GitHub. Check your internet connection."
     }
     
     # Extract highest cli-v* tag by semantic version (do not rely on API ordering)
-    VERSION=$(printf "%s" "$RELEASES_JSON" | node -e '
+    if [ -z "${VERSION:-}" ]; then
+    VERSION=$(printf "%s" "$RELEASES_JSON" | ASSET_NAME="$ASSET_NAME" node -e '
 const fs = require("fs")
 const input = fs.readFileSync(0, "utf8")
 let releases
@@ -146,10 +150,16 @@ let latestParts = null
 
 if (Array.isArray(releases)) {
   for (const release of releases) {
-    if (!release || typeof release.tag_name !== "string" || !release.tag_name.startsWith("cli-v")) {
+    if (
+      !release ||
+      typeof release.tag_name !== "string" ||
+      !/^(?:cli-)?v/.test(release.tag_name) ||
+      !Array.isArray(release.assets) ||
+      !release.assets.some((asset) => asset && asset.name === process.env.ASSET_NAME)
+    ) {
       continue
     }
-    const candidate = release.tag_name.slice("cli-v".length)
+    const candidate = release.tag_name.replace(/^(?:cli-)?v/, "")
     const candidateParts = parseVersion(candidate)
     if (!candidateParts) continue
     if (!latestParts || compareVersions(candidateParts, latestParts) > 0) {
@@ -163,17 +173,25 @@ if (latestVersion) {
   process.stdout.write(latestVersion)
 }
 ')
+    fi
     
     if [ -z "$VERSION" ]; then
         error "Could not find any CLI releases. The CLI may not have been released yet."
     fi
     
-    info "Latest version: $VERSION"
+    RELEASE_METADATA=$(printf "%s" "$RELEASES_JSON" | node "$SCRIPT_DIR/scripts/resolve-release.mjs" --asset "$ASSET_NAME" --version "$VERSION")
+    if [ -z "$RELEASE_METADATA" ]; then
+        error "Could not find a CLI release containing $ASSET_NAME."
+    fi
+
+    RELEASE_TAG=$(printf "%s" "$RELEASE_METADATA" | node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(0, "utf8")).tag)')
+    ASSET_URL=$(printf "%s" "$RELEASE_METADATA" | node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(0, "utf8")).url)')
+    info "Using release $RELEASE_TAG (version: $VERSION)"
 }
 
 # Download and extract
 download_and_install() {
-    TARBALL="adtec-code-cli-${PLATFORM}.tar.gz"
+    TARBALL="${ASSET_NAME:-adtec-code-cli-${PLATFORM}.tar.gz}"
     
     # Create temp directory
     TMP_DIR=$(mktemp -d)
@@ -187,7 +205,7 @@ download_and_install() {
         info "Using local tarball: $ADTEC_CODE_LOCAL_TARBALL"
         cp "$ADTEC_CODE_LOCAL_TARBALL" "$TMP_DIR/$TARBALL"
     else
-        URL="https://github.com/$REPO/releases/download/cli-v${VERSION}/${TARBALL}"
+        URL="$ASSET_URL"
         
         info "Downloading from $URL..."
         

@@ -96,8 +96,12 @@ export async function getLatestCliVersion(
 		}
 
 		const tagName = release.tag_name
-		if (typeof tagName === "string" && tagName.startsWith("cli-v")) {
-			const candidate = tagName.slice("cli-v".length)
+		const assets = release.assets
+		const hasCliAsset =
+			Array.isArray(assets) &&
+			assets.some((asset) => isRecord(asset) && typeof asset.name === "string" && asset.name.startsWith("adtec-code-cli-"))
+		if (typeof tagName === "string" && (tagName.startsWith("cli-v") || (tagName.startsWith("v") && hasCliAsset))) {
+			const candidate = tagName.replace(/^cli-v/, "").replace(/^v/, "")
 			try {
 				if (!latestVersion || compareVersions(candidate, latestVersion) > 0) {
 					latestVersion = candidate
@@ -115,15 +119,25 @@ export async function getLatestCliVersion(
 	throw new Error("Could not determine the latest CLI release version.")
 }
 
-export function runUpgradeInstaller(version?: string, spawnImpl: typeof spawn = spawn): Promise<void> {
+export function runUpgradeInstaller(
+	version?: string,
+	spawnImpl: typeof spawn = spawn,
+	platform = process.platform,
+	installCommand = INSTALL_SCRIPT_COMMAND,
+): Promise<void> {
 	return new Promise((resolve, reject) => {
-		if (!INSTALL_SCRIPT_COMMAND) {
+		if (!installCommand) {
 			reject(new Error("No internal ADTEC Code install command is configured."))
 			return
 		}
 
 		const env = version ? { ...process.env, ADTEC_CODE_VERSION: version } : process.env
-		const child = spawnImpl("sh", ["-c", INSTALL_SCRIPT_COMMAND], { stdio: "inherit", env })
+		const executable = platform === "win32" ? "powershell.exe" : "sh"
+		const args =
+			platform === "win32"
+				? ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", installCommand]
+				: ["-c", installCommand]
+		const child = spawnImpl(executable, args, { stdio: "inherit", env })
 
 		child.once("error", (error) => {
 			reject(error)
