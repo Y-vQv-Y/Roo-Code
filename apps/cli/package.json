@@ -1,6 +1,6 @@
 {
 	"name": "@adtec-code/cli",
-	"version": "0.1.17",
+	"version": "0.1.18",
 	"description": "ADTEC Code CLI - Run the ADTEC Code agent from the command line",
 	"private": true,
 	"type": "module",

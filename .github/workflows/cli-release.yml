@@ -1,70 +1,20 @@
-name: CLI Release
+name: CLI Package Build
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      version:
-        description: 'Version to release (e.g., 0.1.0). Leave empty to use package.json version.'
-        required: false
+      release_sha:
+        description: 'Commit to package.'
+        required: true
         type: string
-      dry_run:
-        description: 'Dry run (build and test but do not create release).'
-        required: false
-        type: boolean
-        default: false
-  workflow_run:
-    workflows: ['Package and Release ADTEC Code']
-    types: [completed]
+      version:
+        description: 'Unified ADTEC Code release version.'
+        required: true
+        type: string
 
 jobs:
-  # workflow_run also fires when the publishing job was skipped. Resolve the
-  # release tag first so those runs finish without producing unrelated builds.
-  resolve_release:
-    runs-on: ubuntu-latest
-    outputs:
-      should_build: ${{ steps.resolve.outputs.should_build }}
-      release_sha: ${{ steps.resolve.outputs.release_sha }}
-      release_tag: ${{ steps.resolve.outputs.release_tag }}
-    steps:
-      - name: Checkout release commit
-        if: github.event_name == 'workflow_run'
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: Resolve release target
-        id: resolve
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          WORKFLOW_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          if [ "$EVENT_NAME" != "workflow_run" ]; then
-            echo "should_build=true" >> "$GITHUB_OUTPUT"
-            echo "release_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
-            echo "release_tag=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          RELEASE_TAG=$(git tag --points-at "$WORKFLOW_SHA" | grep '^v' | head -1 || true)
-          if [ -z "$RELEASE_TAG" ]; then
-            echo "No ADTEC Code release tag points at $WORKFLOW_SHA; skipping CLI release."
-            echo "should_build=false" >> "$GITHUB_OUTPUT"
-            echo "release_sha=$WORKFLOW_SHA" >> "$GITHUB_OUTPUT"
-            echo "release_tag=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "should_build=true" >> "$GITHUB_OUTPUT"
-          echo "release_sha=$WORKFLOW_SHA" >> "$GITHUB_OUTPUT"
-          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
-
   # Build CLI for each platform.
   build:
-    needs: resolve_release
-    if: >
-      needs.resolve_release.outputs.should_build == 'true' &&
-      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     strategy:
       fail-fast: false
       matrix:
@@ -97,7 +47,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ needs.resolve_release.outputs.release_sha }}
+          ref: ${{ inputs.release_sha }}
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
@@ -112,13 +62,8 @@ jobs:
         id: version
         shell: bash
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            VERSION="${{ inputs.version }}"
-          else
-            VERSION=$(node -p "require('./apps/cli/package.json').version")
-          fi
+          VERSION="${{ inputs.version }}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=cli-v$VERSION" >> $GITHUB_OUTPUT
           echo "Using version: $VERSION"
 
       - name: Build extension bundle
@@ -339,212 +284,3 @@ jobs:
             adtec-code-cli-${{ matrix.platform }}.zip.sha256
           if-no-files-found: error
           retention-days: 7
-
-  # Create GitHub release with all platform artifacts.
-  release:
-    needs: [resolve_release, build]
-    runs-on: ubuntu-latest
-    if: >
-      needs.resolve_release.outputs.should_build == 'true' &&
-      (github.event_name == 'workflow_run' || !inputs.dry_run)
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ needs.resolve_release.outputs.release_sha }}
-
-      - name: Get version
-        id: version
-        run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            VERSION="${{ inputs.version }}"
-          else
-            VERSION=$(node -p "require('./apps/cli/package.json').version")
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=cli-v$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Prepare release files
-        run: |
-          mkdir -p release
-          find artifacts -name "*.tar.gz" -exec cp {} release/ \;
-          find artifacts -name "*.zip" -exec cp {} release/ \;
-          find artifacts -name "*.sha256" -exec cp {} release/ \;
-          ls -la release/
-
-      - name: Extract changelog
-        id: changelog
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          CHANGELOG_FILE="apps/cli/CHANGELOG.md"
-
-          if [ -f "$CHANGELOG_FILE" ]; then
-            # Extract content between version headers.
-            CONTENT=$(awk -v version="$VERSION" '
-              BEGIN { found = 0; content = ""; target = "[" version "]" }
-              /^## \[/ {
-                if (found) { exit }
-                if (index($0, target) > 0) { found = 1; next }
-              }
-              found { content = content $0 "\n" }
-              END { print content }
-            ' "$CHANGELOG_FILE")
-
-            if [ -n "$CONTENT" ]; then
-              echo "Found changelog content"
-              echo "content<<EOF" >> $GITHUB_OUTPUT
-              echo "$CONTENT" >> $GITHUB_OUTPUT
-              echo "EOF" >> $GITHUB_OUTPUT
-            else
-              echo "No changelog content found for version $VERSION"
-              echo "content=" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "No changelog file found"
-            echo "content=" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Generate checksums summary
-        id: checksums
-        run: |
-          echo "checksums<<EOF" >> $GITHUB_OUTPUT
-          cat release/*.sha256 >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Check for existing release
-        id: check_release
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          if gh release view "$TAG" &> /dev/null; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Delete existing release
-        if: github.event_name == 'workflow_dispatch' && steps.check_release.outputs.exists == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          echo "Deleting existing release $TAG..."
-          gh release delete "$TAG" --yes || true
-          git push origin ":refs/tags/$TAG" || true
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
-          TAG: ${{ steps.version.outputs.tag }}
-          RELEASE_TAG: ${{ needs.resolve_release.outputs.release_tag }}
-          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.content }}
-          CHECKSUMS: ${{ steps.checksums.outputs.checksums }}
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            # The extension workflow creates the Release before this workflow
-            # starts, but allow a short propagation window for the API.
-            for attempt in {1..12}; do
-              if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-                gh release upload "$RELEASE_TAG" release/* --clobber
-                echo "CLI artifacts uploaded to $RELEASE_TAG"
-                exit 0
-              fi
-              sleep 10
-            done
-
-            echo "Release $RELEASE_TAG was not available for CLI artifact upload"
-            exit 1
-          fi
-
-          NOTES_FILE=$(mktemp)
-
-          if [ -n "$CHANGELOG_CONTENT" ]; then
-            echo "## What's New" >> "$NOTES_FILE"
-            echo "" >> "$NOTES_FILE"
-            echo "$CHANGELOG_CONTENT" >> "$NOTES_FILE"
-            echo "" >> "$NOTES_FILE"
-          fi
-
-          echo "## Installation" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "Download the matching archive. Use apps/cli/install.sh on macOS/Linux or apps/cli/install.ps1 on Windows." >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "## Requirements" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "- Node.js 20 or higher" >> "$NOTES_FILE"
-          echo "- macOS Apple Silicon, macOS Intel, Windows x64, Linux x64, or Linux ARM64" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "## Usage" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo '```bash' >> "$NOTES_FILE"
-          echo "# Run a task" >> "$NOTES_FILE"
-          echo 'adtec-code "What is this project?"' >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "# See all options" >> "$NOTES_FILE"
-          echo "adtec-code --help" >> "$NOTES_FILE"
-          echo '```' >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "## Platform Support" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "This release includes binaries for:" >> "$NOTES_FILE"
-          echo '- `adtec-code-cli-macos-arm64.tar.gz` - macOS ARM64 / Apple Silicon' >> "$NOTES_FILE"
-          echo '- `adtec-code-cli-macos-x64.tar.gz` - macOS x64 / Intel' >> "$NOTES_FILE"
-          echo '- `adtec-code-cli-windows-x64.zip` - Windows x64' >> "$NOTES_FILE"
-          echo '- `adtec-code-cli-linux-x64.tar.gz` - Linux x64' >> "$NOTES_FILE"
-          echo '- `adtec-code-cli-linux-arm64.tar.gz` - Linux ARM64' >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo "## Checksums" >> "$NOTES_FILE"
-          echo "" >> "$NOTES_FILE"
-          echo '```' >> "$NOTES_FILE"
-          echo "$CHECKSUMS" >> "$NOTES_FILE"
-          echo '```' >> "$NOTES_FILE"
-
-          gh release create "$TAG" \
-            --title "ADTEC Code CLI v$VERSION" \
-            --notes-file "$NOTES_FILE" \
-            --prerelease \
-            release/*
-
-          rm -f "$NOTES_FILE"
-          echo "Release created: https://github.com/${{ github.repository }}/releases/tag/$TAG"
-
-  # Summary job for dry runs
-  summary:
-    needs: build
-    runs-on: ubuntu-latest
-    if: ${{ inputs.dry_run }}
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Show build summary
-        run: |
-          echo "## Dry Run Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The following artifacts were built:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          find artifacts -type f \( -name "*.tar.gz" -o -name "*.zip" \) | while read f; do
-            SIZE=$(ls -lh "$f" | awk '{print $5}')
-            echo "- $(basename $f) ($SIZE)" >> $GITHUB_STEP_SUMMARY
-          done
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Checksums" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          cat artifacts/*/*.sha256 >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

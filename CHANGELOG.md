@@ -2,6 +2,12 @@
 
 All notable changes to ADTEC Code are documented in this file.
 
+## 0.1.18
+
+- Unified the VS Code extension and CLI release version.
+- Added a single GitHub Release pipeline for the VSIX and all supported CLI platforms.
+- Preserved existing release tags instead of moving them between commits.
+
 ## 0.1.1
 
 - Fixed strict TypeScript declaration generation for dynamically resolved Moonshot model metadata.

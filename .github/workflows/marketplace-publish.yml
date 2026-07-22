@@ -7,136 +7,301 @@ on:
   pull_request:
     types: [closed]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build and validate all artifacts without creating a tag or Release.'
+        required: false
+        type: boolean
+        default: false
 
 env:
   GIT_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
 jobs:
-  publish-extension:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # Required for pushing tags.
+  resolve-release:
     if: >
-        ( github.event_name == 'pull_request' &&
-        github.event.pull_request.merged == true &&
-        github.event.pull_request.base.ref == 'main' &&
-        contains(github.event.pull_request.title, 'Changeset version bump') ) ||
-        ( github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') ) ||
-        github.event_name == 'workflow_dispatch'
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      contains(github.event.pull_request.title, 'Changeset version bump')) ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.resolve.outputs.should_build }}
+      should_release: ${{ steps.resolve.outputs.should_release }}
+      release_sha: ${{ steps.resolve.outputs.release_sha }}
+      release_tag: ${{ steps.resolve.outputs.release_tag }}
+      version: ${{ steps.resolve.outputs.version }}
     steps:
-      - name: Checkout code
+      - name: Checkout release commit
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ env.GIT_REF }}
+
+      - name: Resolve and validate release metadata
+        id: resolve
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          RELEASE_SHA: ${{ env.GIT_REF }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          VERSION=$(node -p "require('./src/package.json').version")
+          CLI_VERSION=$(node -p "require('./apps/cli/package.json').version")
+          if [ "$VERSION" != "$CLI_VERSION" ]; then
+            echo "VSIX version $VERSION does not match CLI version $CLI_VERSION"
+            exit 1
+          fi
+
+          RELEASE_TAG="v$VERSION"
+          CURRENT_COMMIT=$(git rev-parse "$RELEASE_SHA")
+
+          if [ "$EVENT_NAME" = "push" ] && [ "$REF_NAME" != "$RELEASE_TAG" ]; then
+            echo "Tag $REF_NAME does not match package version tag $RELEASE_TAG"
+            exit 1
+          fi
+
+          REMOTE_TAGS=$(git ls-remote --tags origin "refs/tags/$RELEASE_TAG" "refs/tags/$RELEASE_TAG^{}")
+          if [ -n "$REMOTE_TAGS" ]; then
+            TAGGED_COMMIT=$(printf '%s\n' "$REMOTE_TAGS" | awk '/\^\{\}$/ { peeled=$1 } !/\^\{\}$/ { direct=$1 } END { print peeled != "" ? peeled : direct }')
+            if [ "$TAGGED_COMMIT" != "$CURRENT_COMMIT" ]; then
+              echo "Tag $RELEASE_TAG already points at $TAGGED_COMMIT, not $CURRENT_COMMIT"
+              exit 1
+            fi
+            echo "Reusing existing tag $RELEASE_TAG"
+          else
+            echo "Tag $RELEASE_TAG will be created after all builds pass"
+          fi
+
+          SHOULD_RELEASE=true
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$DRY_RUN" = "true" ]; then
+            SHOULD_RELEASE=false
+          fi
+
+          echo "should_build=true" >> "$GITHUB_OUTPUT"
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "release_sha=$CURRENT_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  build-vsix:
+    needs: resolve-release
+    if: needs.resolve-release.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-release.outputs.release_sha }}
+
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
         with:
           install-args: '--frozen-lockfile'
-      - name: Configure Git
+
+      - name: Package VS Code extension
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Package Extension
-        run: |
+          set -euo pipefail
           package_name=$(node -p "require('./src/package.json').name")
           current_package_version=$(node -p "require('./src/package.json').version")
           vsix_path="bin/${package_name}-${current_package_version}.vsix"
           pnpm vsix
 
-          # Save VSIX contents to a temporary file to avoid broken pipe issues.
           test -f "$vsix_path"
           unzip -l "$vsix_path" > /tmp/adtec-code-vsix-contents.txt
 
-          # Check for required files.
-          grep -q "extension/package.json" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/package.nls.json" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/dist/extension.js" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/webview-ui/audio/celebration.wav" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/webview-ui/build/assets/index.js" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/codicons/codicon.ttf" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/icons/adtec-logo.png" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/assets/icons/adtec-activitybar.png" /tmp/adtec-code-vsix-contents.txt || exit 1
-          grep -q "extension/builtin-skills/adtec-test/SKILL.md" /tmp/adtec-code-vsix-contents.txt || exit 1
+          grep -q "extension/package.json" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/package.nls.json" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/dist/extension.js" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/webview-ui/audio/celebration.wav" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/webview-ui/build/assets/index.js" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/assets/codicons/codicon.ttf" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/assets/vscode-material-icons/icons/3d.svg" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/assets/icons/adtec-logo.png" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/assets/icons/adtec-activitybar.png" /tmp/adtec-code-vsix-contents.txt
+          grep -q "extension/builtin-skills/adtec-test/SKILL.md" /tmp/adtec-code-vsix-contents.txt
 
-          # Verify the installed extension metadata and bundled skill contract.
-          unzip -p "$vsix_path" extension/package.json | grep -Fq '"name": "adtec-code"' || exit 1
-          unzip -p "$vsix_path" extension/package.json | grep -Fq '"publisher": "ADTEC"' || exit 1
-          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'name: adtec-test' || exit 1
-          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'ADTEC bundled skill loaded successfully.' || exit 1
+          unzip -p "$vsix_path" extension/package.json | grep -Fq '"name": "adtec-code"'
+          unzip -p "$vsix_path" extension/package.json | grep -Fq '"publisher": "ADTEC"'
+          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'name: adtec-test'
+          unzip -p "$vsix_path" extension/builtin-skills/adtec-test/SKILL.md | grep -Fq 'ADTEC bundled skill loaded successfully.'
 
-          # Do not ship local secrets or legacy source-project branding.
-          ! grep -q "extension/.env" /tmp/adtec-code-vsix-contents.txt || exit 1
-          ! grep -q "extension/assets/icons/icon.svg" /tmp/adtec-code-vsix-contents.txt || exit 1
-          
-          # Clean up temporary file.
+          ! grep -q "extension/.env" /tmp/adtec-code-vsix-contents.txt
+          ! grep -q "extension/assets/icons/icon.svg" /tmp/adtec-code-vsix-contents.txt
+          (
+            cd "$(dirname "$vsix_path")"
+            sha256sum "$(basename "$vsix_path")" > "$(basename "$vsix_path").sha256"
+          )
           rm /tmp/adtec-code-vsix-contents.txt
-      - name: Create and Push Git Tag
-        if: github.event_name != 'push'
-        run: |
-          current_package_version=$(node -p "require('./src/package.json').version")
-          release_tag="v${current_package_version}"
 
-          if git ls-remote --exit-code --tags origin "refs/tags/${release_tag}" >/dev/null 2>&1; then
-            git fetch origin "refs/tags/${release_tag}:refs/tags/${release_tag}"
-            tagged_commit=$(git rev-list -n 1 "$release_tag")
-            current_commit=$(git rev-parse HEAD)
-            if [ "$tagged_commit" != "$current_commit" ]; then
-              echo "Tag $release_tag already points at $tagged_commit, not $current_commit"
-              exit 1
-            fi
-            echo "Reusing existing tag $release_tag"
-          else
-            git tag -a "$release_tag" -m "Release $release_tag"
-            git push origin "$release_tag" --no-verify
-            echo "Successfully created and pushed git tag $release_tag"
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: |
+            bin/*.vsix
+            bin/*.vsix.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  build-cli:
+    needs: resolve-release
+    if: needs.resolve-release.outputs.should_build == 'true'
+    uses: ./.github/workflows/cli-release.yml
+    with:
+      release_sha: ${{ needs.resolve-release.outputs.release_sha }}
+      version: ${{ needs.resolve-release.outputs.version }}
+    secrets: inherit
+
+  create-release:
+    needs: [resolve-release, build-vsix, build-cli]
+    if: >
+      needs.resolve-release.outputs.should_build == 'true' &&
+      needs.resolve-release.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.resolve-release.outputs.release_sha }}
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          find artifacts -type f \( -name '*.vsix' -o -name '*.tar.gz' -o -name '*.zip' -o -name '*.sha256' \) -exec cp {} release/ \;
+          expected_files=12
+          actual_files=$(find release -type f | wc -l)
+          if [ "$actual_files" -ne "$expected_files" ]; then
+            echo "Expected $expected_files release files, found $actual_files"
+            find release -maxdepth 1 -type f -print
+            exit 1
           fi
-      # Public Marketplace publishing is disabled for internal ADTEC Code distributions.
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          package_name=$(node -p "require('./src/package.json').name")
-          current_package_version=$(node -p "require('./src/package.json').version")
-          vsix_path="bin/${package_name}-${current_package_version}.vsix"
+          ls -la release
 
-          # Extract changelog for current version
-          echo "Extracting changelog for version ${current_package_version}"
-          changelog_content=$(awk -v version="${current_package_version}" '
-            $0 == "## " version || $0 == "## [" version "]" {
-              capture = 1
-              next
-            }
+      - name: Generate release notes
+        id: notes
+        shell: bash
+        env:
+          VERSION: ${{ needs.resolve-release.outputs.version }}
+        run: |
+          set -euo pipefail
+          notes_file="$RUNNER_TEMP/adtec-code-release-notes.md"
+          extension_notes=$(awk -v version="$VERSION" '
+            $0 == "## " version || $0 == "## [" version "]" { capture=1; next }
             capture && /^## / { exit }
             capture { print }
           ' CHANGELOG.md)
+          cli_notes=$(awk -v version="$VERSION" '
+            $0 == "## [" version "]" || $0 == "## " version { capture=1; next }
+            capture && /^## / { exit }
+            capture { print }
+          ' apps/cli/CHANGELOG.md)
 
-          # If changelog extraction failed, use a default message
-          if [ -z "$changelog_content" ]; then
-            echo "Warning: No changelog section found for version ${current_package_version}"
-            changelog_content="Release v${current_package_version}"
+          {
+            echo "## ADTEC Code $VERSION"
+            echo
+            echo "### VS Code Extension"
+            echo
+            printf '%s\n' "${extension_notes:-Unified VSIX and CLI release packaging.}"
+            echo
+            echo "### CLI"
+            echo
+            printf '%s\n' "${cli_notes:-CLI artifacts for macOS, Windows, and Linux.}"
+            echo
+            echo "### Included artifacts"
+            echo
+            echo '- VSIX extension package'
+            echo '- macOS Apple Silicon CLI'
+            echo '- macOS Intel CLI'
+            echo '- Windows x64 CLI'
+            echo '- Linux x64 CLI'
+            echo '- Linux ARM64 CLI'
+          } > "$notes_file"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+
+      - name: Create or validate release tag
+        env:
+          RELEASE_SHA: ${{ needs.resolve-release.outputs.release_sha }}
+          RELEASE_TAG: ${{ needs.resolve-release.outputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          remote_tags=$(git ls-remote --tags origin "refs/tags/$RELEASE_TAG" "refs/tags/$RELEASE_TAG^{}")
+          if [ -n "$remote_tags" ]; then
+            tagged_commit=$(printf '%s\n' "$remote_tags" | awk '/\^\{\}$/ { peeled=$1 } !/\^\{\}$/ { direct=$1 } END { print peeled != "" ? peeled : direct }')
+            if [ "$tagged_commit" != "$RELEASE_SHA" ]; then
+              echo "Tag $RELEASE_TAG already points at $tagged_commit, not $RELEASE_SHA"
+              exit 1
+            fi
+            echo "Validated existing tag $RELEASE_TAG"
           else
-            echo "Found changelog section for version ${current_package_version}"
+            git tag -a "$RELEASE_TAG" -m "Release $RELEASE_TAG" "$RELEASE_SHA"
+            git push origin "$RELEASE_TAG" --no-verify
+            echo "Created and pushed tag $RELEASE_TAG"
           fi
 
-          # Create release with changelog content
-          if [ "${{ github.event_name }}" = "push" ]; then
-            release_tag="${GITHUB_REF_NAME}"
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.resolve-release.outputs.release_tag }}
+          VERSION: ${{ needs.resolve-release.outputs.version }}
+          NOTES_FILE: ${{ steps.notes.outputs.notes_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "ADTEC Code v$VERSION" --notes-file "$NOTES_FILE"
+            gh release upload "$RELEASE_TAG" release/* --clobber
+            echo "Updated GitHub Release $RELEASE_TAG"
           else
-            release_tag="v${current_package_version}"
+            gh release create "$RELEASE_TAG" \
+              --title "ADTEC Code v$VERSION" \
+              --notes-file "$NOTES_FILE" \
+              release/*
+            echo "Created GitHub Release $RELEASE_TAG"
           fi
 
-          if gh release view "$release_tag" >/dev/null 2>&1; then
-            gh release edit "$release_tag" \
-              --title "Release ${release_tag}" \
-              --notes "$changelog_content"
-            gh release upload "$release_tag" "$vsix_path" --clobber
-            echo "Successfully updated GitHub Release ${release_tag}"
-          else
-            gh release create "$release_tag" \
-              --title "Release ${release_tag}" \
-              --notes "$changelog_content" \
-              --target ${{ env.GIT_REF }} \
-              "$vsix_path"
-            echo "Successfully created GitHub Release ${release_tag}"
-          fi
+  dry-run-summary:
+    needs: [resolve-release, build-vsix, build-cli]
+    if: >
+      needs.resolve-release.outputs.should_build == 'true' &&
+      needs.resolve-release.outputs.should_release == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Summarize validated artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '## ADTEC Code dry-run complete' >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          find artifacts -type f \( -name '*.vsix' -o -name '*.tar.gz' -o -name '*.zip' \) -printf '%f\n' | sort | while read -r file; do
+            echo "- $file" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo '### Checksums' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/*/*.sha256 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

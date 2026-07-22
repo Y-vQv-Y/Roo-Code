@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "fs"
 import { fileURLToPath } from "url"
+import { parse } from "yaml"
 
 import { getCodeActionCommand, getCommand, getTerminalCommand } from "../utils/commands"
 
@@ -100,11 +101,13 @@ describe("ADTEC Code package metadata", () => {
 	it("publishes the branded VSIX and verifies the bundled test skill", () => {
 		const workflow = readFileSync(new URL("../../.github/workflows/marketplace-publish.yml", import.meta.url), "utf-8")
 
+		expect(parse(workflow)).toBeDefined()
 		expect(workflow).toContain("package_name=$(node -p \"require('./src/package.json').name\")")
 		expect(workflow).toContain('vsix_path="bin/${package_name}-${current_package_version}.vsix"')
 		expect(workflow).toContain('unzip -l "$vsix_path"')
 		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
-		expect(workflow).toMatch(/gh release create[\s\S]*"\$vsix_path"/)
+		expect(workflow).toContain('sha256sum "$(basename "$vsix_path")" > "$(basename "$vsix_path").sha256"')
+		expect(workflow).toMatch(/gh release create "\$RELEASE_TAG"[\s\S]*release\/\*/)
 		expect(workflow).not.toContain("bin/adtec-code-${current_package_version}.vsix")
 	})
 
@@ -123,6 +126,9 @@ describe("ADTEC Code package metadata", () => {
 		const windowsInstaller = readFileSync(new URL("../../apps/cli/install.ps1", import.meta.url), "utf-8")
 
 		expect(cliPackage.name).toBe("@adtec-code/cli")
+		expect(cliPackage.version).toBe(manifest.version)
+		expect(parse(workflow)).toBeDefined()
+		expect(workflow).toContain("workflow_call:")
 		expect(workflow).toContain("pnpm --filter @adtec-code/cli build")
 		expect(workflow).toContain('cp -r src/builtin-skills/* "$RELEASE_DIR/extension/builtin-skills/"')
 		expect(workflow).toContain("extension/builtin-skills/adtec-test/SKILL.md")
@@ -137,6 +143,9 @@ describe("ADTEC Code package metadata", () => {
 		)
 		expect(workflow).toContain("./apps/cli/scripts/package-windows.ps1")
 		expect(workflow).toContain("Windows CLI --help check failed")
+		expect(workflow).not.toContain("workflow_run:")
+		expect(workflow).not.toContain("cli-v$VERSION")
+		expect(workflow).not.toContain("gh release create")
 		expect(windowsPackager).toContain('set "ADTEC_CODE_RIPGREP_PATH=%~dp0rg.exe"')
 		expect(windowsPackager).toContain("Compress-Archive")
 		expect(windowsInstaller).toContain("Installed CLI failed the --version check")
@@ -148,5 +157,20 @@ describe("ADTEC Code package metadata", () => {
 
 		expect(workflow).toContain('$0 == "## " version')
 		expect(workflow).toContain("capture && /^## / { exit }")
+	})
+
+	it("publishes the VSIX and every CLI platform through one guarded product release", () => {
+		const workflow = readFileSync(new URL("../../.github/workflows/marketplace-publish.yml", import.meta.url), "utf-8")
+
+		expect(workflow).toContain("uses: ./.github/workflows/cli-release.yml")
+		expect(workflow).toContain("needs: [resolve-release, build-vsix, build-cli]")
+		expect(workflow).toContain("expected_files=12")
+		expect(workflow).toContain('RELEASE_TAG="v$VERSION"')
+		expect(workflow).toContain('Tag $RELEASE_TAG already points at $TAGGED_COMMIT, not $CURRENT_COMMIT')
+		expect(workflow).toContain('gh release upload "$RELEASE_TAG" release/* --clobber')
+		expect(workflow).toContain("needs.resolve-release.outputs.should_release == 'false'")
+		expect(workflow).not.toContain("gh release delete")
+		expect(workflow).not.toContain('git push origin ":refs/tags/')
+		expect(workflow).not.toContain("git push --force")
 	})
 })
