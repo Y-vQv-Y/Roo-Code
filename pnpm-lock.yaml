@@ -287,6 +287,86 @@ importers:
         specifier: workspace:^
         version: link:../../packages/build
 
+  apps/web:
+    dependencies:
+      lucide-react:
+        specifier: ^0.559.0
+        version: 0.559.0(react@19.2.6)
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
+    devDependencies:
+      '@roo-code/config-eslint':
+        specifier: workspace:^
+        version: link:../../packages/config-eslint
+      '@roo-code/config-typescript':
+        specifier: workspace:^
+        version: link:../../packages/config-typescript
+      '@types/node':
+        specifier: 20.x
+        version: 20.17.57
+      '@types/react':
+        specifier: ^18.3.23
+        version: 18.3.23
+      '@types/react-dom':
+        specifier: ^18.3.5
+        version: 18.3.7(@types/react@18.3.23)
+      '@vitejs/plugin-react':
+        specifier: ^4.4.1
+        version: 4.4.1(vite@6.3.6(@types/node@20.17.57)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.47.1)(tsx@4.19.4)(yaml@2.8.0))
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: 5.8.3
+        version: 5.8.3
+      vite:
+        specifier: 6.3.6
+        version: 6.3.6(@types/node@20.17.57)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.47.1)(tsx@4.19.4)(yaml@2.8.0)
+      vitest:
+        specifier: ^3.2.3
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@20.17.57)(@vitest/ui@3.2.4)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.47.1)(tsx@4.19.4)(yaml@2.8.0)
+
+  apps/web-server:
+    dependencies:
+      ignore:
+        specifier: ^7.0.3
+        version: 7.0.5
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@roo-code/config-eslint':
+        specifier: workspace:^
+        version: link:../../packages/config-eslint
+      '@roo-code/config-typescript':
+        specifier: workspace:^
+        version: link:../../packages/config-typescript
+      '@types/node':
+        specifier: ^24.1.0
+        version: 24.2.1
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      tsup:
+        specifier: ^8.4.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)
+      tsx:
+        specifier: ^4.19.3
+        version: 4.19.4
+      typescript:
+        specifier: 5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.3
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.2.1)(@vitest/ui@3.2.4)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.47.1)(tsx@4.19.4)(yaml@2.8.0)
+
   packages/build:
     dependencies:
       zod:

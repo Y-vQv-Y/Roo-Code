@@ -23,6 +23,14 @@
 			"entry": ["src/clientModules/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}", "src/theme/**/*.{ts,tsx}"],
 			"project": ["src/**/*.{ts,tsx}"]
 		},
+		"apps/web-server": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"apps/web": {
+			"entry": ["src/main.tsx"],
+			"project": ["src/**/*.{ts,tsx}"]
+		},
 		"packages/{build,evals,ipc,types}": {
 			"project": ["src/**/*.ts"]
 		}

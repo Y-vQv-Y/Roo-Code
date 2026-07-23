@@ -1,0 +1,29 @@
+{
+	"name": "@adtec-code/web-server",
+	"version": "0.1.18",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "tsx src/index.ts",
+		"build": "tsup",
+		"start": "node dist/index.js",
+		"lint": "eslint src --ext=.ts --max-warnings=0",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"clean": "rimraf dist .turbo"
+	},
+	"dependencies": {
+		"ignore": "^7.0.3",
+		"zod": "3.25.76"
+	},
+	"devDependencies": {
+		"@roo-code/config-eslint": "workspace:^",
+		"@roo-code/config-typescript": "workspace:^",
+		"@types/node": "^24.1.0",
+		"rimraf": "^6.0.1",
+		"tsup": "^8.4.0",
+		"tsx": "^4.19.3",
+		"typescript": "5.8.3",
+		"vitest": "^3.2.3"
+	}
+}

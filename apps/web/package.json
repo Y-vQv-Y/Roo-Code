@@ -1,0 +1,33 @@
+{
+	"name": "@adtec-code/web",
+	"version": "0.1.18",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc --noEmit && vite build",
+		"preview": "vite preview",
+		"lint": "eslint src --ext=.ts,.tsx --max-warnings=0",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"clean": "rimraf dist .turbo"
+	},
+	"dependencies": {
+		"lucide-react": "^0.559.0",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6"
+	},
+	"devDependencies": {
+		"@roo-code/config-eslint": "workspace:^",
+		"@roo-code/config-typescript": "workspace:^",
+		"@types/node": "20.x",
+		"@types/react": "^18.3.23",
+		"@types/react-dom": "^18.3.5",
+		"@vitejs/plugin-react": "^4.4.1",
+		"jsdom": "^26.1.0",
+		"rimraf": "^6.0.1",
+		"typescript": "5.8.3",
+		"vite": "6.3.6",
+		"vitest": "^3.2.3"
+	}
+}

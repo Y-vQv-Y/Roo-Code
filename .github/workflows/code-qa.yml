@@ -58,6 +58,18 @@ jobs:
                   if-no-files-found: error
             - name: Build CLI
               run: pnpm --filter @adtec-code/cli build
+            - name: Build Web Server
+              run: pnpm --filter @adtec-code/web-server build
+            - name: Build Web Client
+              run: pnpm --filter @adtec-code/web build
+            - name: Upload Web artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: adtec-code-web-${{ github.sha }}
+                  path: |
+                      apps/web-server/dist/**
+                      apps/web/dist/**
+                  if-no-files-found: error
 
     unit-test:
         name: platform-unit-test (${{ matrix.name }})

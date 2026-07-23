@@ -1,0 +1,14 @@
+{
+	"extends": "@roo-code/config-typescript/base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": { "@/*": ["src/*"] }
+	},
+	"include": ["src", "vite.config.ts"],
+	"exclude": ["node_modules", "dist"]
+}
