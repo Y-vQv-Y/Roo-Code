@@ -65,7 +65,9 @@ export class AgentScheduler {
 		this.running.add(task.id)
 		let current = await this.tasks.updateStatus(task, "running")
 		try {
-			await executor({ task: current, workspace }, async (event) => this.events.publish(task.id, event.type, event.data))
+			await executor({ task: current, workspace }, async (event) => {
+				await this.events.publish(task.id, event.type, event.data)
+			})
 			current = await this.tasks.updateStatus(current, "completed")
 		} catch (error) {
 			await this.tasks.updateStatus(current, "failed", error instanceof Error ? error.message : String(error))

@@ -9,4 +9,11 @@ describe("lineDiff", () => {
 			{ type: "add", line: 2, text: "three" },
 		])
 	})
+
+	it("handles empty files and additions at the end", () => {
+		expect(lineDiff("", "one\ntwo")).toEqual([
+			{ type: "add", line: 1, text: "one" },
+			{ type: "add", line: 2, text: "two" },
+		])
+	})
 })

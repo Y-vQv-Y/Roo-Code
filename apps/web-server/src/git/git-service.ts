@@ -14,7 +14,8 @@ export class GitService {
 		const { stdout } = await execFileAsync("git", ["status", "--porcelain=v1", "--branch"], { cwd, windowsHide: true })
 		const lines = stdout.trimEnd().split(/\r?\n/).filter(Boolean)
 		const branchLine = lines.find((line) => line.startsWith("## ")) ?? "## HEAD"
-		return { branch: branchLine.slice(3).split("...")[0], clean: lines.length <= 1, files: lines.filter((line) => !line.startsWith("## ")).map((line) => line.slice(3)) }
+		const branch = branchLine.slice(3).split("...")[0] ?? "HEAD"
+		return { branch, clean: lines.length <= 1, files: lines.filter((line) => !line.startsWith("## ")).map((line) => line.slice(3)) }
 	}
 
 	async diff(cwd: string, pathspec?: string): Promise<string> {

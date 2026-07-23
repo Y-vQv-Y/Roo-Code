@@ -135,7 +135,7 @@ export function createWebServer(deps: WebServerDependencies) {
 			const startMatch = pathname.match(/^\/v1\/auth\/([^/]+)\/start$/)
 			if (req.method === "POST" && startMatch) {
 				const input = authStartSchema.parse(await body(req))
-				const provider = deps.auth.getProvider(startMatch[1])
+				const provider = deps.auth.getProvider(startMatch[1]!)
 				if (!(provider instanceof OidcIdentityProvider) || typeof provider.createAuthorizationRequest !== "function") throw new ApiError(404, "OIDC provider not found")
 				const flow = flows.create({ providerId: provider.id, verifier: "pending", redirectUri: input.redirectUri, organizationId: input.organizationId })
 				const authorization = await provider.createAuthorizationRequest(input.redirectUri, flow.state)
@@ -176,7 +176,7 @@ export function createWebServer(deps: WebServerDependencies) {
 
 			const organizationsMatch = pathname.match(/^\/v1\/organizations\/([^/]+)(?:\/(groups|roles))?$/)
 			if (organizationsMatch && req.method === "GET") {
-				const organizationId = organizationsMatch[1]
+				const organizationId = organizationsMatch[1]!
 				if (!user.organizationIds.includes(organizationId)) throw new ApiError(404, "Organization not found")
 				if (organizationsMatch[2] === "groups") return json(res, 200, { groups: await deps.identity.listGroups(organizationId) })
 				if (organizationsMatch[2] === "roles") return json(res, 200, { roles: await deps.identity.listRoles(organizationId) })
@@ -199,40 +199,41 @@ export function createWebServer(deps: WebServerDependencies) {
 			const groupMemberMatch = pathname.match(/^\/v1\/organizations\/groups\/([^/]+)\/members$/)
 			if (req.method === "POST" && groupMemberMatch) {
 				const input = groupMemberSchema.parse(await body(req))
-				return json(res, 200, { group: await deps.identityAdmin.addGroupMember(user, groupMemberMatch[1], input.userId) })
+				return json(res, 200, { group: await deps.identityAdmin.addGroupMember(user, groupMemberMatch[1]!, input.userId) })
 			}
 
 			const workspaceFileMatch = pathname.match(/^\/v1\/workspaces\/([^/]+)\/files$/)
 			if (workspaceFileMatch && req.method === "GET") {
-				const workspace = await workspaceForUser(workspaceFileMatch[1], user, deps, { resource: "file", action: "read" })
+				const workspace = await workspaceForUser(workspaceFileMatch[1]!, user, deps, { resource: "file", action: "read" })
 				const filePath = requestUrl.searchParams.get("path")
 				if (!filePath) throw new ApiError(400, "path query parameter is required")
 				return json(res, 200, { path: filePath, content: await deps.fileService(workspace).read(filePath) })
 			}
 			if (workspaceFileMatch && req.method === "PUT") {
-				const workspace = await workspaceForUser(workspaceFileMatch[1], user, deps, { resource: "file", action: "write" })
+				const workspace = await workspaceForUser(workspaceFileMatch[1]!, user, deps, { resource: "file", action: "write" })
 				const input = fileWriteSchema.parse(await body(req))
 				return json(res, 200, { change: await deps.fileService(workspace).write(input.path, input.content) })
 			}
 
 			const patchMatch = pathname.match(/^\/v1\/workspaces\/([^/]+)\/patch$/)
 			if (patchMatch && req.method === "POST") {
-				const workspace = await workspaceForUser(patchMatch[1], user, deps, { resource: "file", action: "write" })
+				const workspace = await workspaceForUser(patchMatch[1]!, user, deps, { resource: "file", action: "write" })
 				const input = patchSchema.parse(await body(req))
 				return json(res, 200, { changes: await deps.fileService(workspace).applyPatch(input.patch) })
 			}
 
 			const checkpointMatch = pathname.match(/^\/v1\/workspaces\/([^/]+)\/checkpoints(?:\/([^/]+)\/restore)?$/)
 			if (checkpointMatch && req.method === "POST") {
-				const workspace = await workspaceForUser(checkpointMatch[1], user, deps, { resource: "file", action: "write" })
-				if (checkpointMatch[2]) return json(res, 200, { changes: await deps.checkpointService.restore(workspace, checkpointMatch[2]) })
+				const workspace = await workspaceForUser(checkpointMatch[1]!, user, deps, { resource: "file", action: "write" })
+				const checkpointId = checkpointMatch[2]
+				if (checkpointId) return json(res, 200, { changes: await deps.checkpointService.restore(workspace, checkpointId) })
 				const input = checkpointSchema.parse(await body(req))
 				return json(res, 201, { checkpoint: await deps.checkpointService.create(workspace, user.id, input.label) })
 			}
 
 			const gitMatch = pathname.match(/^\/v1\/workspaces\/([^/]+)\/git\/status$/)
 			if (gitMatch && req.method === "GET") {
-				const workspace = await workspaceForUser(gitMatch[1], user, deps, { resource: "workspace", action: "read" })
+				const workspace = await workspaceForUser(gitMatch[1]!, user, deps, { resource: "workspace", action: "read" })
 				return json(res, 200, await git.status(workspace.rootPath))
 			}
 
@@ -246,7 +247,7 @@ export function createWebServer(deps: WebServerDependencies) {
 
 			const taskEventsMatch = pathname.match(/^\/v1\/tasks\/([^/]+)\/events$/)
 			if (req.method === "GET" && taskEventsMatch) {
-				const task = await deps.taskService.get(taskEventsMatch[1])
+				const task = await deps.taskService.get(taskEventsMatch[1]!)
 				if (!task) throw new ApiError(404, "Task not found")
 				await workspaceForUser(task.workspaceId, user, deps, { resource: "task", action: "read" })
 				res.writeHead(200, { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache", connection: "keep-alive" })

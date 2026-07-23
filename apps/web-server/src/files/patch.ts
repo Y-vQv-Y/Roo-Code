@@ -25,13 +25,13 @@ export function parsePatch(patch: string): PatchOperation[] {
 	const operations: PatchOperation[] = []
 	let index = 1
 	while (index < lines.length - 1) {
-		const header = lines[index]
+		const header = lines[index]!
 		if (header.startsWith("*** Add File: ")) {
 			const path = normalizeWorkspacePath(header.slice("*** Add File: ".length))
 			const content: string[] = []
 			index += 1
-			while (index < lines.length - 1 && !lines[index].startsWith("*** ")) {
-				const line = lines[index]
+			while (index < lines.length - 1 && !lines[index]!.startsWith("*** ")) {
+				const line = lines[index]!
 				if (!line.startsWith("+")) throw new PatchFormatError(`Added file line must start with +: ${line}`)
 				content.push(line.slice(1))
 				index += 1
@@ -48,13 +48,14 @@ export function parsePatch(patch: string): PatchOperation[] {
 			const path = normalizeWorkspacePath(header.slice("*** Update File: ".length))
 			index += 1
 			let moveTo: string | undefined
-			if (lines[index]?.startsWith("*** Move to: ")) {
-				moveTo = normalizeWorkspacePath(lines[index].slice("*** Move to: ".length))
+			const moveHeader = lines[index]
+			if (moveHeader?.startsWith("*** Move to: ")) {
+				moveTo = normalizeWorkspacePath(moveHeader.slice("*** Move to: ".length))
 				index += 1
 			}
 			const hunks: string[] = []
-			while (index < lines.length - 1 && !lines[index].startsWith("*** ")) {
-				hunks.push(lines[index])
+			while (index < lines.length - 1 && !lines[index]!.startsWith("*** ")) {
+				hunks.push(lines[index]!)
 				index += 1
 			}
 			operations.push({ path, operation: "patch", content: hunks.join("\n"), moveTo })
