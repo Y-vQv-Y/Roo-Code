@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { applyPatchToFiles, parsePatch, PatchFormatError } from "./patch.js"
+import { applyPatchToFiles, PatchFormatError } from "./patch.js"
 
 describe("structured patch", () => {
 	it("adds, updates and deletes files", () => {

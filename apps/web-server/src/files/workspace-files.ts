@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto"
-import { readFile, readdir, realpath, stat, unlink, writeFile, mkdir, rename } from "node:fs/promises"
+import { readFile, readdir, realpath, unlink, writeFile, mkdir, rename } from "node:fs/promises"
 import path from "node:path"
 import ignore from "ignore"
 import type { FileChange } from "../domain.js"
